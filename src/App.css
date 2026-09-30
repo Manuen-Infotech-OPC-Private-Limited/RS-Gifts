@@ -1,0 +1,26 @@
+/* RS-Gifts App Styles - Ready for step-by-step section building */
+:root {
+  --primary: #8a1f44;
+  --primary-hover: #721837;
+  --primary-light: #fdf2f4;
+  --accent: #c9a45c;
+  --text-main: #2b2528;
+  --text-muted: #6f676b;
+  --border-light: #ede6eb;
+  --bg-page: #faf8f9;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
