@@ -51,7 +51,7 @@ export const WishlistPage = () => {
 
   if (wishlistItems.length === 0) {
     return (
-      <div className="w-full bg-[#FAF8FA] py-16 px-4 font-sans select-none min-h-[70vh] flex items-center justify-center">
+      <div className="w-full bg-[#FFF9F5] py-16 px-4 font-sans select-none min-h-[70vh] flex items-center justify-center">
         <div className="max-w-md w-full bg-white p-8 rounded-3xl border border-[#ECE7EC] shadow-sm text-center space-y-4">
           <div className="w-20 h-20 rounded-full bg-[#FDF2F4] text-[#821D38] flex items-center justify-center mx-auto">
             <Heart size={34} strokeWidth={1.5} />
@@ -75,7 +75,7 @@ export const WishlistPage = () => {
   }
 
   return (
-    <div className="w-full bg-[#FAF8FA] py-6 sm:py-9 font-sans select-none min-h-[80vh]">
+    <div className="w-full bg-[#FFF9F5] py-6 sm:py-9 font-sans select-none min-h-[80vh]">
       <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         
         {/* Header with Title and Actions */}

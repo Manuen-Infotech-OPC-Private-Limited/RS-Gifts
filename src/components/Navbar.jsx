@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
   const navigate = useNavigate();
@@ -29,8 +29,7 @@ export const Navbar = ({ onSearch }) => {
     { label: 'Personalized Gifts', path: '/personalized-gifts' },
     { label: 'Festival Gifts', path: '/festival-gifts' },
     { label: 'Hampers', path: '/hampers' },
-    { label: 'New Arrivals', path: '/new-arrivals' },
-    { label: 'Offers', path: '/offers' }
+    { label: 'New Arrivals', path: '/new-arrivals' }
   ];
 
   const handleSearch = (e) => {
@@ -103,39 +102,78 @@ export const Navbar = ({ onSearch }) => {
         {/* Right Actions: Shifted left with gap on right */}
         <div className="flex items-center gap-7 mr-14 shrink-0">
           {user ? (
-            <div 
-              className="relative"
-              onMouseEnter={() => setUserMenuOpen(true)}
-              onMouseLeave={() => setUserMenuOpen(false)}
-            >
-              <button
-                onClick={() => navigate('/account')}
-                className="flex items-center gap-2 text-sm font-semibold text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer py-1"
+            <div className="flex items-center gap-3">
+              <div 
+                className="relative"
+                onMouseEnter={() => setUserMenuOpen(true)}
+                onMouseLeave={() => setUserMenuOpen(false)}
               >
-                <div className="w-7 h-7 rounded-full bg-[#FDF2F4] border border-[#821D38] flex items-center justify-center text-xs font-bold text-[#821D38]">
-                  {user.firstName?.charAt(0) || 'U'}
-                </div>
-                <span>{user.firstName}</span>
-                <ChevronDown size={14} className={`transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
-              </button>
+                <button
+                  onClick={() => {
+                    if (user.role === 'admin') {
+                      const token = localStorage.getItem('rs_admin_token') || localStorage.getItem('rs_gifts_token') || '';
+                      window.location.href = `http://localhost:3000?token=${encodeURIComponent(token)}`;
+                    } else {
+                      navigate('/account');
+                    }
+                  }}
+                  className="flex items-center gap-2 text-sm font-semibold text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer py-1"
+                  title={user.role === 'admin' ? 'Go to Admin Dashboard' : 'View Account'}
+                >
+                  <div className="w-7 h-7 rounded-full bg-[#FDF2F4] border border-[#821D38] flex items-center justify-center text-xs font-bold text-[#821D38]">
+                    {user.role === 'admin' ? 'RS' : (user.firstName?.charAt(0) || 'U')}
+                  </div>
+                  <span>{user.role === 'admin' ? 'RS Gifts' : user.firstName}</span>
+                  <ChevronDown size={14} className={`transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </button>
 
-              {userMenuOpen && (
-                <div className="absolute top-full right-0 bg-white min-w-[220px] rounded-2xl shadow-xl border border-neutral-100 py-2 z-50 animate-in fade-in duration-150">
-                  <div className="px-4 py-2 border-b border-neutral-100">
-                    <p className="text-xs font-bold text-neutral-900 truncate">{user.firstName} {user.lastName}</p>
-                    <p className="text-[11px] text-neutral-500 truncate">{user.email}</p>
+                {userMenuOpen && (
+                  <div className="absolute top-full right-0 bg-white min-w-[230px] rounded-2xl shadow-xl border border-neutral-100 py-2 z-50 animate-in fade-in duration-150">
+                    <div className="px-4 py-2.5 border-b border-neutral-100">
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-xs font-bold text-neutral-900 truncate">
+                          {user.role === 'admin' ? 'RS Gifts' : (user.name || `${user.firstName || ''} ${user.lastName || ''}`).replace(/Super Admin|Admin/gi, '').trim() || 'RS Gifts'}
+                        </p>
+                        {user.role === 'admin' ? (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#821D38] text-white font-bold uppercase tracking-wider shrink-0">Admin</span>
+                        ) : (
+                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider shrink-0">Customer</span>
+                        )}
+                      </div>
+                      <p className="text-[11px] text-neutral-500 truncate mt-0.5">{user.email}</p>
+                    </div>
+
+                    {user.role !== 'admin' && (
+                      <div className="py-1 border-b border-neutral-100 text-xs">
+                        <button
+                          onClick={() => { setUserMenuOpen(false); navigate('/account'); }}
+                          className="w-full text-left px-4 py-2 text-neutral-700 hover:bg-[#FDF2F4] hover:text-[#821D38] font-medium flex items-center gap-2 cursor-pointer transition-colors"
+                        >
+                          <User size={13} />
+                          <span>My Account Profile</span>
+                        </button>
+                        <button
+                          onClick={() => { setUserMenuOpen(false); navigate('/account?tab=orders'); }}
+                          className="w-full text-left px-4 py-2 text-neutral-700 hover:bg-[#FDF2F4] hover:text-[#821D38] font-medium flex items-center gap-2 cursor-pointer transition-colors"
+                        >
+                          <Package size={13} />
+                          <span>My Orders & Tracking</span>
+                        </button>
+                      </div>
+                    )}
+
+                    <div className="pt-1">
+                      <button
+                        onClick={() => { setUserMenuOpen(false); logout(); }}
+                        className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+                      >
+                        <LogOut size={14} />
+                        <span>Sign Out</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="pt-1">
-                    <button
-                      onClick={() => { setUserMenuOpen(false); logout(); }}
-                      className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-semibold flex items-center gap-2 cursor-pointer"
-                    >
-                      <LogOut size={14} />
-                      <span>Sign Out</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           ) : (
             <button 

@@ -87,7 +87,7 @@ export const ShopByCategory = ({ onSelectCategory }) => {
   };
 
   return (
-    <section className="w-full bg-[#FFFFFF] py-5 sm:py-6 border-b border-[#F2EAEF] relative">
+    <section className="w-full bg-[#FFF9F5] py-5 sm:py-6 relative">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
         <div className="flex items-center justify-between mb-4 sm:mb-6">

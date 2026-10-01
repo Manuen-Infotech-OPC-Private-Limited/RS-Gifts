@@ -12,6 +12,8 @@ import { AuthModal } from './components/auth/AuthModal';
 import { AccountPage } from './pages/AccountPage';
 import { CartPage } from './pages/CartPage';
 import { WishlistPage } from './pages/WishlistPage';
+import { BirthdayGiftsPage } from './pages/BirthdayGiftsPage';
+import { ProductDetailsPage } from './pages/ProductDetailsPage';
 import { CartDrawer } from './components/cart/CartDrawer';
 import './App.css';
 
@@ -34,10 +36,10 @@ export function App() {
     <AuthProvider>
       <WishlistProvider>
         <CartProvider>
-          <div className="app-root flex flex-col min-h-screen">
+          <div className="app-root flex flex-col min-h-screen bg-[#FFF9F5]">
             <Navbar onSearch={handleSearch} onNavigate={handleNavigate} />
-            
-            <main className="flex-1">
+
+            <main className="flex-1 bg-[#FFF9F5]">
               <Routes>
                 {/* Home Storefront */}
                 <Route
@@ -50,6 +52,14 @@ export function App() {
                     </>
                   }
                 />
+
+                {/* Birthday Gifts Page */}
+                <Route path="/birthday-gifts" element={<BirthdayGiftsPage />} />
+                <Route path="/category/birthday-gifts" element={<BirthdayGiftsPage />} />
+
+                {/* Product Details Page */}
+                <Route path="/product/:idOrSlug" element={<ProductDetailsPage />} />
+                <Route path="/products/:idOrSlug" element={<ProductDetailsPage />} />
 
                 {/* Wishlist Page */}
                 <Route path="/wishlist" element={<WishlistPage />} />

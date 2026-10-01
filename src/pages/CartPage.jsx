@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 import { 
   ShoppingBag, 
   Trash2, 
@@ -21,6 +22,7 @@ import {
 } from 'lucide-react';
 
 export const CartPage = () => {
+  const { user, openAuthModal } = useAuth();
   const {
     cartItems,
     cartCount,
@@ -56,6 +58,11 @@ export const CartPage = () => {
   const [couponMessage, setCouponMessage] = useState(null);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
 
+  // Never show order placed screen when user logs in or auth state changes
+  useEffect(() => {
+    setCheckoutSuccess(false);
+  }, [user]);
+
   const handleApplyCoupon = (e) => {
     e.preventDefault();
     if (!couponInput.trim()) return;
@@ -74,17 +81,21 @@ export const CartPage = () => {
   };
 
   const handleCheckout = () => {
+    if (!user) {
+      openAuthModal('login');
+      return;
+    }
     setCheckoutSuccess(true);
     setTimeout(() => {
       clearCart();
-    }, 2500);
+    }, 1500);
   };
 
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - itemsSubtotal);
 
   if (checkoutSuccess) {
     return (
-      <div className="w-full bg-[#FAF8FA] py-16 px-4 font-sans select-none min-h-[70vh] flex items-center justify-center">
+      <div className="w-full bg-[#FFF9F5] py-16 px-4 font-sans select-none min-h-[70vh] flex items-center justify-center">
         <div className="max-w-md w-full bg-white p-8 sm:p-10 rounded-3xl border border-[#ECE7EC] shadow-xl text-center space-y-4">
           <div className="w-16 h-16 rounded-full bg-[#E8F5E9] text-[#15803D] flex items-center justify-center mx-auto">
             <Check size={32} strokeWidth={2.5} />
@@ -95,12 +106,24 @@ export const CartPage = () => {
           <p className="text-xs sm:text-sm text-[#6F6870] leading-relaxed">
             Thank you for shopping with RS Gifts. We have sent your order confirmation and invoice to your registered email.
           </p>
-          <div className="pt-2">
+          <div className="pt-2 space-y-2">
             <button
-              onClick={() => navigate('/account?tab=orders')}
+              onClick={() => {
+                setCheckoutSuccess(false);
+                navigate('/account?tab=orders');
+              }}
               className="w-full py-3 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
             >
               Track Order Status
+            </button>
+            <button
+              onClick={() => {
+                setCheckoutSuccess(false);
+                navigate('/');
+              }}
+              className="w-full py-2.5 rounded-xl border border-neutral-200 text-neutral-700 hover:bg-neutral-50 text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Back to Storefront
             </button>
           </div>
         </div>
@@ -110,7 +133,7 @@ export const CartPage = () => {
 
   if (cartItems.length === 0) {
     return (
-      <div className="w-full bg-[#FAF8FA] py-16 px-4 font-sans select-none min-h-[70vh] flex items-center justify-center">
+      <div className="w-full bg-[#FFF9F5] py-16 px-4 font-sans select-none min-h-[70vh] flex items-center justify-center">
         <div className="max-w-md w-full bg-white p-8 rounded-3xl border border-[#ECE7EC] shadow-sm text-center space-y-4">
           <div className="w-20 h-20 rounded-full bg-[#FDF2F4] text-[#821D38] flex items-center justify-center mx-auto">
             <ShoppingBag size={34} strokeWidth={1.5} />
@@ -134,10 +157,10 @@ export const CartPage = () => {
   }
 
   return (
-    <div className="w-full bg-[#FAF8FA] py-6 sm:py-9 font-sans select-none min-h-[80vh]">
+    <div className="w-full bg-[#FFF9F5] py-6 sm:py-9 font-sans select-none min-h-[80vh]">
       <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         
-        {/* Page Title & Free Shipping Bar */}
+        {/* Page Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-xl sm:text-2xl font-bold text-[#1E1217]">
@@ -146,18 +169,6 @@ export const CartPage = () => {
             <p className="text-xs text-[#6F6870] mt-0.5">
               Review your selected items and personalize your gifting options
             </p>
-          </div>
-
-          {/* Shipping Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white border border-[#ECE7EC] text-xs shadow-2xs">
-            <Truck size={14} className={isFreeDelivery ? 'text-[#15803D]' : 'text-[#821D38]'} />
-            {isFreeDelivery ? (
-              <span className="text-[#15803D] font-bold">Free Luxury Shipping Unlocked</span>
-            ) : (
-              <span className="text-neutral-700">
-                Add <strong className="text-[#821D38]">₹{remainingForFreeShipping}</strong> for Free Delivery
-              </span>
-            )}
           </div>
         </div>
 
@@ -232,7 +243,7 @@ export const CartPage = () => {
 
                   {/* Quantity & Item Total */}
                   <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2 pt-2 sm:pt-0">
-                    <div className="flex items-center border border-[#ECE7EC] rounded-xl overflow-hidden bg-[#FAF8FA]">
+                    <div className="flex items-center border border-[#ECE7EC] rounded-xl overflow-hidden bg-[#FFF9F5]">
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         className="w-7 h-7 flex items-center justify-center text-neutral-600 hover:bg-white transition-colors cursor-pointer"
@@ -268,7 +279,7 @@ export const CartPage = () => {
               </div>
 
               {/* 1. Gift Wrap Option */}
-              <label className="flex items-start gap-3 p-3.5 rounded-2xl border border-[#ECE7EC] hover:border-[#DFC8D0] bg-[#FAF8FA] transition-colors cursor-pointer">
+              <label className="flex items-start gap-3 p-3.5 rounded-2xl border border-[#ECE7EC] hover:border-[#DFC8D0] bg-[#FFF9F5] transition-colors cursor-pointer">
                 <input
                   type="checkbox"
                   checked={giftWrap}
@@ -289,7 +300,7 @@ export const CartPage = () => {
               </label>
 
               {/* 2. Personalized Greeting Card Note */}
-              <div className="p-3.5 rounded-2xl border border-[#ECE7EC] bg-[#FAF8FA] space-y-3">
+              <div className="p-3.5 rounded-2xl border border-[#ECE7EC] bg-[#FFF9F5] space-y-3">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -324,7 +335,7 @@ export const CartPage = () => {
               </div>
 
               {/* 3. Target Scheduled Delivery Date */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border border-[#ECE7EC] bg-[#FAF8FA]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border border-[#ECE7EC] bg-[#FFF9F5]">
                 <div className="flex items-center gap-2.5">
                   <Calendar size={18} className="text-[#821D38] shrink-0" />
                   <div>
@@ -379,7 +390,7 @@ export const CartPage = () => {
                     placeholder="Enter WELCOME10"
                     value={couponInput}
                     onChange={(e) => setCouponInput(e.target.value)}
-                    className="flex-1 px-3 py-2 text-xs rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] uppercase placeholder-neutral-400 focus:outline-none focus:border-[#821D38]"
+                    className="flex-1 px-3 py-2 text-xs rounded-xl border border-[#ECE7EC] bg-[#FFF9F5] uppercase placeholder-neutral-400 focus:outline-none focus:border-[#821D38]"
                   />
                   <button
                     type="submit"

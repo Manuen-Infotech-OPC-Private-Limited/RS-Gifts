@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { initialUserData, initialAddresses, initialOrders, initialOccasions } from '../data/mockUserData';
+import api from '../services/api';
 
 const AuthContext = createContext();
 
@@ -10,15 +11,24 @@ export const AuthProvider = ({ children }) => {
       const saved = localStorage.getItem('rs_gifts_user');
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed && parsed.avatar) {
-          delete parsed.avatar;
+        if (parsed) {
+          if (parsed.avatar) delete parsed.avatar;
+          if (parsed.role === 'admin' || parsed.email === 'admin@rsgifts.com') {
+            parsed.name = 'RS Gifts';
+            parsed.firstName = 'RS';
+            parsed.lastName = 'Gifts';
+          } else {
+            if (parsed.name) parsed.name = parsed.name.replace(/Super Admin|Admin/gi, '').trim();
+            if (parsed.lastName) parsed.lastName = parsed.lastName.replace(/Super Admin|Admin/gi, '').trim();
+          }
+          parsed.role = parsed.role === 'admin' ? 'admin' : 'customer';
           localStorage.setItem('rs_gifts_user', JSON.stringify(parsed));
+          return parsed;
         }
-        return parsed;
       }
-      return initialUserData;
+      return null;
     } catch {
-      return initialUserData;
+      return null;
     }
   });
 
@@ -74,32 +84,94 @@ export const AuthProvider = ({ children }) => {
   }, [occasions]);
 
   // Auth actions
-  const login = (emailOrPhone, password) => {
-    const loggedUser = {
-      ...initialUserData,
-      email: emailOrPhone.includes('@') ? emailOrPhone : 'user@example.com',
-      phone: !emailOrPhone.includes('@') ? emailOrPhone : initialUserData.phone,
-    };
-    setUser(loggedUser);
-    setAuthModalOpen(false);
-    return { success: true };
+  const login = async (emailOrPhone, password) => {
+    try {
+      const data = await api.post('/customer/auth/login', {
+        email: emailOrPhone.trim(),
+        password,
+      });
+
+      const token = data.token;
+      const backendUser = data.user || {};
+      const rawName = (backendUser.role === 'admin' || backendUser.email === 'admin@rsgifts.com')
+        ? 'RS Gifts'
+        : (backendUser.name || 'User').replace(/Super Admin|Admin/gi, '').trim() || 'User';
+      const nameParts = rawName.split(' ');
+      const firstName = nameParts[0] || (backendUser.role === 'admin' ? 'RS' : 'User');
+      const lastName = nameParts.slice(1).join(' ') || (backendUser.role === 'admin' ? 'Gifts' : '');
+
+      const loggedUser = {
+        id: backendUser.id || backendUser._id || `usr_${Date.now()}`,
+        name: rawName,
+        firstName,
+        lastName,
+        email: backendUser.email || emailOrPhone,
+        phone: backendUser.phone || '',
+        role: backendUser.role === 'admin' ? 'admin' : 'customer',
+        addresses: backendUser.addresses || [],
+      };
+
+      if (token) {
+        localStorage.setItem('rs_gifts_token', token);
+        if (loggedUser.role === 'admin') {
+          localStorage.setItem('rs_admin_token', token);
+        }
+      }
+
+      setUser(loggedUser);
+      return { success: true, user: loggedUser, token };
+    } catch (err) {
+      console.warn('Backend login failed, checking fallback:', err);
+      const errMsg = err.response?.data?.message || err.message || 'Invalid credentials';
+      return { success: false, error: errMsg };
+    }
   };
 
-  const register = (formData) => {
-    const newUser = {
-      ...initialUserData,
-      id: `usr_${Date.now()}`,
-      firstName: formData.firstName || 'New',
-      lastName: formData.lastName || 'User',
-      email: formData.email,
-      phone: formData.phone || '+91 98765 00000',
-    };
-    setUser(newUser);
-    setAuthModalOpen(false);
-    return { success: true };
+  const register = async (formData) => {
+    try {
+      const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim() || 'New User';
+      const data = await api.post('/customer/auth/register', {
+        name: fullName,
+        email: formData.email?.trim(),
+        password: formData.password,
+        phone: formData.phone || '',
+      });
+
+      const token = data.token;
+      const backendUser = data.user || {};
+      const nameParts = (backendUser.name || fullName).split(' ');
+
+      const newUser = {
+        id: backendUser.id || backendUser._id || `usr_${Date.now()}`,
+        name: backendUser.name || fullName,
+        firstName: nameParts[0] || 'New',
+        lastName: nameParts.slice(1).join(' ') || '',
+        email: backendUser.email || formData.email,
+        phone: backendUser.phone || formData.phone || '',
+        role: backendUser.role || 'customer',
+        addresses: backendUser.addresses || [],
+      };
+
+      if (token) {
+        localStorage.setItem('rs_gifts_token', token);
+        if (backendUser.role === 'admin') {
+          localStorage.setItem('rs_admin_token', token);
+        }
+      }
+
+      setUser(newUser);
+      return { success: true, user: newUser, token };
+    } catch (err) {
+      console.warn('Backend register error:', err);
+      const errMsg = err.response?.data?.message || err.message || 'Registration failed';
+      return { success: false, error: errMsg };
+    }
   };
 
   const logout = () => {
+    localStorage.removeItem('rs_gifts_token');
+    localStorage.removeItem('rs_admin_token');
+    localStorage.removeItem('rs_gifts_user');
     setUser(null);
   };
 

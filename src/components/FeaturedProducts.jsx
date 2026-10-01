@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Heart, Star, Check } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { fetchLiveProducts } from '../services/productService';
+import { fetchLiveProducts, fetchActiveCoupon } from '../services/productService';
 
 const productsData = [
   {
@@ -11,66 +11,72 @@ const productsData = [
     name: 'Teddy Bear (Premium)',
     price: 699,
     originalPrice: 999,
-    discount: '30% OFF',
+    discount: '₹200 OFF',
     rating: 4.8,
     reviews: 124,
     image: '/images/products/teddy-bear.png',
-    categories: ['All', 'Best Sellers', 'Toys & Kids']
+    categories: ['All', 'Best Sellers', 'Toys & Kids'],
+    featured: true
   },
   {
     id: 'prod-2',
     name: 'Personalized Photo Frame',
     price: 499,
     originalPrice: 699,
-    discount: '29% OFF',
+    discount: '₹200 OFF',
     rating: 4.9,
     reviews: 98,
     image: '/images/products/photo-frame.png',
-    categories: ['All', 'Best Sellers', 'Personalized Gifts']
+    categories: ['All', 'Best Sellers', 'Personalized Gifts'],
+    featured: true
   },
   {
     id: 'prod-3',
     name: 'Luxury Gift Hamper',
     price: 1999,
     originalPrice: 2499,
-    discount: '20% OFF',
+    discount: '₹200 OFF',
     rating: 4.9,
     reviews: 76,
     image: '/images/products/luxury-hamper.png',
-    categories: ['All', 'Offers', 'Flowers & Hampers']
+    categories: ['All', 'Offers', 'Flowers & Hampers'],
+    featured: true
   },
   {
     id: 'prod-4',
     name: 'LED Moon Lamp',
     price: 1299,
     originalPrice: 1699,
-    discount: '24% OFF',
+    discount: '₹200 OFF',
     rating: 4.7,
     reviews: 112,
     image: '/images/products/moon-lamp.png',
-    categories: ['All', 'New Arrivals', 'Home & Decor']
+    categories: ['All', 'New Arrivals', 'Home & Decor'],
+    featured: true
   },
   {
     id: 'prod-5',
     name: 'Artificial Plant (Decor)',
     price: 499,
     originalPrice: 799,
-    discount: '38% OFF',
+    discount: '₹200 OFF',
     rating: 4.6,
     reviews: 68,
     image: '/images/products/artificial-plant.png',
-    categories: ['All', 'Offers', 'Home & Decor']
+    categories: ['All', 'Offers', 'Home & Decor'],
+    featured: true
   },
   {
     id: 'prod-6',
     name: 'Personalized Mug',
     price: 399,
     originalPrice: 599,
-    discount: '33% OFF',
+    discount: '₹200 OFF',
     rating: 4.8,
     reviews: 91,
     image: '/images/products/personalized-mug.png',
-    categories: ['All', 'New Arrivals', 'Personalized Gifts']
+    categories: ['All', 'New Arrivals', 'Personalized Gifts'],
+    featured: true
   }
 ];
 
@@ -81,27 +87,52 @@ export const FeaturedProducts = ({ onAddToCart }) => {
   const [activeTab, setActiveTab] = useState('All');
   const [addedItems, setAddedItems] = useState({});
   const [liveProducts, setLiveProducts] = useState(null);
+  const [activeCoupon, setActiveCoupon] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
-    fetchLiveProducts()
-      .then((items) => {
-        if (isMounted && Array.isArray(items) && items.length > 0) {
-          setLiveProducts(items);
-        }
-      })
-      .catch(() => {
-        // Graceful fallback to static data if backend is offline
-      });
+    const loadProducts = () => {
+      fetchLiveProducts()
+        .then((items) => {
+          if (isMounted && Array.isArray(items) && items.length > 0) {
+            setLiveProducts(items);
+          }
+        })
+        .catch(() => {
+          // Graceful fallback to static data if backend is offline
+        });
 
+      fetchActiveCoupon()
+        .then((coupon) => {
+          if (isMounted && coupon) {
+            setActiveCoupon(coupon);
+          }
+        })
+        .catch(() => {});
+    };
+
+    loadProducts();
+
+    window.addEventListener('focus', loadProducts);
     return () => {
       isMounted = false;
+      window.removeEventListener('focus', loadProducts);
     };
   }, []);
 
   const filterTabs = ['All', 'Best Sellers', 'New Arrivals', 'Offers'];
 
-  const productList = liveProducts && liveProducts.length > 0 ? liveProducts : productsData;
+  const dynamicDiscountLabel = activeCoupon
+    ? (activeCoupon.discountType === 'flat' || activeCoupon.discountType === 'fixed'
+        ? `₹${activeCoupon.discountValue} OFF`
+        : `${activeCoupon.discountValue}% OFF`)
+    : null;
+
+  const allLoadedProducts = (liveProducts && liveProducts.length > 0 ? liveProducts : productsData).map((p) => ({
+    ...p,
+    discount: dynamicDiscountLabel || p.discount || '₹200 OFF',
+  }));
+  const productList = allLoadedProducts.filter((p) => p.featured === true);
 
   const filteredProducts = activeTab === 'All'
     ? productList
@@ -126,7 +157,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
   };
 
   return (
-    <section className="w-full bg-[#FFFFFF] py-7 sm:py-9">
+    <section className="w-full bg-[#FFF9F5] py-7 sm:py-9">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header with Filter Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
@@ -141,8 +172,8 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 sm:px-5 py-1.5 rounded-full text-xs sm:text-[13px] font-medium transition-all duration-200 cursor-pointer whitespace-nowrap ${activeTab === tab
-                    ? 'bg-[#821D38] text-white shadow-xs font-semibold'
-                    : 'bg-white text-[#4A3E45] hover:text-[#1E1217] border border-[#E8E2E5] hover:border-[#D5CAD0]'
+                  ? 'bg-[#821D38] text-white shadow-xs font-semibold'
+                  : 'bg-white text-[#4A3E45] hover:text-[#1E1217] border border-[#E8E2E5] hover:border-[#D5CAD0]'
                   }`}
               >
                 {tab}
@@ -151,9 +182,17 @@ export const FeaturedProducts = ({ onAddToCart }) => {
           </div>
         </div>
 
-        {/* 6 Products Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-4.5">
-          {filteredProducts.map((product) => {
+        {/* Products Grid */}
+        {filteredProducts.length === 0 ? (
+          <div className="py-12 px-6 text-center bg-[#FAF6F4] rounded-2xl border border-dashed border-[#DFC8D0]">
+            <p className="text-base font-bold text-[#561023]">No Featured Products</p>
+            <p className="text-xs text-[#705E67] mt-1 max-w-md mx-auto">
+              No products are currently marked as featured in this category. Click the star on items in the Admin Panel to display them here.
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-4.5">
+            {filteredProducts.map((product) => {
             const isWishlisted = isInWishlist(product.id);
             const isAdded = !!addedItems[product.id];
 
@@ -163,7 +202,10 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                 className="group bg-white rounded-2xl border border-[#EFEBEF] hover:border-[#DFC8D0] overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 select-none"
               >
                 {/* Top Image Box with Floating Wishlist Button (Flush to top/sides) */}
-                <div className="relative w-full aspect-[314/276] overflow-hidden bg-[#FAF6F4]">
+                <div 
+                  onClick={() => navigate(`/product/${product.slug || product.id}`)}
+                  className="relative w-full aspect-[314/276] overflow-hidden bg-[#FAF6F4] cursor-pointer"
+                >
                   <img
                     src={product.image}
                     alt={product.name}
@@ -182,8 +224,8 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                   >
                     <Heart
                       className={`w-4 h-4 transition-colors ${isWishlisted
-                          ? 'text-[#E11D48] fill-[#E11D48]'
-                          : 'text-[#821D38] stroke-[2]'
+                        ? 'text-[#E11D48] fill-[#E11D48]'
+                        : 'text-[#821D38] stroke-[2]'
                         }`}
                     />
                   </button>
@@ -193,7 +235,10 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                 <div className="p-2.5 sm:p-3 flex flex-col justify-between flex-1">
                   <div>
                     {/* Title */}
-                    <h3 className="text-xs sm:text-[13px] font-semibold text-[#271B21] line-clamp-1 mb-1.5 group-hover:text-[#821D38] transition-colors">
+                    <h3 
+                      onClick={() => navigate(`/product/${product.slug || product.id}`)}
+                      className="text-xs sm:text-[13px] font-semibold text-[#271B21] line-clamp-1 mb-1.5 group-hover:text-[#821D38] transition-colors cursor-pointer"
+                    >
                       {product.name}
                     </h3>
 
@@ -232,8 +277,8 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                       type="button"
                       onClick={() => handleAddToCartClick(product)}
                       className={`w-full py-2 px-1 rounded-xl text-[11px] sm:text-xs font-bold transition-all duration-200 shadow-2xs flex items-center justify-center gap-1 cursor-pointer active:scale-98 ${isAdded
-                          ? 'bg-[#15803D] text-white'
-                          : 'bg-[#E8A0AD] hover:bg-[#df93a1] text-[#29252A]'
+                        ? 'bg-[#15803D] text-white'
+                        : 'bg-[#E8A0AD] hover:bg-[#df93a1] text-[#29252A]'
                         }`}
                     >
                       {isAdded ? (
@@ -259,6 +304,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
             );
           })}
         </div>
+        )}
 
         {/* 2 Promotional Banners Below */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mt-7 sm:mt-9">
@@ -270,7 +316,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
             <img
               src="/images/banners/banner-personalized.png"
               alt="Personalized Gifts - Make it Uniquely Yours"
-              className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+              className="w-full h-auto block object-cover transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
           </div>
@@ -283,7 +329,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
             <img
               src="/images/banners/banner-occasions.png"
               alt="Gifts for Every Occasion"
-              className="w-full h-auto object-cover transition-transform duration-300 group-hover:scale-[1.01]"
+              className="w-full h-auto block object-cover transition-transform duration-300 group-hover:scale-[1.01]"
               loading="lazy"
             />
           </div>

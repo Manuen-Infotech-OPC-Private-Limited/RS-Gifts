@@ -5,6 +5,7 @@
   --color-primary-hover: #6E162E;
   --color-primary-light: #FDF2F4;
   --color-accent: #C9A45C;
+  --color-warm-ivory: #FFF9F5;
   --font-serif: 'Playfair Display', Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
 }
@@ -13,12 +14,13 @@
 html {
   font-size: 16px;
   scroll-behavior: smooth;
+  background-color: #FFF9F5;
 }
 
 body {
   font-family: var(--font-sans);
   color: #29252A;
-  background-color: #FFFFFF;
+  background-color: #FFF9F5;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

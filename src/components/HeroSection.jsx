@@ -81,12 +81,54 @@ const slidesData = [
 
 export const HeroSection = ({ onShopNow }) => {
   const navigate = useNavigate();
+  const [slides, setSlides] = useState(slidesData);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  const totalSlides = slidesData.length;
+  // Fetch live banners uploaded by Admin
+  useEffect(() => {
+    let isMounted = true;
+    const loadLiveBanners = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/api/customer/content/banners');
+        if (!res.ok) return;
+        const data = await res.json();
+        const activeBanners = (data.banners || []).filter(b => b.active !== false && (b.image || b.imageUrl));
+        if (activeBanners.length > 0 && isMounted) {
+          const dynamicSlides = activeBanners.map((b, idx) => {
+            const rawTitle = b.title || "More Than Gifts, It's Emotions";
+            const parts = rawTitle.includes(',') ? rawTitle.split(',') : [rawTitle];
+            return {
+              id: b._id || b.id || `live_banner_${idx}`,
+              tagline: b.subtitle ? 'EXCLUSIVE CURATED GIFTS' : 'GIFTS THAT SPEAK FROM THE HEART',
+              titleLine1: parts[0] ? parts[0].trim() + (parts.length > 1 ? ',' : '') : 'More Than Gifts,',
+              titleLine2: parts.length > 1 ? parts.slice(1).join(' ').trim() : '',
+              hasHeart: true,
+              description: b.subtitle || 'Thoughtful gifts for every occasion. Because every moment deserves something special.',
+              buttonText: b.buttonText || 'Shop Now',
+              buttonLink: b.link || b.buttonLink || '/gifts',
+              image: b.image || b.imageUrl || '/images/hero-banner-1.png',
+              badges: [
+                { id: `b_${idx}_1`, icon: Truck, label: 'Fast & Reliable Delivery' },
+                { id: `b_${idx}_2`, icon: ShieldCheck, label: 'Secure Payments' },
+                { id: `b_${idx}_3`, icon: Gift, label: 'Easy Returns' },
+              ]
+            };
+          });
+          setSlides(dynamicSlides);
+        }
+      } catch (err) {
+        console.warn('Could not load live banners from backend, using default slides:', err);
+      }
+    };
+
+    loadLiveBanners();
+    return () => { isMounted = false; };
+  }, []);
+
+  const totalSlides = slides.length;
 
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
@@ -154,7 +196,7 @@ export const HeroSection = ({ onShopNow }) => {
   return (
     <section 
       onClick={handleBannerClick}
-      className="relative w-full overflow-hidden bg-[#FAF7F5] select-none cursor-pointer"
+      className="relative w-full overflow-hidden bg-[#FFF9F5] select-none cursor-pointer"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -167,15 +209,18 @@ export const HeroSection = ({ onShopNow }) => {
         className="flex w-full transition-transform duration-700 ease-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
-        {slidesData.map((slide, idx) => (
+        {slides.map((slide, idx) => (
           <div 
-            key={slide.id} 
+            key={slide.id || idx} 
             className="w-full shrink-0 relative min-h-[270px] sm:min-h-[295px] lg:min-h-[320px] flex items-center"
           >
             {/* Background Image */}
             <div 
               className="absolute inset-0 w-full h-full bg-cover bg-center lg:bg-right transition-opacity duration-500"
-              style={{ backgroundImage: `url(${slide.image})` }}
+              style={{ 
+                backgroundImage: `url("${slide.image || '/images/hero-banner-1.png'}")`,
+                backgroundColor: '#FDF7F4'
+              }}
             />
 
             {/* Soft Ambient Gradient Overlay: ensures text readability on the left while keeping the luxury gifts crisp on the right */}
@@ -202,15 +247,26 @@ export const HeroSection = ({ onShopNow }) => {
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
                   <span>{slide.titleLine1}</span>
-                  <br />
-                  <span className="inline-flex items-center gap-1.5">
-                    {slide.titleLine2}
-                    {slide.hasHeart && (
+                  {slide.titleLine2 && (
+                    <>
+                      <br />
+                      <span className="inline-flex items-center gap-1.5">
+                        {slide.titleLine2}
+                        {slide.hasHeart && (
+                          <Heart 
+                            className="w-5 h-5 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
+                          />
+                        )}
+                      </span>
+                    </>
+                  )}
+                  {!slide.titleLine2 && slide.hasHeart && (
+                    <span className="inline-flex items-center gap-1.5 ml-2">
                       <Heart 
                         className="w-5 h-5 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
                       />
-                    )}
-                  </span>
+                    </span>
+                  )}
                 </h1>
 
                 {/* Description */}
@@ -233,8 +289,8 @@ export const HeroSection = ({ onShopNow }) => {
 
                 {/* Trust Badges matching reference */}
                 <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 text-[10.5px] sm:text-[11.5px] font-medium text-[#483B42]">
-                  {slide.badges.map((badge) => {
-                    const IconComponent = badge.icon;
+                  {(slide.badges || []).map((badge) => {
+                    const IconComponent = badge.icon || Gift;
                     return (
                       <div key={badge.id} className="flex items-center gap-1.5">
                         <IconComponent className="w-3.5 h-3.5 text-[#821D38] stroke-[2] shrink-0" />
@@ -251,7 +307,7 @@ export const HeroSection = ({ onShopNow }) => {
 
       {/* Carousel Dots Pagination (Matching reference) */}
       <div className="absolute bottom-2 sm:bottom-2.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
-        {slidesData.map((_, index) => (
+        {slides.map((_, index) => (
           <button
             key={index}
             onClick={() => goToSlide(index)}

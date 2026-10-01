@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import api from '../services/api';
 
 export const Footer = ({
   bgColor = '#E8A0AD',
@@ -8,6 +9,85 @@ export const Footer = ({
   secondaryColor = '#6F6870'
 }) => {
   const navigate = useNavigate();
+
+  const [contactInfo, setContactInfo] = useState(() => {
+    try {
+      const saved = localStorage.getItem('rs_gifts_contact_info');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          phone: parsed.phone || parsed.contactPhone || '',
+          email: parsed.email || parsed.contactEmail || parsed.supportEmail || '',
+          location: parsed.location || parsed.storeAddress || '',
+          hours: parsed.hours || parsed.supportHours || ''
+        };
+      }
+    } catch (e) {}
+    return {
+      phone: '',
+      email: '',
+      location: '',
+      hours: ''
+    };
+  });
+
+  useEffect(() => {
+    // Fetch live public contact settings dynamically from MongoDB
+    api.get('/customer/content/settings')
+      .then(res => {
+        const s = res?.settings || res?.data?.settings;
+        if (s) {
+          const liveContact = {
+            phone: s.contactPhone || '',
+            email: s.contactEmail || s.supportEmail || '',
+            location: s.storeAddress || '',
+            hours: s.supportHours || '',
+          };
+          setContactInfo(liveContact);
+          try {
+            localStorage.setItem('rs_gifts_contact_info', JSON.stringify(liveContact));
+          } catch (e) {}
+        }
+      })
+      .catch((err) => {
+        console.warn('Could not load live contact settings from MongoDB:', err);
+      });
+
+    // Listen to localStorage and window custom events for instant real-time updates
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem('rs_gifts_contact_info');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          setContactInfo({
+            phone: parsed.phone || parsed.contactPhone || '',
+            email: parsed.email || parsed.contactEmail || parsed.supportEmail || '',
+            location: parsed.location || parsed.storeAddress || '',
+            hours: parsed.hours || parsed.supportHours || ''
+          });
+        }
+      } catch (e) {}
+    };
+
+    const handleCustomUpdate = (e) => {
+      if (e.detail) {
+        setContactInfo({
+          phone: e.detail.phone || e.detail.contactPhone || '',
+          email: e.detail.email || e.detail.contactEmail || '',
+          location: e.detail.location || e.detail.storeAddress || '',
+          hours: e.detail.hours || e.detail.supportHours || '',
+        });
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('rs_gifts_contact_updated', handleCustomUpdate);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('rs_gifts_contact_updated', handleCustomUpdate);
+    };
+  }, []);
 
   const handleNav = (path) => {
     if (navigate && path.startsWith('/')) {
@@ -215,60 +295,70 @@ export const Footer = ({
           </div>
 
           {/* Column 4: Contact Us */}
-          <div className="flex flex-col space-y-1.5 min-w-[195px]">
-            {/* Heading: Primary #29252A */}
-            <h4
-              style={{ color: primaryColor }}
-              className="text-[13.5px] sm:text-[14px] font-bold tracking-tight mb-0.5"
-            >
-              Contact Us
-            </h4>
-            <div className="space-y-1.5">
-              {/* Phone */}
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Phone className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                <a
-                  href="tel:+919876543210"
-                  style={{ color: secondaryColor }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
-                  className="text-[12.5px] transition-colors"
-                >
-                  +91 98765 43210
-                </a>
-              </div>
+          {(contactInfo.phone || contactInfo.email || contactInfo.location || contactInfo.hours) && (
+            <div className="flex flex-col space-y-1.5 min-w-[195px]">
+              {/* Heading: Primary #29252A */}
+              <h4
+                style={{ color: primaryColor }}
+                className="text-[13.5px] sm:text-[14px] font-bold tracking-tight mb-0.5"
+              >
+                Contact Us
+              </h4>
+              <div className="space-y-1.5">
+                {/* Phone */}
+                {contactInfo.phone && (
+                  <div className="flex items-center gap-2 whitespace-nowrap">
+                    <Phone className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
+                    <a
+                      href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`}
+                      style={{ color: secondaryColor }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
+                      className="text-[12.5px] transition-colors"
+                    >
+                      {contactInfo.phone}
+                    </a>
+                  </div>
+                )}
 
-              {/* Email */}
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Mail className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                <a
-                  href="mailto:support@rsgifts.in"
-                  style={{ color: secondaryColor }}
-                  onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
-                  onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
-                  className="text-[12.5px] transition-colors"
-                >
-                  support@rsgifts.in
-                </a>
-              </div>
+                {/* Email */}
+                {contactInfo.email && (
+                  <div className="flex items-center gap-2 whitespace-nowrap">
+                    <Mail className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
+                    <a
+                      href={`mailto:${contactInfo.email}`}
+                      style={{ color: secondaryColor }}
+                      onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
+                      onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
+                      className="text-[12.5px] transition-colors"
+                    >
+                      {contactInfo.email}
+                    </a>
+                  </div>
+                )}
 
-              {/* Location */}
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <MapPin className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                <span style={{ color: secondaryColor }} className="text-[12.5px]">
-                  Hyderabad, India
-                </span>
-              </div>
+                {/* Location */}
+                {contactInfo.location && (
+                  <div className="flex items-center gap-2 whitespace-nowrap">
+                    <MapPin className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
+                    <span style={{ color: secondaryColor }} className="text-[12.5px]">
+                      {contactInfo.location}
+                    </span>
+                  </div>
+                )}
 
-              {/* Hours */}
-              <div className="flex items-center gap-2 whitespace-nowrap">
-                <Clock className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                <span style={{ color: secondaryColor }} className="text-[12.5px]">
-                  Mon - Sat: 9:00 AM - 8:00 PM
-                </span>
+                {/* Hours */}
+                {contactInfo.hours && (
+                  <div className="flex items-center gap-2 whitespace-nowrap">
+                    <Clock className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
+                    <span style={{ color: secondaryColor }} className="text-[12.5px]">
+                      {contactInfo.hours}
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
 
           {/* Column 5: We Accept */}
           <div className="flex flex-col space-y-1.5 min-w-[215px]">

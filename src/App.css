@@ -7,7 +7,7 @@
   --text-main: #2b2528;
   --text-muted: #6f676b;
   --border-light: #ede6eb;
-  --bg-page: #faf8f9;
+  --bg-page: #FFF9F5;
 }
 
 body {
@@ -23,4 +23,5 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #FFF9F5;
 }
