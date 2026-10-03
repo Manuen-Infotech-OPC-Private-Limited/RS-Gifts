@@ -157,10 +157,105 @@ export const FeaturedProducts = ({ onAddToCart }) => {
   };
 
   return (
-    <section className="w-full bg-[#FFF9F5] py-7 sm:py-9">
+    <section className="w-full bg-[#FFF9F5] py-4 sm:py-9">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Section Header with Filter Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+        {/* Mobile Section Header (Matching Reference Screenshot) */}
+        <div className="flex md:hidden items-center justify-between mb-3">
+          <h2 className="text-lg font-bold text-[#1E1217] tracking-tight">
+            Best Selling Gifts
+          </h2>
+          <button
+            onClick={() => navigate('/birthday-gifts')}
+            className="text-xs font-semibold text-[#821D38] hover:underline cursor-pointer"
+          >
+            View All
+          </button>
+        </div>
+
+        {/* Mobile Horizontal Swipeable Products Carousel (Matching Reference Screenshot) */}
+        <div 
+          className="md:hidden flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x mb-2"
+          style={{
+            scrollbarWidth: 'none',
+            msOverflowStyle: 'none',
+            WebkitOverflowScrolling: 'touch'
+          }}
+        >
+          {productList.map((product) => {
+            const isWishlisted = isInWishlist(product.id);
+            const discountPercent = product.originalPrice && product.price < product.originalPrice
+              ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+              : 30;
+
+            return (
+              <div
+                key={product.id}
+                onClick={() => navigate(`/product/${product.slug || product.id}`)}
+                className="w-[148px] shrink-0 snap-start bg-white rounded-2xl border border-[#ECE7EC] shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer select-none active:scale-[0.98] transition-transform"
+              >
+                {/* Image Box */}
+                <div className="relative w-full aspect-[4/3.8] bg-[#FAF6F4] overflow-hidden">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover"
+                    loading="lazy"
+                  />
+                  {/* Floating Wishlist Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleWishlist(product);
+                    }}
+                    className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white/95 shadow-xs flex items-center justify-center cursor-pointer"
+                    aria-label="Wishlist"
+                  >
+                    <Heart
+                      className={`w-3.5 h-3.5 ${
+                        isWishlisted ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {/* Card Content */}
+                <div className="p-2.5 flex flex-col justify-between flex-1">
+                  <div>
+                    <h3 className="text-xs font-semibold text-[#1E1217] truncate mb-1">
+                      {product.name}
+                    </h3>
+                    <div className="flex items-center gap-1.5 flex-wrap mb-1">
+                      <span className="text-xs font-bold text-[#1E1217]">
+                        ₹{product.price.toLocaleString('en-IN')}
+                      </span>
+                      {product.originalPrice > product.price && (
+                        <span className="text-[10px] text-gray-400 line-through">
+                          ₹{product.originalPrice.toLocaleString('en-IN')}
+                        </span>
+                      )}
+                      <span className="text-[9px] font-bold text-[#16A34A] bg-[#DCFCE7] px-1 py-0.5 rounded">
+                        {discountPercent}% OFF
+                      </span>
+                    </div>
+
+                    {/* Star Rating */}
+                    <div className="flex items-center gap-1 text-[11px] text-[#705E67]">
+                      <div className="flex text-[#F59E0B]">
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className="w-2.5 h-2.5 fill-[#F59E0B] stroke-[#F59E0B]" />
+                        ))}
+                      </div>
+                      <span className="text-[10px] font-medium text-[#705E67]">{product.rating || '4.7'} ({product.reviews || '230'})</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Desktop Section Header with Filter Tabs */}
+        <div className="hidden md:flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <h2 className="text-xl sm:text-2xl md:text-[26px] font-bold text-[#1E1217] tracking-tight">
             Featured Products
           </h2>
@@ -182,16 +277,16 @@ export const FeaturedProducts = ({ onAddToCart }) => {
           </div>
         </div>
 
-        {/* Products Grid */}
+        {/* Desktop Products Grid */}
         {filteredProducts.length === 0 ? (
-          <div className="py-12 px-6 text-center bg-[#FAF6F4] rounded-2xl border border-dashed border-[#DFC8D0]">
+          <div className="hidden md:block py-12 px-6 text-center bg-[#FAF6F4] rounded-2xl border border-dashed border-[#DFC8D0]">
             <p className="text-base font-bold text-[#561023]">No Featured Products</p>
             <p className="text-xs text-[#705E67] mt-1 max-w-md mx-auto">
               No products are currently marked as featured in this category. Click the star on items in the Admin Panel to display them here.
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-4.5">
+          <div className="hidden md:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 md:gap-4.5">
             {filteredProducts.map((product) => {
             const isWishlisted = isInWishlist(product.id);
             const isAdded = !!addedItems[product.id];
@@ -306,8 +401,37 @@ export const FeaturedProducts = ({ onAddToCart }) => {
         </div>
         )}
 
-        {/* 2 Promotional Banners Below */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mt-7 sm:mt-9">
+        {/* Mobile Promo Banner (Matching Reference Screenshot) */}
+        <div 
+          onClick={() => navigate ? navigate('/birthday-gifts') : null}
+          className="mt-5 md:hidden w-full rounded-2xl bg-gradient-to-r from-[#FCE7F0] via-[#FDF0EC] to-[#FBE0DC] border border-[#F3DEE5] p-4 relative overflow-hidden flex items-center justify-between cursor-pointer shadow-2xs select-none active:scale-[0.99] transition-transform"
+        >
+          <div className="relative z-10 max-w-[200px]">
+            <h3 
+              className="text-lg font-serif font-bold text-[#821D38] leading-tight mb-0.5"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Upto 50% OFF
+            </h3>
+            <p className="text-[11px] text-[#705E67] font-medium mb-3">
+              on Selected Gifts
+            </p>
+            <button className="px-4 py-1.5 rounded-full bg-[#821D38] text-white text-[11px] font-semibold shadow-xs">
+              Shop Now
+            </button>
+          </div>
+
+          <div className="w-32 h-22 shrink-0 relative flex items-center justify-end rounded-xl overflow-hidden shadow-2xs">
+            <img
+              src="/images/promo-gift-box.jpg"
+              alt="Selected Gifts Offers"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        </div>
+
+        {/* 2 Promotional Banners (Desktop Only) */}
+        <div className="hidden md:grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5 mt-7 sm:mt-9">
           {/* Banner 1: Personalized Gifts */}
           <div
             onClick={() => navigate ? navigate('/personalized-gifts') : null}

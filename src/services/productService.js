@@ -119,10 +119,57 @@ export const fetchProductByIdOrSlug = async (idOrSlug) => {
       throw new Error(data?.message || 'Product not found');
     }
     const coupon = await fetchActiveCoupon().catch(() => null);
+
+    const sanitizeCustomerName = (name) => {
+      const trimmed = (name || '').trim();
+      if (!trimmed || /^\s*rs\s*gifts?\s*$/i.test(trimmed)) {
+        return 'Verified Customer';
+      }
+      return trimmed;
+    };
+
+    // Only include admin-approved reviews and sanitize customer name
+    const approvedReviews = (data.reviews || [])
+      .filter((r) => r.isApproved === true)
+      .map((r) => ({
+        ...r,
+        customerName: sanitizeCustomerName(r.customerName || r.name || r.user?.name),
+      }));
+
+    // Sync with Admin Panel approved reviews from localStorage
+    try {
+      const savedAdmin = localStorage.getItem('rs_gifts_admin_clean_frame_v3');
+      if (savedAdmin) {
+        const parsed = JSON.parse(savedAdmin);
+        const adminApproved = (parsed.reviews || []).filter(
+          (r) =>
+            r.status === 'approved' &&
+            (r.productId === data.product._id ||
+              r.productId === data.product.id ||
+              r.productTitle?.toLowerCase() === data.product.name?.toLowerCase())
+        );
+        const existingIds = new Set(approvedReviews.map((r) => r._id || r.id));
+        adminApproved.forEach((ar) => {
+          if (!existingIds.has(ar.id)) {
+            approvedReviews.push({
+              _id: ar.id,
+              customerName: sanitizeCustomerName(ar.customerName),
+              rating: ar.rating,
+              comment: ar.comment,
+              createdAt: ar.date,
+              isApproved: true,
+            });
+          }
+        });
+      }
+    } catch {
+      // ignore
+    }
+
     return {
       product: normalizeProduct(data.product, coupon),
       rawProduct: data.product,
-      reviews: data.reviews || [],
+      reviews: approvedReviews,
       relatedProducts: (data.relatedProducts || []).map((p) => normalizeProduct(p, coupon)),
     };
   } catch (err) {
@@ -143,10 +190,25 @@ export const fetchProductByIdOrSlug = async (idOrSlug) => {
             .filter((p) => p._id !== found._id && p.id !== found.id)
             .slice(0, 4)
             .map((p) => normalizeProduct(p));
+          const adminApproved = (parsed.reviews || [])
+            .filter(
+              (r) =>
+                r.status === 'approved' &&
+                (r.productId === found._id ||
+                  r.productId === found.id ||
+                  r.productTitle?.toLowerCase() === found.name?.toLowerCase() ||
+                  r.productTitle?.toLowerCase() === found.title?.toLowerCase())
+            )
+            .map((r) => ({
+              ...r,
+              customerName: (r.customerName || '').trim() && !/^\s*rs\s*gifts?\s*$/i.test(r.customerName.trim())
+                ? r.customerName.trim()
+                : 'Verified Customer',
+            }));
           return {
             product: norm,
             rawProduct: found,
-            reviews: [],
+            reviews: adminApproved,
             relatedProducts: related,
           };
         }
@@ -159,9 +221,20 @@ export const fetchProductByIdOrSlug = async (idOrSlug) => {
   }
 };
 
+export const submitProductReview = async ({ productId, rating, comment, customerName, customerEmail }) => {
+  return await api.post('/customer/reviews', {
+    productId,
+    rating,
+    comment,
+    customerName,
+    customerEmail,
+  });
+};
+
 export default {
   fetchLiveProducts,
   fetchActiveCoupon,
   fetchProductByIdOrSlug,
   normalizeProduct,
+  submitProductReview,
 };

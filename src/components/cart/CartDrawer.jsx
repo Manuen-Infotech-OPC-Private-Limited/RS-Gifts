@@ -10,8 +10,7 @@ import {
   ArrowRight, 
   Gift, 
   Sparkles, 
-  ShieldCheck,
-  Truck
+  ShieldCheck
 } from 'lucide-react';
 
 export const CartDrawer = () => {
@@ -30,12 +29,6 @@ export const CartDrawer = () => {
   const navigate = useNavigate();
 
   if (!isCartDrawerOpen) return null;
-
-  const progressPercent = Math.min(
-    100,
-    Math.round((itemsSubtotal / freeShippingThreshold) * 100)
-  );
-  const remainingForFreeShipping = Math.max(0, freeShippingThreshold - itemsSubtotal);
 
   const handleGoToCart = () => {
     closeCartDrawer();
@@ -74,32 +67,6 @@ export const CartDrawer = () => {
             </button>
           </div>
 
-          {/* Free Shipping Progress Bar */}
-          <div className="px-4 sm:px-5 py-3 bg-[#FAF8FA] border-b border-[#ECE7EC] shrink-0">
-            <div className="flex items-center justify-between text-xs font-medium mb-1.5">
-              <span className="flex items-center gap-1.5 text-neutral-700">
-                <Truck size={14} className={isFreeDelivery ? 'text-[#15803D]' : 'text-[#821D38]'} />
-                {isFreeDelivery ? (
-                  <span className="text-[#15803D] font-bold">Free Luxury Shipping Unlocked!</span>
-                ) : (
-                  <span>
-                    Add <strong className="text-[#821D38]">₹{remainingForFreeShipping}</strong> for Free Delivery
-                  </span>
-                )}
-              </span>
-              <span className="text-[11px] text-neutral-500 font-semibold">
-                {progressPercent}%
-              </span>
-            </div>
-            <div className="w-full h-1.5 bg-[#E8E4E8] rounded-full overflow-hidden">
-              <div
-                className={`h-full transition-all duration-300 rounded-full ${
-                  isFreeDelivery ? 'bg-[#15803D]' : 'bg-[#821D38]'
-                }`}
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-          </div>
 
           {/* Cart Items List */}
           <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">

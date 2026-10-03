@@ -16,10 +16,10 @@ const slidesData = [
   {
     id: 1,
     tagline: 'GIFTS THAT SPEAK FROM THE HEART',
-    titleLine1: 'More Than Gifts,',
-    titleLine2: "It's Emotions",
-    hasHeart: true,
-    description: 'Thoughtful gifts for every occasion.\nBecause every moment deserves something special.',
+    titleLine1: 'Make Every',
+    titleLine2: 'Moment Special',
+    hasHeart: false,
+    description: 'Thoughtful Gifts for Every Occasion',
     buttonText: 'Shop Now',
     buttonLink: '/gifts',
     image: '/images/hero-banner-1.png',
@@ -212,11 +212,11 @@ export const HeroSection = ({ onShopNow }) => {
         {slides.map((slide, idx) => (
           <div 
             key={slide.id || idx} 
-            className="w-full shrink-0 relative min-h-[270px] sm:min-h-[295px] lg:min-h-[320px] flex items-center"
+            className="w-full shrink-0 relative min-h-[185px] sm:min-h-[260px] lg:min-h-[320px] flex items-center"
           >
             {/* Background Image */}
             <div 
-              className="absolute inset-0 w-full h-full bg-cover bg-center lg:bg-right transition-opacity duration-500"
+              className="absolute inset-0 w-full h-full bg-cover bg-right sm:bg-center lg:bg-right transition-opacity duration-500"
               style={{ 
                 backgroundImage: `url("${slide.image || '/images/hero-banner-1.png'}")`,
                 backgroundColor: '#FDF7F4'
@@ -227,23 +227,23 @@ export const HeroSection = ({ onShopNow }) => {
             <div 
               className="absolute inset-0 pointer-events-none" 
               style={{
-                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.90) 32%, rgba(255, 255, 255, 0.65) 55%, rgba(255, 255, 255, 0.15) 80%, rgba(255, 255, 255, 0) 100%)'
+                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 36%, rgba(255, 255, 255, 0.70) 58%, rgba(255, 255, 255, 0.15) 82%, rgba(255, 255, 255, 0) 100%)'
               }}
             />
 
             {/* Inner Content Area */}
-            <div className="relative z-10 w-full max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-12 py-3.5 sm:py-5 lg:py-6 flex flex-col justify-center">
-              <div className="max-w-[500px]">
+            <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 sm:px-10 lg:px-12 py-3 sm:py-5 lg:py-6 flex flex-col justify-center">
+              <div className="max-w-[210px] sm:max-w-[500px]">
                 {/* Tagline / Subtitle */}
                 <p 
-                  className="text-[10px] sm:text-[11px] font-semibold tracking-[0.16em] text-[#821D38] uppercase mb-1 flex items-center gap-1.5"
+                  className="hidden sm:flex text-[10px] sm:text-[11px] font-semibold tracking-[0.16em] text-[#821D38] uppercase mb-1 items-center gap-1.5"
                 >
                   {slide.tagline}
                 </p>
 
                 {/* Main Heading */}
                 <h1 
-                  className="text-xl sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.12] tracking-tight mb-1.5 sm:mb-2"
+                  className="text-base sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.14] tracking-tight mb-1 sm:mb-2"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
                   <span>{slide.titleLine1}</span>
@@ -254,16 +254,16 @@ export const HeroSection = ({ onShopNow }) => {
                         {slide.titleLine2}
                         {slide.hasHeart && (
                           <Heart 
-                            className="w-5 h-5 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
+                            className="w-4 h-4 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
                           />
                         )}
                       </span>
                     </>
                   )}
                   {!slide.titleLine2 && slide.hasHeart && (
-                    <span className="inline-flex items-center gap-1.5 ml-2">
+                    <span className="inline-flex items-center gap-1.5 ml-1.5">
                       <Heart 
-                        className="w-5 h-5 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
+                        className="w-4 h-4 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
                       />
                     </span>
                   )}
@@ -271,24 +271,24 @@ export const HeroSection = ({ onShopNow }) => {
 
                 {/* Description */}
                 <p 
-                  className="text-xs sm:text-[13px] text-[#52454B] leading-snug mb-3 sm:mb-3.5 whitespace-pre-line font-normal"
+                  className="text-[11px] sm:text-[13px] text-[#52454B] leading-snug mb-2 sm:mb-3.5 whitespace-pre-line font-normal"
                 >
                   {slide.description}
                 </p>
 
                 {/* Call to Action Button */}
-                <div className="mb-3 sm:mb-4 relative z-30">
+                <div className="mb-1 sm:mb-4 relative z-30">
                   <button
                     onClick={(e) => { e.stopPropagation(); handleActionClick(slide.buttonLink); }}
-                    className="group inline-flex items-center justify-center gap-2 px-5 py-2 rounded-full bg-[#821D38] hover:bg-[#6E162E] text-white text-xs sm:text-[13px] font-medium shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                    className="group inline-flex items-center justify-center gap-1.5 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full bg-[#821D38] hover:bg-[#6E162E] text-white text-[11px] sm:text-[13px] font-medium shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
                   >
                     <span>{slide.buttonText}</span>
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                    <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 </div>
 
-                {/* Trust Badges matching reference */}
-                <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 text-[10.5px] sm:text-[11.5px] font-medium text-[#483B42]">
+                {/* Trust Badges matching reference (Desktop/Tablet) */}
+                <div className="hidden sm:flex flex-wrap items-center gap-3.5 sm:gap-5 text-[10.5px] sm:text-[11.5px] font-medium text-[#483B42]">
                   {(slide.badges || []).map((badge) => {
                     const IconComponent = badge.icon || Gift;
                     return (

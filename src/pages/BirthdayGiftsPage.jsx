@@ -8,8 +8,7 @@ import {
   Heart, 
   Star, 
   Check, 
-  Cake, 
-  RefreshCw 
+  Cake 
 } from 'lucide-react';
 import birthdayHeroImg from '../assets/birthday-hero.png';
 import { useCart } from '../context/CartContext';
@@ -295,7 +294,7 @@ export const BirthdayGiftsPage = () => {
       <section id="birthday-catalog" className="w-full bg-[#FFF9F5] py-8 sm:py-10">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
           {/* Section Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6 pb-3 border-b border-[#ECE3E7]">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="text-xl sm:text-2xl font-bold text-[#1E1217] tracking-tight">
@@ -306,17 +305,6 @@ export const BirthdayGiftsPage = () => {
                 Explore handpicked presents, delicious surprises, and bespoke birthday hampers.
               </p>
             </div>
-
-            {products.length > 0 && (
-              <button
-                onClick={loadBirthdayProducts}
-                className="inline-flex items-center gap-1.5 text-xs text-[#821D38] hover:text-[#561023] font-medium cursor-pointer self-start sm:self-auto py-1 px-2 rounded-lg hover:bg-white transition-colors"
-                title="Refresh Products"
-              >
-                <RefreshCw size={13} />
-                <span>Refresh</span>
-              </button>
-            )}
           </div>
 
           {products.length === 0 ? (

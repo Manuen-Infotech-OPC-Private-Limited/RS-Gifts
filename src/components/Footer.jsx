@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Phone, Mail, MapPin, Clock } from 'lucide-react';
+import { Phone, Mail, MapPin, Clock, Heart } from 'lucide-react';
 import api from '../services/api';
 
 export const Footer = ({
@@ -418,7 +418,7 @@ export const Footer = ({
           </div>
           <div className="flex items-center gap-1.5">
             <span>Made with</span>
-            <span className="text-[#E11D48] text-[12.5px] inline-block">❤️</span>
+            <Heart size={13} className="text-[#E11D48] fill-[#E11D48] inline" />
             <span>for Special Moments</span>
           </div>
         </div>

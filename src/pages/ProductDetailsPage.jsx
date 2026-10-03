@@ -13,12 +13,10 @@ import {
   ChevronRight,
   ChevronLeft,
   ZoomIn,
-  MapPin,
   Sparkles,
   Clock,
   ArrowLeft,
   Box,
-  AlertCircle,
   X,
   CreditCard,
   MessageSquare,
@@ -44,9 +42,7 @@ export const ProductDetailsPage = () => {
   // Gallery States
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-  const [isHoverZooming, setIsHoverZooming] = useState(false);
-  const [zoomCoords, setZoomCoords] = useState({ x: 50, y: 50 });
-  const imageContainerRef = useRef(null);
+
 
   // User Selection States
   const [quantity, setQuantity] = useState(1);
@@ -60,10 +56,12 @@ export const ProductDetailsPage = () => {
   const [addedAnimation, setAddedAnimation] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
 
-  // Pincode Checker States
-  const [pincode, setPincode] = useState('');
-  const [pincodeResult, setPincodeResult] = useState(null);
-  const [checkingPincode, setCheckingPincode] = useState(false);
+  // Dynamically calculated rating
+  const averageRating = reviews.length > 0
+    ? (reviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0) / reviews.length).toFixed(1)
+    : (product?.rating || '5.0');
+
+
 
   // Load Product Data on mount or when idOrSlug changes
   useEffect(() => {
@@ -131,14 +129,6 @@ export const ProductDetailsPage = () => {
     setSelectedImageIndex((prev) => (prev === galleryImages.length - 1 ? 0 : prev + 1));
   };
 
-  // Zoom handlers
-  const handleMouseMove = (e) => {
-    if (!imageContainerRef.current) return;
-    const rect = imageContainerRef.current.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
-    setZoomCoords({ x: Math.max(0, Math.min(100, x)), y: Math.max(0, Math.min(100, y)) });
-  };
 
   // Cart & Buy Now Handlers
   const handleAddToCart = () => {
@@ -169,41 +159,6 @@ export const ProductDetailsPage = () => {
     navigate('/cart');
   };
 
-  // Pincode Verification Handler
-  const handleCheckPincode = (e) => {
-    e.preventDefault();
-    const cleanPin = pincode.trim();
-    if (!cleanPin || cleanPin.length !== 6 || !/^\d+$/.test(cleanPin)) {
-      setPincodeResult({
-        success: false,
-        message: 'Please enter a valid 6-digit Indian PIN code.'
-      });
-      return;
-    }
-
-    setCheckingPincode(true);
-    setTimeout(() => {
-      setCheckingPincode(false);
-      // Deterministic delivery estimate
-      const days = (parseInt(cleanPin[cleanPin.length - 1], 10) % 3) + 2;
-      const deliveryDate = new Date();
-      deliveryDate.setDate(deliveryDate.getDate() + days);
-      const formattedDate = deliveryDate.toLocaleDateString('en-IN', {
-        weekday: 'short',
-        month: 'short',
-        day: 'numeric'
-      });
-
-      setPincodeResult({
-        success: true,
-        pincode: cleanPin,
-        date: formattedDate,
-        message: `Fast Delivery by ${formattedDate}`,
-        freeShipping: true,
-        cod: true
-      });
-    }, 450);
-  };
 
   // Share Handler
   const handleShare = () => {
@@ -229,30 +184,30 @@ export const ProductDetailsPage = () => {
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-[#FFF9F5] py-8 sm:py-12">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb skeleton */}
           <div className="h-4 w-48 bg-rose-100/60 rounded-full mb-8 animate-pulse" />
 
           {/* Main 2-column skeleton */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
             {/* Gallery Skeleton */}
-            <div className="lg:col-span-7 flex flex-col gap-4">
-              <div className="w-full aspect-square bg-[#FAF6F4] rounded-3xl border border-[#ECE3E7] animate-pulse" />
-              <div className="flex gap-3">
+            <div className="lg:col-span-5 flex flex-col gap-3">
+              <div className="w-full aspect-square max-h-[420px] bg-[#FAF6F4] rounded-2xl border border-[#ECE3E7] animate-pulse" />
+              <div className="flex gap-2.5">
                 {[...Array(4)].map((_, i) => (
-                  <div key={i} className="w-20 h-20 rounded-2xl bg-[#FAF6F4] border border-[#ECE3E7] animate-pulse" />
+                  <div key={i} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-[#FAF6F4] border border-[#ECE3E7] animate-pulse" />
                 ))}
               </div>
             </div>
 
             {/* Info Skeleton */}
-            <div className="lg:col-span-5 flex flex-col gap-5">
-              <div className="h-5 w-24 bg-rose-100/80 rounded-full animate-pulse" />
-              <div className="h-8 w-3/4 bg-gray-200 rounded-lg animate-pulse" />
+            <div className="lg:col-span-7 flex flex-col gap-4">
+              <div className="h-4 w-24 bg-rose-100/80 rounded-full animate-pulse" />
+              <div className="h-6 w-3/4 bg-gray-200 rounded-lg animate-pulse" />
               <div className="h-4 w-1/3 bg-gray-200 rounded-lg animate-pulse" />
-              <div className="h-10 w-44 bg-rose-100/70 rounded-xl animate-pulse" />
-              <div className="h-24 w-full bg-gray-100 rounded-2xl animate-pulse" />
-              <div className="h-12 w-full bg-gray-200 rounded-xl animate-pulse" />
+              <div className="h-9 w-40 bg-rose-100/70 rounded-xl animate-pulse" />
+              <div className="h-20 w-full bg-gray-100 rounded-xl animate-pulse" />
+              <div className="h-10 w-full bg-gray-200 rounded-xl animate-pulse" />
             </div>
           </div>
         </div>
@@ -287,8 +242,9 @@ export const ProductDetailsPage = () => {
   return (
     <div className="w-full min-h-screen bg-[#FFF9F5] text-[#1E1217] pb-20">
       {/* Top Breadcrumb Navigation */}
+      {/* Top Breadcrumb Navigation */}
       <div className="border-b border-[#ECE3E7]/60 bg-white/40 backdrop-blur-xs">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <nav className="flex items-center gap-2 text-xs sm:text-sm text-[#705E67] overflow-x-auto whitespace-nowrap">
             <Link to="/" className="hover:text-[#821D38] transition-colors font-medium">
               Home
@@ -310,29 +266,21 @@ export const ProductDetailsPage = () => {
       </div>
 
       {/* Main Product Showcase Section */}
-      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:gap-14">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-start">
           
-          {/* LEFT COLUMN: Premium Gallery with Thumbnails & Zoom */}
-          <div className="lg:col-span-7 flex flex-col gap-4 select-none">
+          {/* LEFT COLUMN: Gallery with Thumbnails (Clean & Compact) */}
+          <div className="lg:col-span-5 flex flex-col gap-3 select-none">
             {/* Main Image Stage */}
             <div
-              ref={imageContainerRef}
-              onMouseEnter={() => setIsHoverZooming(true)}
-              onMouseLeave={() => setIsHoverZooming(false)}
-              onMouseMove={handleMouseMove}
               onClick={() => setIsLightboxOpen(true)}
-              className="relative w-full aspect-square sm:aspect-[4/3] lg:aspect-square bg-gradient-to-b from-[#FAF6F4] to-[#F7EFEA] rounded-3xl border border-[#ECE3E7] shadow-sm overflow-hidden cursor-crosshair group flex items-center justify-center"
+              className="relative w-full aspect-square max-h-[380px] sm:max-h-[420px] bg-gradient-to-b from-[#FAF6F4] to-[#F7EFEA] rounded-2xl border border-[#ECE3E7] shadow-xs overflow-hidden cursor-pointer group flex items-center justify-center"
             >
-              {/* Image with smooth zoom transform */}
+              {/* Product Image - Clean static view without hover zoom enlargement */}
               <img
                 src={activeImage}
                 alt={product.name}
-                style={{
-                  transformOrigin: `${zoomCoords.x}% ${zoomCoords.y}%`,
-                  transform: isHoverZooming ? 'scale(1.75)' : 'scale(1)',
-                }}
-                className="w-full h-full object-cover transition-transform duration-200 ease-out pointer-events-none"
+                className="w-full h-full object-cover pointer-events-none"
               />
 
               {/* Wishlist Button (Floating Top Right) */}
@@ -343,26 +291,20 @@ export const ProductDetailsPage = () => {
                   toggleWishlist(product);
                 }}
                 aria-label={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
-                className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/95 hover:bg-white shadow-md flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 cursor-pointer z-10"
+                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 hover:bg-white shadow-sm flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 cursor-pointer z-10"
               >
                 <Heart
-                  className={`w-5 h-5 transition-colors ${
+                  className={`w-4.5 h-4.5 transition-colors ${
                     isWishlisted ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
                   }`}
                 />
               </button>
 
-              {/* Discount / Exclusive Badge (Floating Top Left) */}
-              <div className="absolute top-4 left-4 flex flex-col gap-1.5 z-10 pointer-events-none">
-                {product.discount && (
-                  <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold tracking-wide uppercase px-2.5 py-1 rounded-full bg-[#821D38] text-white shadow-xs">
-                    <Sparkles size={11} />
-                    {product.discount}
-                  </span>
-                )}
+              {/* Exclusive / Bestseller Badge (Floating Top Left) */}
+              <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
                 {product.featured && (
-                  <span className="inline-flex items-center gap-1 text-[10.5px] font-semibold px-2 py-0.5 rounded-full bg-[#F59E0B] text-white shadow-xs">
-                    ★ Bestseller
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F59E0B] text-white shadow-xs">
+                    <Star size={10} className="fill-white" /> Bestseller
                   </span>
                 )}
               </div>
@@ -373,29 +315,29 @@ export const ProductDetailsPage = () => {
                   <button
                     type="button"
                     onClick={handlePrevImage}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#1E1217] shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer z-10"
+                    className="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-[#1E1217] shadow-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer z-10"
                     title="Previous Image"
                   >
-                    <ChevronLeft size={18} />
+                    <ChevronLeft size={16} />
                   </button>
                   <button
                     type="button"
                     onClick={handleNextImage}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white/90 hover:bg-white text-[#1E1217] shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer z-10"
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/90 hover:bg-white text-[#1E1217] shadow-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer z-10"
                     title="Next Image"
                   >
-                    <ChevronRight size={18} />
+                    <ChevronRight size={16} />
                   </button>
                 </>
               )}
 
               {/* Enlarge Hint / Image Counter (Bottom) */}
-              <div className="absolute bottom-3.5 right-4 flex items-center gap-2 z-10 pointer-events-none">
-                <span className="text-[11px] font-medium text-[#483B42] bg-white/90 backdrop-blur-xs px-2.5 py-1 rounded-full shadow-2xs flex items-center gap-1">
-                  <ZoomIn size={12} /> Click to Enlarge
+              <div className="absolute bottom-2.5 right-3 flex items-center gap-1.5 z-10 pointer-events-none">
+                <span className="text-[10px] font-medium text-[#483B42] bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded-full shadow-2xs flex items-center gap-1">
+                  <ZoomIn size={11} /> Click to view
                 </span>
                 {galleryImages.length > 1 && (
-                  <span className="text-[11px] font-bold text-[#1E1217] bg-white/90 px-2.5 py-1 rounded-full shadow-2xs">
+                  <span className="text-[10px] font-bold text-[#1E1217] bg-white/90 px-2 py-0.5 rounded-full shadow-2xs">
                     {selectedImageIndex + 1} / {galleryImages.length}
                   </span>
                 )}
@@ -404,7 +346,7 @@ export const ProductDetailsPage = () => {
 
             {/* Thumbnail Row */}
             {galleryImages.length > 1 && (
-              <div className="flex items-center gap-2.5 sm:gap-3.5 overflow-x-auto pb-2 scrollbar-none">
+              <div className="flex items-center gap-2 sm:gap-2.5 overflow-x-auto pb-1 scrollbar-none">
                 {galleryImages.map((imgUrl, idx) => {
                   const isActive = idx === selectedImageIndex;
                   return (
@@ -412,9 +354,9 @@ export const ProductDetailsPage = () => {
                       key={idx}
                       type="button"
                       onClick={() => setSelectedImageIndex(idx)}
-                      className={`relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden bg-white border-2 transition-all duration-200 cursor-pointer shrink-0 ${
+                      className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-white border-2 transition-all duration-200 cursor-pointer shrink-0 ${
                         isActive
-                          ? 'border-[#821D38] ring-2 ring-[#821D38]/20 shadow-md scale-102'
+                          ? 'border-[#821D38] ring-2 ring-[#821D38]/20 shadow-xs'
                           : 'border-[#ECE3E7] hover:border-[#821D38]/50 opacity-80 hover:opacity-100'
                       }`}
                     >
@@ -431,42 +373,51 @@ export const ProductDetailsPage = () => {
           </div>
 
           {/* RIGHT COLUMN: Product Info, Price, Variants, & Actions */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
+          <div className="lg:col-span-7 flex flex-col justify-between">
             <div>
-              {/* Category & SKU row */}
-              <div className="flex items-center justify-between gap-3 mb-2">
-                <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#821D38] bg-[#FDF2F5] px-3 py-1 rounded-full border border-[#DFC8D0]/60">
+              {/* Category */}
+              <div className="mb-2">
+                <span className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-[#821D38] bg-[#FDF2F5] px-2.5 py-0.5 rounded-full border border-[#DFC8D0]/60">
                   {product.category || 'Luxury Gift'}
                 </span>
-
-                {product.sku && (
-                  <span className="text-[11px] text-[#8C7D85] font-mono">
-                    SKU: {product.sku}
-                  </span>
-                )}
               </div>
 
               {/* Product Title */}
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1E1217] tracking-tight leading-snug mb-3">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#1E1217] tracking-tight leading-snug mb-2.5">
                 {product.name}
               </h1>
 
               {/* Ratings & Stock Availability Row */}
-              <div className="flex flex-wrap items-center gap-3 sm:gap-4 pb-4 mb-4 border-b border-[#ECE3E7]">
+              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3.5 pb-3 mb-3.5 border-b border-[#ECE3E7]">
                 {/* Star Rating */}
-                <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab('reviews');
+                    const el = document.getElementById('product-tabs-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                  className="flex items-center gap-1.5 cursor-pointer group"
+                >
                   <div className="flex items-center text-[#F59E0B]">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-[#F59E0B] stroke-[#F59E0B]" />
+                      <Star
+                        key={i}
+                        className={`w-3.5 h-3.5 ${
+                          i < Math.round(Number(averageRating))
+                            ? 'fill-[#F59E0B] stroke-[#F59E0B]'
+                            : 'text-gray-300 stroke-gray-300'
+                        }`}
+                      />
                     ))}
                   </div>
-                  <span className="text-xs sm:text-sm font-bold text-[#1E1217]">
-                    {product.rating}
+                  <span className="text-xs font-bold text-[#1E1217]">
+                    {averageRating}
                   </span>
-                  <span className="text-xs text-[#705E67]">
-                    ({product.reviews || reviews.length || 24} reviews)
+                  <span className="text-xs text-[#705E67] group-hover:text-[#821D38] transition-colors">
+                    ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
                   </span>
-                </div>
+                </button>
 
                 <span className="text-[#D1C6CB]">•</span>
 
@@ -490,105 +441,59 @@ export const ProductDetailsPage = () => {
               </div>
 
               {/* Price Section */}
-              <div className="bg-[#FAF4F1] p-4 sm:p-5 rounded-2xl border border-[#EBE1DC] mb-5">
-                <div className="flex items-baseline gap-3 flex-wrap">
-                  <span className="text-2xl sm:text-3xl font-extrabold text-[#1E1217]">
+              <div className="bg-[#FAF4F1] p-3 sm:p-3.5 rounded-xl border border-[#EBE1DC] mb-3.5">
+                <div className="flex items-baseline gap-2.5 flex-wrap">
+                  <span className="text-xl sm:text-2xl font-extrabold text-[#1E1217]">
                     ₹{Number(product.price).toLocaleString('en-IN')}
                   </span>
                   {product.originalPrice && product.originalPrice > product.price && (
-                    <span className="text-base sm:text-lg text-gray-400 line-through">
+                    <span className="text-sm text-gray-400 line-through">
                       ₹{Number(product.originalPrice).toLocaleString('en-IN')}
                     </span>
                   )}
                   {product.discount && (
-                    <span className="text-xs font-bold text-[#15803D] bg-[#DCFCE7] px-2.5 py-0.5 rounded-md">
+                    <span className="text-[11px] font-bold text-[#15803D] bg-[#DCFCE7] px-2 py-0.5 rounded-md">
                       {product.discount}
                     </span>
                   )}
                 </div>
-                <p className="text-[11px] text-[#705E67] mt-1">
+                <p className="text-[10.5px] text-[#705E67] mt-0.5">
                   Inclusive of all taxes. Free shipping on orders over ₹999.
                 </p>
-
-                {/* Active Coupon Banner if available */}
-                {product.activeCoupon && (
-                  <div className="mt-3 pt-3 border-t border-[#E5DAD4] flex items-center gap-2 text-xs font-medium text-[#821D38]">
-                    <Sparkles size={14} className="shrink-0 text-[#821D38]" />
-                    <span>
-                      Coupon applied: <strong className="font-bold">{product.activeCoupon.label || product.activeCoupon.code}</strong>
-                    </span>
-                  </div>
-                )}
               </div>
 
               {/* Short Description */}
               {product.description && (
-                <div className="mb-5">
-                  <p className="text-xs sm:text-sm text-[#483B42] leading-relaxed line-clamp-3">
+                <div className="mb-3.5">
+                  <p className="text-xs text-[#483B42] leading-relaxed line-clamp-3">
                     {product.description}
                   </p>
                 </div>
               )}
 
-              {/* Gifting / Personalization Options */}
-              <div className="space-y-3.5 mb-5 pb-5 border-b border-[#ECE3E7]">
-                {/* Custom Name / Message engraving input */}
+              {/* Quantity Selector & Live Subtotal */}
+              <div className="flex items-center justify-between gap-4 mb-3.5">
                 <div>
                   <label className="block text-xs font-bold text-[#2E2026] mb-1">
-                    Personalized Name / Custom Note (Optional)
-                  </label>
-                  <input
-                    type="text"
-                    value={customText}
-                    onChange={(e) => setCustomText(e.target.value)}
-                    placeholder="e.g., Happy Birthday Sarah! or Love, Alex"
-                    maxLength={50}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-[#D9CDD3] bg-white text-xs sm:text-sm text-[#1E1217] placeholder:text-gray-400 focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38]"
-                  />
-                </div>
-
-                {/* Luxury Gift Wrap Addon Checkbox */}
-                <label className="flex items-start gap-2.5 p-3 rounded-xl bg-white border border-[#ECE3E7] hover:border-[#821D38]/40 transition-colors cursor-pointer select-none">
-                  <input
-                    type="checkbox"
-                    checked={addGiftWrap}
-                    onChange={(e) => setAddGiftWrap(e.target.checked)}
-                    className="mt-0.5 accent-[#821D38] rounded cursor-pointer"
-                  />
-                  <div className="text-xs">
-                    <span className="font-bold text-[#1E1217]">
-                      Add Luxury Gift Wrapping (+₹99)
-                    </span>
-                    <p className="text-[#705E67] text-[11px] mt-0.5">
-                      Wrapped in our signature berry paper, satin ribbon & wax seal.
-                    </p>
-                  </div>
-                </label>
-              </div>
-
-              {/* Quantity Selector & Live Subtotal */}
-              <div className="flex items-center justify-between gap-4 mb-5">
-                <div>
-                  <label className="block text-xs font-bold text-[#2E2026] mb-1.5">
                     Quantity
                   </label>
-                  <div className="inline-flex items-center rounded-xl border border-[#D9CDD3] bg-white shadow-2xs overflow-hidden">
+                  <div className="inline-flex items-center rounded-lg border border-[#D9CDD3] bg-white shadow-2xs overflow-hidden">
                     <button
                       type="button"
                       disabled={quantity <= 1}
                       onClick={() => setQuantity((prev) => Math.max(1, prev - 1))}
-                      className="px-3 py-2 text-[#483B42] hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors font-bold cursor-pointer"
+                      className="px-2.5 py-1.5 text-[#483B42] hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors font-bold cursor-pointer text-xs"
                     >
                       -
                     </button>
-                    <span className="w-10 text-center font-bold text-xs sm:text-sm text-[#1E1217]">
+                    <span className="w-8 text-center font-bold text-xs text-[#1E1217]">
                       {quantity}
                     </span>
                     <button
                       type="button"
                       disabled={product.stock ? quantity >= product.stock : false}
                       onClick={() => setQuantity((prev) => prev + 1)}
-                      className="px-3 py-2 text-[#483B42] hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors font-bold cursor-pointer"
+                      className="px-2.5 py-1.5 text-[#483B42] hover:bg-gray-100 disabled:opacity-30 disabled:hover:bg-transparent transition-colors font-bold cursor-pointer text-xs"
                     >
                       +
                     </button>
@@ -596,21 +501,21 @@ export const ProductDetailsPage = () => {
                 </div>
 
                 <div className="text-right">
-                  <span className="block text-[11px] text-[#705E67]">Subtotal</span>
-                  <span className="text-lg font-bold text-[#1E1217]">
-                    ₹{((product.price * quantity) + (addGiftWrap ? 99 : 0)).toLocaleString('en-IN')}
+                  <span className="block text-[10.5px] text-[#705E67]">Subtotal</span>
+                  <span className="text-base font-bold text-[#1E1217]">
+                    ₹{(product.price * quantity).toLocaleString('en-IN')}
                   </span>
                 </div>
               </div>
 
               {/* Action Buttons: Add to Cart & Buy Now */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3.5">
                 {/* Add to Cart Button */}
                 <button
                   type="button"
                   disabled={isOutOfStock}
                   onClick={handleAddToCart}
-                  className={`w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed ${
+                  className={`w-full py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed ${
                     addedAnimation
                       ? 'bg-[#15803D] text-white'
                       : 'bg-[#E8A0AD] hover:bg-[#df93a1] text-[#29252A]'
@@ -634,54 +539,15 @@ export const ProductDetailsPage = () => {
                   type="button"
                   disabled={isOutOfStock}
                   onClick={handleBuyNow}
-                  className="w-full py-3.5 px-4 rounded-xl text-xs sm:text-sm font-bold bg-[#A83F5B] hover:bg-[#93344D] text-white transition-all duration-200 shadow-sm flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-bold bg-[#A83F5B] hover:bg-[#93344D] text-white transition-all duration-200 shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CreditCard className="w-4 h-4" />
                   <span>Buy Now</span>
                 </button>
               </div>
 
-              {/* Pincode Delivery Checker */}
-              <div className="bg-white p-4 rounded-2xl border border-[#ECE3E7] shadow-2xs mb-5">
-                <div className="flex items-center gap-2 mb-2 text-xs font-bold text-[#2E2026]">
-                  <MapPin size={14} className="text-[#821D38]" />
-                  <span>Check Delivery Date & Pincode</span>
-                </div>
-                <form onSubmit={handleCheckPincode} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={pincode}
-                    onChange={(e) => setPincode(e.target.value)}
-                    placeholder="Enter 6-digit PIN code"
-                    maxLength={6}
-                    className="flex-1 px-3 py-2 rounded-xl border border-[#D9CDD3] text-xs text-[#1E1217] placeholder:text-gray-400 focus:outline-none focus:border-[#821D38]"
-                  />
-                  <button
-                    type="submit"
-                    disabled={checkingPincode}
-                    className="px-4 py-2 rounded-xl bg-[#821D38] text-white text-xs font-bold hover:bg-[#561023] transition-colors cursor-pointer"
-                  >
-                    {checkingPincode ? 'Checking...' : 'Check'}
-                  </button>
-                </form>
-
-                {/* Pincode Result Feedback */}
-                {pincodeResult && (
-                  <div
-                    className={`mt-2.5 p-2 rounded-lg text-xs flex items-center gap-2 ${
-                      pincodeResult.success
-                        ? 'bg-[#F0FDF4] text-[#15803D] border border-[#BBF7D0]'
-                        : 'bg-[#FEF2F2] text-[#DC2626] border border-[#FECACA]'
-                    }`}
-                  >
-                    {pincodeResult.success ? <Check size={14} /> : <AlertCircle size={14} />}
-                    <span>{pincodeResult.message}</span>
-                  </div>
-                )}
-              </div>
-
               {/* Share & Gift Assistance */}
-              <div className="flex items-center justify-between text-xs text-[#705E67] pt-2">
+              <div className="flex items-center justify-between text-[11px] text-[#705E67] pt-1">
                 <button
                   type="button"
                   onClick={handleShare}
@@ -698,26 +564,26 @@ export const ProductDetailsPage = () => {
             </div>
 
             {/* Trust Highlights Grid (4 Key Pillars) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-6 mt-6 border-t border-[#ECE3E7]">
-              <div className="flex flex-col items-center text-center p-2.5 rounded-xl bg-white border border-[#EFEBEF]">
-                <Truck className="w-5 h-5 text-[#821D38] mb-1.5" />
-                <span className="text-[11px] font-bold text-[#1E1217]">Free Shipping</span>
-                <span className="text-[9.5px] text-[#705E67]">Orders over ₹999</span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3.5 mt-3.5 border-t border-[#ECE3E7]">
+              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
+                <Truck className="w-4 h-4 text-[#821D38] mb-1" />
+                <span className="text-[10.5px] font-bold text-[#1E1217]">Free Shipping</span>
+                <span className="text-[9px] text-[#705E67]">Orders over ₹999</span>
               </div>
-              <div className="flex flex-col items-center text-center p-2.5 rounded-xl bg-white border border-[#EFEBEF]">
-                <ShieldCheck className="w-5 h-5 text-[#821D38] mb-1.5" />
-                <span className="text-[11px] font-bold text-[#1E1217]">100% Secure</span>
-                <span className="text-[9.5px] text-[#705E67]">Encrypted Checkout</span>
+              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
+                <ShieldCheck className="w-4 h-4 text-[#821D38] mb-1" />
+                <span className="text-[10.5px] font-bold text-[#1E1217]">100% Secure</span>
+                <span className="text-[9px] text-[#705E67]">Encrypted Checkout</span>
               </div>
-              <div className="flex flex-col items-center text-center p-2.5 rounded-xl bg-white border border-[#EFEBEF]">
-                <RefreshCw className="w-5 h-5 text-[#821D38] mb-1.5" />
-                <span className="text-[11px] font-bold text-[#1E1217]">Easy Returns</span>
-                <span className="text-[9.5px] text-[#705E67]">7-Day Replacement</span>
+              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
+                <RefreshCw className="w-4 h-4 text-[#821D38] mb-1" />
+                <span className="text-[10.5px] font-bold text-[#1E1217]">Easy Returns</span>
+                <span className="text-[9px] text-[#705E67]">7-Day Replacement</span>
               </div>
-              <div className="flex flex-col items-center text-center p-2.5 rounded-xl bg-white border border-[#EFEBEF]">
-                <Gift className="w-5 h-5 text-[#821D38] mb-1.5" />
-                <span className="text-[11px] font-bold text-[#1E1217]">Gift Ready</span>
-                <span className="text-[9.5px] text-[#705E67]">Luxury Packaging</span>
+              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
+                <Gift className="w-4 h-4 text-[#821D38] mb-1" />
+                <span className="text-[10.5px] font-bold text-[#1E1217]">Gift Ready</span>
+                <span className="text-[9px] text-[#705E67]">Luxury Packaging</span>
               </div>
             </div>
           </div>
@@ -725,15 +591,15 @@ export const ProductDetailsPage = () => {
       </section>
 
       {/* Tabbed Product Information Section */}
-      <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16">
-        <div className="bg-white rounded-3xl border border-[#ECE3E7] shadow-2xs overflow-hidden">
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-10 sm:mt-14">
+        <div className="bg-white rounded-2xl border border-[#ECE3E7] shadow-2xs overflow-hidden">
           {/* Tab Header Buttons */}
           <div className="flex items-center gap-2 sm:gap-6 border-b border-[#ECE3E7] px-4 sm:px-8 bg-[#FAF6F4]/60 overflow-x-auto">
             {[
               { id: 'description', label: 'Description' },
               { id: 'details', label: 'Product Details' },
               { id: 'shipping', label: 'Shipping & Returns' },
-              { id: 'reviews', label: `Customer Reviews (${reviews.length || 24})` }
+              { id: 'reviews', label: `Customer Reviews (${reviews.length})` }
             ].map((tab) => {
               const isActive = activeTab === tab.id;
               return (
@@ -842,63 +708,84 @@ export const ProductDetailsPage = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-3xl font-extrabold text-[#1E1217]">{product.rating}</span>
+                      <span className="text-3xl font-extrabold text-[#1E1217]">{averageRating}</span>
                       <div className="flex items-center text-[#F59E0B]">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-[#F59E0B] stroke-[#F59E0B]" />
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${
+                              i < Math.round(Number(averageRating))
+                                ? 'fill-[#F59E0B] stroke-[#F59E0B]'
+                                : 'text-gray-300 stroke-gray-300'
+                            }`}
+                          />
                         ))}
                       </div>
                     </div>
-                    <p className="text-xs text-[#705E67] mt-1">Based on {reviews.length || 24} verified customer reviews</p>
+                    <p className="text-xs text-[#705E67] mt-1">
+                      {reviews.length > 0
+                        ? `Based on ${reviews.length} customer review${reviews.length > 1 ? 's' : ''}`
+                        : 'No reviews yet for this product.'}
+                    </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => alert('Review submission is available for authenticated customers who purchased this gift.')}
-                    className="py-2.5 px-4 rounded-xl bg-[#821D38] text-white text-xs font-bold hover:bg-[#561023] transition-colors self-start sm:self-auto cursor-pointer"
-                  >
-                    Write a Review
-                  </button>
                 </div>
 
-                {/* Review Items */}
-                <div className="space-y-4">
-                  {(reviews.length > 0 ? reviews : [
-                    {
-                      name: 'Pooja Verma',
-                      rating: 5,
-                      date: '2 days ago',
-                      comment: 'Absolutely stunning! The packaging was so luxurious and the recipient was genuinely touched. Highly recommend RS Gifts!'
-                    },
-                    {
-                      name: 'Rahul Sharma',
-                      rating: 5,
-                      date: '1 week ago',
-                      comment: 'Delivered right on time for my sister’s birthday. Excellent quality and presentation exactly as shown in images.'
-                    }
-                  ]).map((rev, i) => (
-                    <div key={i} className="p-4 rounded-2xl border border-[#ECE3E7] bg-white">
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-xs sm:text-sm text-[#1E1217]">
-                            {rev.name || rev.user?.name || 'Verified Buyer'}
-                          </span>
-                          <span className="text-[10px] font-semibold text-[#15803D] bg-[#DCFCE7] px-2 py-0.5 rounded-full">
-                            Verified Purchase
-                          </span>
+                {/* Customer Reviews List */}
+                {reviews.length > 0 ? (
+                  <div className="space-y-4">
+                    {reviews.map((rev, i) => {
+                      let reviewerName = (rev.customerName || rev.name || rev.user?.name || '').trim();
+                      if (!reviewerName || /^\s*rs\s*gifts?\s*$/i.test(reviewerName)) {
+                        reviewerName = 'Verified Customer';
+                      }
+                      const reviewDate = rev.createdAt
+                        ? new Date(rev.createdAt).toLocaleDateString('en-IN', {
+                            day: 'numeric',
+                            month: 'short',
+                            year: 'numeric'
+                          })
+                        : rev.date || '';
+                      const stars = Math.min(5, Math.max(1, Number(rev.rating) || 5));
+
+                      return (
+                        <div key={rev._id || rev.id || i} className="p-4 rounded-2xl border border-[#ECE3E7] bg-white">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-bold text-xs sm:text-sm text-[#1E1217]">
+                              {reviewerName}
+                            </span>
+                            {reviewDate && (
+                              <span className="text-[11px] text-[#8C7D85]">{reviewDate}</span>
+                            )}
+                          </div>
+                          <div className="flex items-center text-[#F59E0B] mb-2">
+                            {[...Array(stars)].map((_, idx) => (
+                              <Star key={idx} className="w-3.5 h-3.5 fill-[#F59E0B] stroke-[#F59E0B]" />
+                            ))}
+                          </div>
+                          <p className="text-xs text-[#5A4952] leading-relaxed">
+                            {rev.comment || rev.reviewText}
+                          </p>
+                          {rev.adminReply && (
+                            <div className="mt-3 p-3 rounded-xl bg-[#FAF6F4] border-l-3 border-[#821D38] text-xs">
+                              <span className="font-bold text-[#821D38] block mb-0.5">RS Gifts Response:</span>
+                              <p className="text-[#5A4952]">{rev.adminReply}</p>
+                            </div>
+                          )}
                         </div>
-                        <span className="text-[11px] text-[#8C7D85]">{rev.date || 'Recent'}</span>
-                      </div>
-                      <div className="flex items-center text-[#F59E0B] mb-2">
-                        {[...Array(rev.rating || 5)].map((_, idx) => (
-                          <Star key={idx} className="w-3.5 h-3.5 fill-[#F59E0B] stroke-[#F59E0B]" />
-                        ))}
-                      </div>
-                      <p className="text-xs text-[#5A4952] leading-relaxed">
-                        {rev.comment || rev.reviewText || 'Superb gifting experience! Thank you RS Gifts.'}
-                      </p>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 px-4 rounded-2xl border border-dashed border-[#ECE3E7] bg-[#FAF8F7]">
+                    <div className="w-12 h-12 rounded-full bg-[#FDF2F5] text-[#821D38] flex items-center justify-center mx-auto mb-3">
+                      <MessageSquare size={20} />
                     </div>
-                  ))}
-                </div>
+                    <h4 className="text-sm font-bold text-[#1E1217] mb-1">No reviews yet</h4>
+                    <p className="text-xs text-[#705E67] max-w-sm mx-auto">
+                      Customer reviews will appear here once approved by our team.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -907,7 +794,7 @@ export const ProductDetailsPage = () => {
 
       {/* "You May Also Like" Related Products Section */}
       {relatedProducts.length > 0 && (
-        <section className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 mt-14 sm:mt-20">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-12 sm:mt-16">
           <div className="flex items-center justify-between pb-3 mb-6 border-b border-[#ECE3E7]">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-[#1E1217] tracking-tight">

@@ -15,6 +15,7 @@ import { WishlistPage } from './pages/WishlistPage';
 import { BirthdayGiftsPage } from './pages/BirthdayGiftsPage';
 import { ProductDetailsPage } from './pages/ProductDetailsPage';
 import { CartDrawer } from './components/cart/CartDrawer';
+import { BottomNav } from './components/BottomNav';
 import './App.css';
 
 export function App() {
@@ -39,7 +40,7 @@ export function App() {
           <div className="app-root flex flex-col min-h-screen bg-[#FFF9F5]">
             <Navbar onSearch={handleSearch} onNavigate={handleNavigate} />
 
-            <main className="flex-1 bg-[#FFF9F5]">
+            <main className="flex-1 bg-[#FFF9F5] pb-16 md:pb-0">
               <Routes>
                 {/* Home Storefront */}
                 <Route
@@ -88,6 +89,7 @@ export function App() {
             <Footer />
             <AuthModal />
             <CartDrawer />
+            <BottomNav />
           </div>
         </CartProvider>
       </WishlistProvider>
