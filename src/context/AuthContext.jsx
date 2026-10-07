@@ -283,7 +283,7 @@ export const AuthProvider = ({ children }) => {
   // Order actions
   const addCustomerOrder = (rawOrder) => {
     const formatted = {
-      id: rawOrder.orderNumber || rawOrder._id || `RS-ORD-${Date.now().toString().slice(-6)}`,
+      id: rawOrder.orderNumber || rawOrder._id || `RS${Math.floor(1000 + Math.random() * 9000)}${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
       _id: rawOrder._id,
       orderNumber: rawOrder.orderNumber,
       date: rawOrder.createdAt || new Date().toISOString(),

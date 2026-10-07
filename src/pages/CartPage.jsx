@@ -193,7 +193,7 @@ export const CartPage = () => {
 
       const response = await api.post('/customer/orders', orderPayload);
       const createdOrder = response?.order || {
-        orderNumber: `RS-ORD-${Date.now().toString().slice(-6)}`,
+        orderNumber: `RS${Math.floor(1000 + Math.random() * 9000)}${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
         totalAmount: grandTotal,
         orderStatus: 'Pending',
         createdAt: new Date().toISOString(),
