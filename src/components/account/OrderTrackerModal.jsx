@@ -117,9 +117,25 @@ export const OrderTrackerModal = ({ order, onClose }) => {
             <div className="p-3.5 rounded-xl bg-white border border-[#EFEBEF] flex items-start gap-3">
               <MapPin size={16} className="text-[#821D38] shrink-0 mt-0.5" />
               <div className="text-xs">
-                <span className="font-bold text-[#1E1217] block">{order.shippingAddress.recipient}</span>
-                <span className="text-[#6F6870] block mt-0.5">{order.shippingAddress.address}</span>
-                <span className="text-[#6F6870] block mt-0.5">Phone: {order.shippingAddress.phone}</span>
+                <span className="font-bold text-[#1E1217] block">
+                  {typeof order.shippingAddress?.recipient === 'string'
+                    ? order.shippingAddress.recipient
+                    : order.shippingAddress?.recipientName || 'Gift Recipient'}
+                </span>
+                <span className="text-[#6F6870] block mt-0.5">
+                  {typeof order.shippingAddress?.address === 'string'
+                    ? order.shippingAddress.address
+                    : [
+                        order.shippingAddress?.addressLine1,
+                        order.shippingAddress?.addressLine2,
+                        order.shippingAddress?.city,
+                        order.shippingAddress?.state,
+                        order.shippingAddress?.postalCode,
+                      ].filter(Boolean).join(', ') || 'Standard Shipping Address'}
+                </span>
+                {order.shippingAddress?.phone && (
+                  <span className="text-[#6F6870] block mt-0.5">Phone: {order.shippingAddress.phone}</span>
+                )}
               </div>
             </div>
           </div>
