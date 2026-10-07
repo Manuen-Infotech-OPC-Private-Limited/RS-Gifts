@@ -57,7 +57,7 @@ export const AccountPage = () => {
             Please Sign In to View Your Account
           </h2>
           <p className="text-xs text-[#6F6870] leading-relaxed">
-            Track your ongoing shipments, access previous invoices, and manage saved delivery addresses.
+            Track your ongoing shipments, review past orders, and manage saved delivery addresses.
           </p>
 
           <button
