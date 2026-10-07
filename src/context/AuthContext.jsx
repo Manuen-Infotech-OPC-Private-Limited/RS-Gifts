@@ -232,7 +232,92 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
+  // Load live customer orders from backend
+  useEffect(() => {
+    if (!user) return;
+    const loadMyOrders = async () => {
+      try {
+        const data = await api.get('/customer/orders/my');
+        const liveOrders = data?.orders || [];
+        if (Array.isArray(liveOrders) && liveOrders.length > 0) {
+          setOrders(liveOrders.map(o => ({
+            id: o.orderNumber || o._id,
+            _id: o._id,
+            orderNumber: o.orderNumber,
+            date: o.createdAt,
+            formattedDate: new Date(o.createdAt).toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric'
+            }),
+            status: o.orderStatus || 'Pending',
+            statusStep: o.orderStatus === 'Delivered' ? 4 : o.orderStatus === 'Shipped' ? 3 : o.orderStatus === 'Processing' ? 2 : 1,
+            carrier: o.tracking?.carrier || 'Express Courier',
+            trackingNumber: o.tracking?.trackingNumber || (o.orderNumber ? `AWB-${o.orderNumber.replace(/[^0-9]/g, '').slice(-6)}` : 'Assigned on Dispatch'),
+            estimatedDelivery: o.orderStatus === 'Delivered' ? 'Delivered' : 'Estimated: 3-5 Business Days',
+            items: (o.items || []).map(i => ({
+              id: i.productId || i.product || i._id,
+              name: i.title,
+              price: i.price,
+              quantity: i.quantity,
+              image: i.image,
+            })),
+            pricing: {
+              subtotal: o.subtotal,
+              shipping: o.shippingFee,
+              discount: o.discountAmount,
+              total: o.totalAmount,
+            },
+            shippingAddress: o.shippingAddress,
+            paymentMethod: o.paymentMethod,
+            paymentStatus: o.paymentStatus,
+          })));
+        }
+      } catch (e) {
+        console.warn('Could not load live user orders from backend:', e.message);
+      }
+    };
+    loadMyOrders();
+  }, [user]);
+
   // Order actions
+  const addCustomerOrder = (rawOrder) => {
+    const formatted = {
+      id: rawOrder.orderNumber || rawOrder._id || `RS-ORD-${Date.now().toString().slice(-6)}`,
+      _id: rawOrder._id,
+      orderNumber: rawOrder.orderNumber,
+      date: rawOrder.createdAt || new Date().toISOString(),
+      formattedDate: new Date(rawOrder.createdAt || Date.now()).toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      }),
+      status: rawOrder.orderStatus || 'Pending',
+      statusStep: 1,
+      carrier: rawOrder.tracking?.carrier || 'Express Courier',
+      trackingNumber: rawOrder.tracking?.trackingNumber || 'Tracking ID Assigned Soon',
+      estimatedDelivery: 'Estimated: 3-5 Business Days',
+      items: (rawOrder.items || []).map(i => ({
+        id: i.productId || i.product || i._id,
+        name: i.title || i.name,
+        price: i.price,
+        quantity: i.quantity,
+        image: i.image,
+      })),
+      pricing: {
+        subtotal: rawOrder.subtotal,
+        shipping: rawOrder.shippingFee,
+        discount: rawOrder.discountAmount,
+        total: rawOrder.totalAmount,
+      },
+      shippingAddress: rawOrder.shippingAddress,
+      paymentMethod: rawOrder.paymentMethod,
+      paymentStatus: rawOrder.paymentStatus,
+    };
+
+    setOrders((prev) => [formatted, ...prev]);
+  };
+
   const cancelOrder = (orderId) => {
     setOrders((prev) =>
       prev.map((order) =>
@@ -270,6 +355,7 @@ export const AuthProvider = ({ children }) => {
         updateAddress,
         deleteAddress,
         setDefaultAddress,
+        addCustomerOrder,
         cancelOrder,
         authModalOpen,
         authModalTab,

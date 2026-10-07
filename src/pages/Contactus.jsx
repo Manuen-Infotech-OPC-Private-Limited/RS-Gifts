@@ -144,7 +144,7 @@ export const Contactus = () => {
         if (errorMsg) setErrorMsg('');
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         if (!formData.fullName.trim() || !formData.email.trim() || !formData.message.trim()) {
             setErrorMsg('Please fill in all required fields (Name, Email, and Message).');
@@ -152,8 +152,22 @@ export const Contactus = () => {
         }
 
         setLoading(true);
+        setErrorMsg('');
 
-        // Save message locally to admin inbox / inquiries in localStorage
+        try {
+            // Send inquiry directly to live MongoDB backend API
+            await api.post('/customer/inquiries', {
+                fullName: formData.fullName.trim(),
+                email: formData.email.trim(),
+                phone: formData.phone.trim(),
+                subject: formData.subject.trim() || 'General Inquiry',
+                message: formData.message.trim(),
+            });
+        } catch (apiErr) {
+            console.warn('Backend API submission note:', apiErr?.message || apiErr);
+        }
+
+        // Save backup to localStorage
         try {
             const savedInquiries = JSON.parse(localStorage.getItem('rs_gifts_inquiries') || '[]');
             const newInquiry = {
@@ -168,17 +182,15 @@ export const Contactus = () => {
             console.warn('Could not save inquiry locally:', e);
         }
 
-        setTimeout(() => {
-            setLoading(false);
-            setSubmitted(true);
-            setFormData({
-                fullName: '',
-                email: '',
-                phone: '',
-                subject: '',
-                message: ''
-            });
-        }, 600);
+        setLoading(false);
+        setSubmitted(true);
+        setFormData({
+            fullName: '',
+            email: '',
+            phone: '',
+            subject: '',
+            message: ''
+        });
     };
 
     return (

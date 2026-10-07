@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 import {
   ShoppingBag,
   Trash2,
@@ -15,11 +16,19 @@ import {
   Check,
   ArrowRight,
   ChevronRight,
-  Info
+  Info,
+  MapPin,
+  Phone,
+  User,
+  ShieldCheck,
+  Truck,
+  X,
+  Loader2,
+  AlertCircle
 } from 'lucide-react';
 
 export const CartPage = () => {
-  const { user, openAuthModal } = useAuth();
+  const { user, addresses, addCustomerOrder, openAuthModal } = useAuth();
   const {
     cartItems,
     cartCount,
@@ -54,10 +63,50 @@ export const CartPage = () => {
   const [couponInput, setCouponInput] = useState('');
   const [couponMessage, setCouponMessage] = useState(null);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [placedOrder, setPlacedOrder] = useState(null);
 
-  // Never show order placed screen when user logs in or auth state changes
+  // Checkout modal state
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [submittingOrder, setSubmittingOrder] = useState(false);
+  const [checkoutError, setCheckoutError] = useState('');
+
+  // Default address if available
+  const defaultAddress = addresses?.find((a) => a.isDefault) || addresses?.[0] || null;
+
+  const [checkoutForm, setCheckoutForm] = useState({
+    recipientName: '',
+    phone: '',
+    email: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    postalCode: '',
+    paymentMethod: 'COD', // COD | UPI
+    orderNotes: '',
+  });
+
+  // Pre-fill form when user logs in or addresses change
   useEffect(() => {
-    setCheckoutSuccess(false);
+    if (user) {
+      setCheckoutForm((prev) => ({
+        ...prev,
+        recipientName: prev.recipientName || user.name || '',
+        phone: prev.phone || user.phone || '',
+        email: prev.email || user.email || '',
+        addressLine1: prev.addressLine1 || defaultAddress?.street || defaultAddress?.addressLine1 || '',
+        city: prev.city || defaultAddress?.city || '',
+        state: prev.state || defaultAddress?.state || '',
+        postalCode: prev.postalCode || defaultAddress?.postalCode || defaultAddress?.pincode || '',
+      }));
+    }
+  }, [user, defaultAddress]);
+
+  // Reset order placed screen when user logs out or cart gets emptied
+  useEffect(() => {
+    if (!placedOrder) {
+      setCheckoutSuccess(false);
+    }
   }, [user]);
 
   const handleApplyCoupon = (e) => {
@@ -77,36 +126,138 @@ export const CartPage = () => {
     removeFromCart(item.id);
   };
 
-  const handleCheckout = () => {
+  const handleOpenCheckout = () => {
     if (!user) {
       openAuthModal('login');
       return;
     }
-    setCheckoutSuccess(true);
-    setTimeout(() => {
+    setCheckoutError('');
+    setIsCheckoutModalOpen(true);
+  };
+
+  const handleConfirmOrder = async (e) => {
+    e.preventDefault();
+    if (
+      !checkoutForm.recipientName.trim() ||
+      !checkoutForm.phone.trim() ||
+      !checkoutForm.addressLine1.trim() ||
+      !checkoutForm.city.trim() ||
+      !checkoutForm.state.trim() ||
+      !checkoutForm.postalCode.trim()
+    ) {
+      setCheckoutError('Please fill in all required delivery fields (Name, Phone, Address, City, State, PIN).');
+      return;
+    }
+
+    setSubmittingOrder(true);
+    setCheckoutError('');
+
+    try {
+      const orderPayload = {
+        items: cartItems.map((item) => ({
+          product: item.id || item._id,
+          title: item.name || item.title || 'Gift Item',
+          quantity: item.quantity,
+          price: item.price,
+          image: item.image || '',
+          personalizationData: {
+            giftWrap: !!giftWrap,
+            giftMessage: includeGiftNote ? giftMessage : '',
+          },
+        })),
+        customerInfo: {
+          name: checkoutForm.recipientName.trim(),
+          email: user?.email || checkoutForm.email.trim() || 'customer@rsgifts.com',
+          phone: checkoutForm.phone.trim(),
+        },
+        shippingAddress: {
+          recipientName: checkoutForm.recipientName.trim(),
+          phone: checkoutForm.phone.trim(),
+          addressLine1: checkoutForm.addressLine1.trim(),
+          addressLine2: checkoutForm.addressLine2.trim(),
+          city: checkoutForm.city.trim(),
+          state: checkoutForm.state.trim(),
+          postalCode: checkoutForm.postalCode.trim(),
+          country: 'India',
+        },
+        paymentMethod: checkoutForm.paymentMethod || 'COD',
+        couponCode: appliedCoupon?.code || '',
+        notes: [
+          checkoutForm.orderNotes.trim(),
+          giftWrap ? 'Includes Premium Ribbon Gift Wrap' : '',
+          includeGiftNote && giftMessage ? `Greeting Card: "${giftMessage}"` : '',
+        ]
+          .filter(Boolean)
+          .join(' | '),
+      };
+
+      const response = await api.post('/customer/orders', orderPayload);
+      const createdOrder = response?.order || {
+        orderNumber: `RS-ORD-${Date.now().toString().slice(-6)}`,
+        totalAmount: grandTotal,
+        orderStatus: 'Pending',
+        createdAt: new Date().toISOString(),
+        items: orderPayload.items,
+        shippingAddress: orderPayload.shippingAddress,
+      };
+
+      // Sync into local AuthContext orders list
+      if (addCustomerOrder) {
+        addCustomerOrder(createdOrder);
+      }
+
+      setPlacedOrder(createdOrder);
+      setIsCheckoutModalOpen(false);
+      setCheckoutSuccess(true);
       clearCart();
-    }, 1500);
+    } catch (err) {
+      console.error('Order creation error:', err);
+      const errMsg = err.response?.data?.message || err.message || 'Failed to place order. Please check connection and try again.';
+      setCheckoutError(errMsg);
+    } finally {
+      setSubmittingOrder(false);
+    }
   };
 
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - itemsSubtotal);
 
-  if (checkoutSuccess) {
+  if (checkoutSuccess && placedOrder) {
     return (
       <div className="w-full bg-[#FFF9F5] py-16 px-4 font-sans select-none min-h-[70vh] flex items-center justify-center">
         <div className="max-w-md w-full bg-white p-8 sm:p-10 rounded-3xl border border-[#ECE7EC] shadow-xl text-center space-y-4">
-          <div className="w-16 h-16 rounded-full bg-[#E8F5E9] text-[#15803D] flex items-center justify-center mx-auto">
+          <div className="w-16 h-16 rounded-full bg-[#E8F5E9] text-[#15803D] flex items-center justify-center mx-auto shadow-sm">
             <Check size={32} strokeWidth={2.5} />
+          </div>
+          <div className="inline-block px-3 py-1 rounded-full bg-[#FDF2F4] text-[#821D38] text-xs font-bold font-mono">
+            Order #{placedOrder.orderNumber}
           </div>
           <h2 className="text-xl sm:text-2xl font-bold text-[#1E1217]">
             Order Placed Successfully!
           </h2>
           <p className="text-xs sm:text-sm text-[#6F6870] leading-relaxed">
-            Thank you for shopping with RS Gifts.Our Customer Support Team will contact You Soon to Deliver Your Order
+            Thank you for shopping with RS Gifts. Your order has been placed in our system. Our team will prepare and dispatch your gift package promptly!
           </p>
+
+          <div className="p-3.5 rounded-2xl bg-[#FCFAFB] border border-[#ECE7EC] text-left text-xs space-y-1.5">
+            <div className="flex justify-between text-neutral-600">
+              <span>Recipient:</span>
+              <span className="font-semibold text-neutral-900">{placedOrder.shippingAddress?.recipientName}</span>
+            </div>
+            <div className="flex justify-between text-neutral-600">
+              <span>Delivery City:</span>
+              <span className="font-semibold text-neutral-900">{placedOrder.shippingAddress?.city}, {placedOrder.shippingAddress?.state}</span>
+            </div>
+            <div className="flex justify-between text-neutral-600">
+              <span>Total Amount:</span>
+              <span className="font-bold text-[#821D38]">₹{(placedOrder.totalAmount || grandTotal).toLocaleString('en-IN')} ({placedOrder.paymentMethod || 'COD'})</span>
+            </div>
+          </div>
+
           <div className="pt-2 space-y-2">
             <button
               onClick={() => {
                 setCheckoutSuccess(false);
+                setPlacedOrder(null);
                 navigate('/account?tab=orders');
               }}
               className="w-full py-3 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer"
@@ -116,6 +267,7 @@ export const CartPage = () => {
             <button
               onClick={() => {
                 setCheckoutSuccess(false);
+                setPlacedOrder(null);
                 navigate('/');
               }}
               className="w-full py-2.5 rounded-xl border border-neutral-200 text-neutral-700 hover:bg-neutral-50 text-xs font-semibold transition-colors cursor-pointer"
@@ -454,7 +606,7 @@ export const CartPage = () => {
 
               {/* Checkout CTA */}
               <button
-                onClick={handleCheckout}
+                onClick={handleOpenCheckout}
                 className="w-full py-3.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs sm:text-sm font-bold shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-98"
               >
                 <span>Proceed to Secure Checkout</span>
@@ -468,6 +620,234 @@ export const CartPage = () => {
         </div>
 
       </div>
+
+      {/* Checkout Delivery Details Modal */}
+      {isCheckoutModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-xl w-full max-h-[92vh] flex flex-col shadow-2xl border border-[#ECE7EC] overflow-hidden">
+            {/* Modal Header */}
+            <div className="px-6 py-4.5 border-b border-[#ECE7EC] flex items-center justify-between bg-[#FFF9F5]">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-[#FDF2F4] text-[#821D38] flex items-center justify-center">
+                  <Truck size={18} />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-[#1E1217]">Delivery & Checkout</h3>
+                  <p className="text-[11px] text-[#6F6870]">Enter delivery address to confirm your gift order</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setIsCheckoutModalOpen(false)}
+                className="p-1.5 rounded-full hover:bg-neutral-200/60 text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Modal Form Content */}
+            <form onSubmit={handleConfirmOrder} className="flex-1 overflow-y-auto p-6 space-y-4 text-xs">
+              {checkoutError && (
+                <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 flex items-start gap-2">
+                  <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                  <span>{checkoutError}</span>
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <span className="text-xs font-bold text-[#1E1217] uppercase tracking-wider block">
+                  1. Recipient Details
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                      Recipient Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Rahul Sharma"
+                      value={checkoutForm.recipientName}
+                      onChange={(e) => setCheckoutForm({ ...checkoutForm, recipientName: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                      Contact Mobile Number *
+                    </label>
+                    <input
+                      type="tel"
+                      required
+                      placeholder="e.g. 9876543210"
+                      value={checkoutForm.phone}
+                      onChange={(e) => setCheckoutForm({ ...checkoutForm, phone: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <span className="text-xs font-bold text-[#1E1217] uppercase tracking-wider block">
+                  2. Delivery Address
+                </span>
+                <div>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                    Street Address / Flat / House No. *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Flat 402, Lotus Residency, MG Road"
+                    value={checkoutForm.addressLine1}
+                    onChange={(e) => setCheckoutForm({ ...checkoutForm, addressLine1: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                      City *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Hyderabad"
+                      value={checkoutForm.city}
+                      onChange={(e) => setCheckoutForm({ ...checkoutForm, city: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                      State *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Telangana"
+                      value={checkoutForm.state}
+                      onChange={(e) => setCheckoutForm({ ...checkoutForm, state: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                      PIN Code *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. 500001"
+                      value={checkoutForm.postalCode}
+                      onChange={(e) => setCheckoutForm({ ...checkoutForm, postalCode: e.target.value })}
+                      className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <span className="text-xs font-bold text-[#1E1217] uppercase tracking-wider block">
+                  3. Payment Method
+                </span>
+                <div className="grid grid-cols-2 gap-3">
+                  <label
+                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${
+                      checkoutForm.paymentMethod === 'COD'
+                        ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
+                        : 'border-[#ECE7EC] bg-white text-neutral-700'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="COD"
+                      checked={checkoutForm.paymentMethod === 'COD'}
+                      onChange={() => setCheckoutForm({ ...checkoutForm, paymentMethod: 'COD' })}
+                      className="accent-[#821D38]"
+                    />
+                    <span>Cash on Delivery (COD)</span>
+                  </label>
+
+                  <label
+                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${
+                      checkoutForm.paymentMethod === 'UPI'
+                        ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
+                        : 'border-[#ECE7EC] bg-white text-neutral-700'
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="UPI"
+                      checked={checkoutForm.paymentMethod === 'UPI'}
+                      onChange={() => setCheckoutForm({ ...checkoutForm, paymentMethod: 'UPI' })}
+                      className="accent-[#821D38]"
+                    />
+                    <span>UPI / Scan & Pay</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="pt-2">
+                <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
+                  Delivery Notes / Gifting Instructions (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Ring the doorbell, leave with neighbor if unavailable"
+                  value={checkoutForm.orderNotes}
+                  onChange={(e) => setCheckoutForm({ ...checkoutForm, orderNotes: e.target.value })}
+                  className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
+                />
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-[#FFF9F5] border border-[#ECE7EC] flex items-center justify-between mt-2">
+                <div>
+                  <span className="text-xs text-neutral-500 block">Total Payable:</span>
+                  <span className="text-base font-black text-[#821D38]">
+                    ₹{grandTotal.toLocaleString('en-IN')}
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 text-[11px] text-[#15803D] font-bold">
+                  <ShieldCheck size={16} />
+                  <span>100% Safe Checkout</span>
+                </div>
+              </div>
+
+              <div className="pt-2 flex items-center justify-end gap-2.5">
+                <button
+                  type="button"
+                  disabled={submittingOrder}
+                  onClick={() => setIsCheckoutModalOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-neutral-200 text-neutral-700 hover:bg-neutral-50 text-xs font-semibold cursor-pointer disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingOrder}
+                  className="px-6 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-bold shadow-xs transition-colors flex items-center gap-2 cursor-pointer disabled:opacity-60"
+                >
+                  {submittingOrder ? (
+                    <>
+                      <Loader2 size={14} className="animate-spin" />
+                      <span>Placing Order...</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Confirm & Place Order (₹{grandTotal})</span>
+                      <ArrowRight size={14} />
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
