@@ -8,7 +8,6 @@ import {
   CheckCircle2, 
   Clock, 
   XCircle, 
-  Download, 
   RotateCcw, 
   ExternalLink,
   ChevronRight,
@@ -21,31 +20,23 @@ export const OrdersList = () => {
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState(null);
-  const [invoiceToast, setInvoiceToast] = useState('');
 
   const filterTabs = ['All', 'In Transit', 'Delivered', 'Cancelled'];
 
   const filteredOrders = orders.filter((order) => {
-    // Filter by status tab
     const matchesFilter =
-      filter === 'All' ? true : order.status.toLowerCase() === filter.toLowerCase();
+      filter === 'All' ? true : (order.status || '').toLowerCase() === filter.toLowerCase();
 
-    // Filter by search query
     const matchesQuery =
       searchQuery.trim() === ''
         ? true
-        : order.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          order.items.some((item) =>
-            item.name.toLowerCase().includes(searchQuery.toLowerCase())
+        : (order.id || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (order.items || []).some((item) =>
+            (item.name || item.title || '').toLowerCase().includes(searchQuery.toLowerCase())
           );
 
     return matchesFilter && matchesQuery;
   });
-
-  const handleDownloadInvoice = (orderId) => {
-    setInvoiceToast(`Invoice #${orderId}.pdf downloaded successfully!`);
-    setTimeout(() => setInvoiceToast(''), 3000);
-  };
 
   const getStatusBadge = (status) => {
     switch (status) {
@@ -82,21 +73,13 @@ export const OrdersList = () => {
 
   return (
     <div className="space-y-5 font-sans">
-      {/* Toast Notification */}
-      {invoiceToast && (
-        <div className="fixed bottom-6 right-6 z-50 px-4 py-3 rounded-2xl bg-[#1E1217] text-white text-xs font-semibold shadow-xl flex items-center gap-2 animate-in fade-in slide-in-from-bottom-2">
-          <Download size={14} className="text-[#C9A45C]" />
-          <span>{invoiceToast}</span>
-        </div>
-      )}
-
       {/* Header & Controls Bar */}
       <div className="bg-white rounded-2xl p-5 sm:p-6 border border-[#ECE7EC] shadow-xs">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
           <div>
             <h2 className="text-xl font-bold text-[#1E1217]">My Orders & Live Tracking</h2>
             <p className="text-xs text-[#6F6870] mt-0.5">
-              Track live packages, review past gifts, and download invoices.
+              Track live packages and review past gifts.
             </p>
           </div>
 
@@ -183,9 +166,13 @@ export const OrdersList = () => {
                           <Truck size={15} />
                           <span>{order.estimatedDelivery}</span>
                         </span>
-                        <span className="text-[11px] text-[#6F6870]">
-                          Carrier: {order.carrier} (AWB: {order.trackingNumber})
-                        </span>
+                        {(order.carrier || order.trackingNumber) ? (
+                          <span className="text-[11px] text-[#6F6870]">
+                            {order.carrier && `Carrier: ${order.carrier}`}
+                            {order.carrier && order.trackingNumber && ' • '}
+                            {order.trackingNumber && `AWB: ${order.trackingNumber}`}
+                          </span>
+                        ) : null}
                       </div>
 
                       {/* Progress Line */}
@@ -278,12 +265,6 @@ export const OrdersList = () => {
                     ))}
                   </div>
 
-                  {/* Recipient Address */}
-                  <div className="text-xs text-[#6F6870] pt-2 border-t border-[#F2EAEF]">
-                    <span className="font-semibold text-[#1E1217]">Delivering to: </span>
-                    <span>{order.shippingAddress.recipient} — {order.shippingAddress.address}</span>
-                  </div>
-
                   {/* Action Buttons */}
                   <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#F2EAEF]">
                     <div className="flex items-center gap-2">
@@ -297,15 +278,6 @@ export const OrdersList = () => {
                           <span>Track Live Shipment</span>
                         </button>
                       )}
-
-                      {/* Download Invoice */}
-                      <button
-                        onClick={() => handleDownloadInvoice(order.id)}
-                        className="px-3.5 py-2 rounded-xl bg-[#FAF8FA] hover:bg-[#F2EAEF] text-[#4A3E45] text-xs font-semibold border border-[#E0D4DC] transition-colors flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <Download size={14} />
-                        <span>Invoice</span>
-                      </button>
                     </div>
 
                     {/* Secondary Actions */}

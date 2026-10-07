@@ -52,25 +52,29 @@ export const OrderTrackerModal = ({ order, onClose }) => {
               <span className="text-sm sm:text-base font-bold text-[#1E1217] block mt-0.5">
                 {order.estimatedDelivery}
               </span>
-              <span className="text-xs text-[#6F6870] mt-0.5 block">
-                Carrier: <strong className="text-neutral-800">{order.carrier}</strong>
-              </span>
+              {order.carrier && (
+                <span className="text-xs text-[#6F6870] mt-0.5 block">
+                  Carrier: <strong className="text-neutral-800">{order.carrier}</strong>
+                </span>
+              )}
             </div>
 
             {/* AWB Tracking Pill with Copy */}
-            <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-neutral-200 self-start sm:self-center">
-              <div className="text-left">
-                <span className="text-[9.5px] text-neutral-400 block uppercase font-bold">AWB Number</span>
-                <span className="text-xs font-mono font-bold text-neutral-800">{order.trackingNumber}</span>
+            {order.trackingNumber && (
+              <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-neutral-200 self-start sm:self-center">
+                <div className="text-left">
+                  <span className="text-[9.5px] text-neutral-400 block uppercase font-bold">AWB Number</span>
+                  <span className="text-xs font-mono font-bold text-neutral-800">{order.trackingNumber}</span>
+                </div>
+                <button
+                  onClick={handleCopy}
+                  title="Copy tracking number"
+                  className="p-1 hover:bg-neutral-100 rounded text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer ml-1"
+                >
+                  {copied ? <CheckCheck size={14} className="text-emerald-600" /> : <Copy size={14} />}
+                </button>
               </div>
-              <button
-                onClick={handleCopy}
-                title="Copy tracking number"
-                className="p-1 hover:bg-neutral-100 rounded text-neutral-500 hover:text-neutral-900 transition-colors cursor-pointer ml-1"
-              >
-                {copied ? <CheckCheck size={14} className="text-emerald-600" /> : <Copy size={14} />}
-              </button>
-            </div>
+            )}
           </div>
 
           {/* Vertical Timeline Checkpoints */}

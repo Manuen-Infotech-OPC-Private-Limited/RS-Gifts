@@ -252,8 +252,8 @@ export const AuthProvider = ({ children }) => {
             }),
             status: o.orderStatus || 'Pending',
             statusStep: o.orderStatus === 'Delivered' ? 4 : o.orderStatus === 'Shipped' ? 3 : o.orderStatus === 'Processing' ? 2 : 1,
-            carrier: o.tracking?.carrier || 'Express Courier',
-            trackingNumber: o.tracking?.trackingNumber || (o.orderNumber ? `AWB-${o.orderNumber.replace(/[^0-9]/g, '').slice(-6)}` : 'Assigned on Dispatch'),
+            carrier: o.tracking?.carrier || '',
+            trackingNumber: o.tracking?.trackingNumber || '',
             estimatedDelivery: o.orderStatus === 'Delivered' ? 'Delivered' : 'Estimated: 3-5 Business Days',
             items: (o.items || []).map(i => ({
               id: i.productId || i.product || i._id,
@@ -294,8 +294,8 @@ export const AuthProvider = ({ children }) => {
       }),
       status: rawOrder.orderStatus || 'Pending',
       statusStep: 1,
-      carrier: rawOrder.tracking?.carrier || 'Express Courier',
-      trackingNumber: rawOrder.tracking?.trackingNumber || 'Tracking ID Assigned Soon',
+      carrier: rawOrder.tracking?.carrier || '',
+      trackingNumber: rawOrder.tracking?.trackingNumber || '',
       estimatedDelivery: 'Estimated: 3-5 Business Days',
       items: (rawOrder.items || []).map(i => ({
         id: i.productId || i.product || i._id,
