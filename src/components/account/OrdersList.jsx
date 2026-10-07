@@ -12,7 +12,8 @@ import {
   RotateCcw, 
   ExternalLink,
   ChevronRight,
-  Gift
+  Gift,
+  Check
 } from 'lucide-react';
 
 export const OrdersList = () => {
@@ -225,7 +226,7 @@ export const OrdersList = () => {
                                     : 'bg-neutral-200 text-neutral-500'
                                 } ${isCurrent ? 'ring-2 ring-[#821D38]/30 scale-110' : ''}`}
                               >
-                                {isDone ? '✓' : m.step}
+                                {isDone ? <Check size={12} className="stroke-[3]" /> : m.step}
                               </div>
                               <span
                                 className={`text-[10.5px] mt-1 font-semibold whitespace-nowrap ${

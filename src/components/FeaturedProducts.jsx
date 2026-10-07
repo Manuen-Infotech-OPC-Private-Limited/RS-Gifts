@@ -240,9 +240,9 @@ export const FeaturedProducts = ({ onAddToCart }) => {
 
                     {/* Star Rating */}
                     <div className="flex items-center gap-1 text-[11px] text-[#705E67]">
-                      <div className="flex text-[#F59E0B]">
+                      <div className="flex text-[#C9A45C]">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className="w-2.5 h-2.5 fill-[#F59E0B] stroke-[#F59E0B]" />
+                          <Star key={i} className="w-2.5 h-2.5 fill-[#C9A45C] stroke-[#C9A45C]" />
                         ))}
                       </div>
                       <span className="text-[10px] font-medium text-[#705E67]">{product.rating || '4.7'} ({product.reviews || '230'})</span>
@@ -352,11 +352,11 @@ export const FeaturedProducts = ({ onAddToCart }) => {
 
                     {/* Rating & Reviews */}
                     <div className="flex items-center gap-1 mb-2.5">
-                      <div className="flex items-center text-[#F59E0B]">
+                      <div className="flex items-center text-[#C9A45C]">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className="w-3 h-3 fill-[#F59E0B] stroke-[#F59E0B]"
+                            className="w-3 h-3 fill-[#C9A45C] stroke-[#C9A45C]"
                           />
                         ))}
                       </div>

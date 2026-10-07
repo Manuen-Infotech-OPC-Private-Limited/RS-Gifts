@@ -4,7 +4,6 @@ import {
   Package, 
   User, 
   MapPin, 
-  CalendarHeart, 
   LogOut, 
   ChevronRight
 } from 'lucide-react';
@@ -35,11 +34,6 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
       id: 'addresses',
       label: 'Saved Delivery Addresses',
       icon: MapPin,
-    },
-    {
-      id: 'occasions',
-      label: 'Occasion Reminders',
-      icon: CalendarHeart,
     },
   ];
 
@@ -76,7 +70,7 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
             <button
               key={item.id}
               onClick={() => onSelectTab(item.id)}
-              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+              className={`w-full flex items-center justify-between px-3.5 py-3 rounded-xl text-xs font-semibold transition-all cursor-pointer outline-none focus:outline-none focus:ring-0 border-0 ${
                 isActive
                   ? 'bg-[#821D38] text-white shadow-xs'
                   : 'text-[#4A3E45] hover:bg-[#FDF2F4] hover:text-[#821D38]'
@@ -112,7 +106,7 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
         <div className="pt-2 mt-2 border-t border-[#F2EAEF]">
           <button
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+            className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer outline-none focus:outline-none focus:ring-0 border-0"
           >
             <LogOut size={16} />
             <span>Sign Out</span>

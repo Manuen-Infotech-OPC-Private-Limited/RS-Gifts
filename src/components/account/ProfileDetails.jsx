@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { User, Mail, Phone, Calendar, Heart, CheckCircle2, Save } from 'lucide-react';
+import { User, Mail, Phone, Calendar, CheckCircle2, Save } from 'lucide-react';
 
 export const ProfileDetails = () => {
   const { user, updateProfile } = useAuth();
@@ -11,7 +11,6 @@ export const ProfileDetails = () => {
     email: user?.email || '',
     phone: user?.phone || '',
     dob: user?.dob || '',
-    anniversary: user?.anniversary || '',
     gender: user?.gender || 'Male',
   });
 
@@ -35,7 +34,7 @@ export const ProfileDetails = () => {
         <div>
           <h2 className="text-xl font-bold text-[#1E1217]">Personal Information</h2>
           <p className="text-xs text-[#6F6870] mt-0.5">
-            Manage your personal profile, contact info, and special celebration dates.
+            Manage your personal profile and contact information.
           </p>
         </div>
 
@@ -129,22 +128,6 @@ export const ProfileDetails = () => {
               />
             </div>
           </div>
-
-          {/* Wedding Anniversary */}
-          <div>
-            <label className="block text-xs font-bold text-[#29252A] mb-1.5">
-              Anniversary Date
-            </label>
-            <div className="relative flex items-center">
-              <Heart size={16} className="absolute left-3.5 text-neutral-400" />
-              <input
-                type="date"
-                value={formData.anniversary}
-                onChange={(e) => handleChange('anniversary', e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#821D38]"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Gender Selection */}
@@ -174,7 +157,7 @@ export const ProfileDetails = () => {
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-all active:scale-98 cursor-pointer"
           >
             <Save size={15} />
-            <span>Save Profile Changes</span>
+            <span>Save</span>
           </button>
         </div>
       </form>

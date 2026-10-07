@@ -7,7 +7,6 @@ import {
   Trash2, 
   ShoppingBag, 
   Star, 
-  Sparkles, 
   Share2, 
   Check, 
   Copy,
@@ -64,9 +63,8 @@ export const WishlistPage = () => {
           </p>
           <button
             onClick={() => navigate('/')}
-            className="w-full py-3 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer flex items-center justify-center"
           >
-            <Sparkles size={14} className="text-[#C9A45C]" />
             <span>Discover Thoughtful Gifts</span>
           </button>
         </div>
@@ -178,11 +176,11 @@ export const WishlistPage = () => {
 
                     {/* Rating & Reviews */}
                     <div className="flex items-center gap-1 mb-2.5">
-                      <div className="flex items-center text-[#F59E0B]">
+                      <div className="flex items-center text-[#C9A45C]">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className="w-3 h-3 fill-[#F59E0B] stroke-[#F59E0B]"
+                            className="w-3 h-3 fill-[#C9A45C] stroke-[#C9A45C]"
                           />
                         ))}
                       </div>

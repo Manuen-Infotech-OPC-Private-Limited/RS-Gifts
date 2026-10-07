@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Heart } from 'lucide-react';
 import api from '../services/api';
 
@@ -16,18 +16,18 @@ export const Footer = ({
       if (saved) {
         const parsed = JSON.parse(saved);
         return {
-          phone: parsed.phone || parsed.contactPhone || '',
-          email: parsed.email || parsed.contactEmail || parsed.supportEmail || '',
-          location: parsed.location || parsed.storeAddress || '',
-          hours: parsed.hours || parsed.supportHours || ''
+          phone: parsed.phone || parsed.contactPhone || '+91 98765 43210',
+          email: parsed.email || parsed.contactEmail || parsed.supportEmail || 'support@rsgifts.com',
+          location: parsed.location || parsed.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
+          hours: parsed.hours || parsed.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM'
         };
       }
-    } catch (e) {}
+    } catch (e) { }
     return {
-      phone: '',
-      email: '',
-      location: '',
-      hours: ''
+      phone: '+91 98765 43210',
+      email: 'support@rsgifts.com',
+      location: '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
+      hours: 'Mon - Sat : 9:00 AM – 7:00 PM'
     };
   });
 
@@ -38,15 +38,15 @@ export const Footer = ({
         const s = res?.settings || res?.data?.settings;
         if (s) {
           const liveContact = {
-            phone: s.contactPhone || '',
-            email: s.contactEmail || s.supportEmail || '',
-            location: s.storeAddress || '',
-            hours: s.supportHours || '',
+            phone: s.contactPhone || '+91 98765 43210',
+            email: s.contactEmail || s.supportEmail || 'support@rsgifts.com',
+            location: s.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
+            hours: s.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM',
           };
           setContactInfo(liveContact);
           try {
             localStorage.setItem('rs_gifts_contact_info', JSON.stringify(liveContact));
-          } catch (e) {}
+          } catch (e) { }
         }
       })
       .catch((err) => {
@@ -60,22 +60,22 @@ export const Footer = ({
         if (saved) {
           const parsed = JSON.parse(saved);
           setContactInfo({
-            phone: parsed.phone || parsed.contactPhone || '',
-            email: parsed.email || parsed.contactEmail || parsed.supportEmail || '',
-            location: parsed.location || parsed.storeAddress || '',
-            hours: parsed.hours || parsed.supportHours || ''
+            phone: parsed.phone || parsed.contactPhone || '+91 98765 43210',
+            email: parsed.email || parsed.contactEmail || parsed.supportEmail || 'support@rsgifts.com',
+            location: parsed.location || parsed.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
+            hours: parsed.hours || parsed.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM'
           });
         }
-      } catch (e) {}
+      } catch (e) { }
     };
 
     const handleCustomUpdate = (e) => {
       if (e.detail) {
         setContactInfo({
-          phone: e.detail.phone || e.detail.contactPhone || '',
-          email: e.detail.email || e.detail.contactEmail || '',
-          location: e.detail.location || e.detail.storeAddress || '',
-          hours: e.detail.hours || e.detail.supportHours || '',
+          phone: e.detail.phone || e.detail.contactPhone || '+91 98765 43210',
+          email: e.detail.email || e.detail.contactEmail || 'support@rsgifts.com',
+          location: e.detail.location || e.detail.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
+          hours: e.detail.hours || e.detail.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM',
         });
       }
     };
@@ -89,10 +89,18 @@ export const Footer = ({
     };
   }, []);
 
+  const scrollToPageTop = () => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const appRoot = document.querySelector('.app-root');
+    if (appRoot) appRoot.scrollTop = 0;
+  };
+
   const handleNav = (path) => {
-    if (navigate && path.startsWith('/')) {
+    if (path && path.startsWith('/')) {
       navigate(path);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      scrollToPageTop();
     }
   };
 
@@ -246,15 +254,16 @@ export const Footer = ({
                 { label: 'Contact Us', path: '/contact' }
               ].map((link) => (
                 <li key={link.label}>
-                  <button
-                    onClick={() => handleNav(link.path)}
+                  <Link
+                    to={link.path}
+                    onClick={scrollToPageTop}
                     style={{ color: secondaryColor }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
                     onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
-                    className="text-[12.5px] font-normal transition-colors cursor-pointer text-left"
+                    className="text-[12.5px] font-normal transition-colors cursor-pointer text-left block hover:underline"
                   >
                     {link.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -280,85 +289,93 @@ export const Footer = ({
                 { label: 'Privacy Policy', path: '/privacy' }
               ].map((link) => (
                 <li key={link.label}>
-                  <button
-                    onClick={() => handleNav(link.path)}
+                  <Link
+                    to={link.path}
+                    onClick={scrollToPageTop}
                     style={{ color: secondaryColor }}
                     onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
                     onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
-                    className="text-[12.5px] font-normal transition-colors cursor-pointer text-left"
+                    className="text-[12.5px] font-normal transition-colors cursor-pointer text-left block hover:underline"
                   >
                     {link.label}
-                  </button>
+                  </Link>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Column 4: Contact Us */}
-          {(contactInfo.phone || contactInfo.email || contactInfo.location || contactInfo.hours) && (
-            <div className="flex flex-col space-y-1.5 min-w-[195px]">
-              {/* Heading: Primary #29252A */}
-              <h4
-                style={{ color: primaryColor }}
-                className="text-[13.5px] sm:text-[14px] font-bold tracking-tight mb-0.5"
-              >
-                Contact Us
-              </h4>
-              <div className="space-y-1.5">
-                {/* Phone */}
-                {contactInfo.phone && (
-                  <div className="flex items-center gap-2 whitespace-nowrap">
-                    <Phone className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                    <a
-                      href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`}
-                      style={{ color: secondaryColor }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
-                      className="text-[12.5px] transition-colors"
-                    >
-                      {contactInfo.phone}
-                    </a>
-                  </div>
-                )}
+          <div className="flex flex-col space-y-1.5 min-w-[195px]">
+            {/* Heading: Primary #29252A */}
+            <Link
+              to="/contact"
+              onClick={scrollToPageTop}
+              style={{ color: primaryColor }}
+              className="text-[13.5px] sm:text-[14px] font-bold tracking-tight mb-0.5 cursor-pointer hover:underline block"
+            >
+              Contact Us
+            </Link>
+            <div className="space-y-1.5">
+              {/* Phone */}
+              {contactInfo.phone && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Phone className="w-3.5 h-3.5 shrink-0 stroke-[2] text-[#C9A45C]" />
+                  <a
+                    href={`tel:${contactInfo.phone.replace(/\s+/g, '')}`}
+                    style={{ color: secondaryColor }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
+                    className="text-[12.5px] transition-colors hover:underline"
+                  >
+                    {contactInfo.phone}
+                  </a>
+                </div>
+              )}
 
-                {/* Email */}
-                {contactInfo.email && (
-                  <div className="flex items-center gap-2 whitespace-nowrap">
-                    <Mail className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                    <a
-                      href={`mailto:${contactInfo.email}`}
-                      style={{ color: secondaryColor }}
-                      onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
-                      onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
-                      className="text-[12.5px] transition-colors"
-                    >
-                      {contactInfo.email}
-                    </a>
-                  </div>
-                )}
+              {/* Email */}
+              {contactInfo.email && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Mail className="w-3.5 h-3.5 shrink-0 stroke-[2] text-[#C9A45C]" />
+                  <a
+                    href={`mailto:${contactInfo.email}`}
+                    style={{ color: secondaryColor }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
+                    className="text-[12.5px] transition-colors hover:underline"
+                  >
+                    {contactInfo.email}
+                  </a>
+                </div>
+              )}
 
-                {/* Location */}
-                {contactInfo.location && (
-                  <div className="flex items-center gap-2 whitespace-nowrap">
-                    <MapPin className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                    <span style={{ color: secondaryColor }} className="text-[12.5px]">
-                      {contactInfo.location}
-                    </span>
-                  </div>
-                )}
+              {/* Location */}
+              {contactInfo.location && (
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 shrink-0 stroke-[2] text-[#C9A45C]" />
+                  <Link
+                    to="/contact"
+                    onClick={scrollToPageTop}
+                    style={{ color: secondaryColor }}
+                    onMouseEnter={(e) => (e.currentTarget.style.color = primaryColor)}
+                    onMouseLeave={(e) => (e.currentTarget.style.color = secondaryColor)}
+                    className="text-[12.5px] transition-colors hover:underline"
+                  >
+                    {contactInfo.location}
+                  </Link>
+                </div>
+              )}
 
-                {/* Hours */}
-                {contactInfo.hours && (
-                  <div className="flex items-center gap-2 whitespace-nowrap">
-                    <Clock className="w-3.5 h-3.5 shrink-0 stroke-[2]" style={{ color: primaryColor }} />
-                    <span style={{ color: secondaryColor }} className="text-[12.5px]">
-                      {contactInfo.hours}
-                    </span>
-                  </div>
-                )}
-              </div>
+              {/* Hours */}
+              {contactInfo.hours && (
+                <div className="flex items-center gap-2 whitespace-nowrap">
+                  <Clock className="w-3.5 h-3.5 shrink-0 stroke-[2] text-[#C9A45C]" />
+                  <span style={{ color: secondaryColor }} className="text-[12.5px]">
+                    {contactInfo.hours}
+                  </span>
+                </div>
+              )}
             </div>
-          )}
+          </div>
 
           {/* Column 5: We Accept */}
           <div className="flex flex-col space-y-1.5 min-w-[215px]">

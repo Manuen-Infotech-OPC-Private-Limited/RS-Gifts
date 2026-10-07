@@ -3,20 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
-import { 
-  ShoppingBag, 
-  Trash2, 
-  Heart, 
-  Plus, 
-  Minus, 
-  Gift, 
-  Calendar, 
-  Tag, 
-  Check, 
-  ShieldCheck, 
-  Truck, 
-  ArrowRight, 
-  Sparkles,
+import {
+  ShoppingBag,
+  Trash2,
+  Heart,
+  Plus,
+  Minus,
+  Gift,
+  Calendar,
+  Tag,
+  Check,
+  ArrowRight,
   ChevronRight,
   Info
 } from 'lucide-react';
@@ -104,7 +101,7 @@ export const CartPage = () => {
             Order Placed Successfully!
           </h2>
           <p className="text-xs sm:text-sm text-[#6F6870] leading-relaxed">
-            Thank you for shopping with RS Gifts. We have sent your order confirmation and invoice to your registered email.
+            Thank you for shopping with RS Gifts.Our Customer Support Team will contact You Soon to Deliver Your Order
           </p>
           <div className="pt-2 space-y-2">
             <button
@@ -123,7 +120,7 @@ export const CartPage = () => {
               }}
               className="w-full py-2.5 rounded-xl border border-neutral-200 text-neutral-700 hover:bg-neutral-50 text-xs font-semibold transition-colors cursor-pointer"
             >
-              Back to Storefront
+              Back to Shop
             </button>
           </div>
         </div>
@@ -146,10 +143,9 @@ export const CartPage = () => {
           </p>
           <button
             onClick={() => navigate('/')}
-            className="w-full py-3 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
+            className="w-full py-3 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer flex items-center justify-center"
           >
-            <Sparkles size={14} className="text-[#C9A45C]" />
-            <span>Discover Thoughtful Gifts</span>
+            <span>Continue Shopping</span>
           </button>
         </div>
       </div>
@@ -159,7 +155,7 @@ export const CartPage = () => {
   return (
     <div className="w-full bg-[#FFF9F5] py-6 sm:py-9 font-sans select-none min-h-[80vh]">
       <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        
+
         {/* Page Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
@@ -174,10 +170,10 @@ export const CartPage = () => {
 
         {/* 2-Column Cart Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
-          
+
           {/* Left Column: Cart Items & Gifting Add-ons (8 cols) */}
           <div className="lg:col-span-8 space-y-5">
-            
+
             {/* Items List */}
             <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#ECE7EC] shadow-xs divide-y divide-[#ECE7EC]">
               <div className="pb-3 flex items-center justify-between text-xs font-semibold text-neutral-500 uppercase tracking-wider">
@@ -245,8 +241,10 @@ export const CartPage = () => {
                   <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2 pt-2 sm:pt-0">
                     <div className="flex items-center border border-[#ECE7EC] rounded-xl overflow-hidden bg-[#FFF9F5]">
                       <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        className="w-7 h-7 flex items-center justify-center text-neutral-600 hover:bg-white transition-colors cursor-pointer"
+                        disabled={item.quantity <= 1}
+                        onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                        className="w-7 h-7 flex items-center justify-center text-neutral-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                        title={item.quantity <= 1 ? "Minimum quantity is 1" : "Decrease quantity"}
                       >
                         <Minus size={12} />
                       </button>
@@ -272,7 +270,7 @@ export const CartPage = () => {
             {/* Luxury Gifting Enhancements Card */}
             <div className="bg-white rounded-3xl p-5 sm:p-6 border border-[#ECE7EC] shadow-xs space-y-4">
               <div className="flex items-center gap-2 pb-2 border-b border-[#ECE7EC]">
-                <Gift size={18} className="text-[#821D38]" />
+                <Gift size={18} className="text-[#C9A45C]" />
                 <h3 className="text-sm sm:text-base font-bold text-[#1E1217]">
                   Luxury Gifting Options
                 </h3>
@@ -327,7 +325,7 @@ export const CartPage = () => {
                       rows={3}
                       value={giftMessage}
                       onChange={(e) => setGiftMessage(e.target.value)}
-                      placeholder="Write your heartfelt message here (e.g., Wishing you a very Happy Birthday! With love, Sarah)..."
+                      placeholder="write your message here"
                       className="w-full text-xs p-3 rounded-xl border border-[#ECE7EC] bg-white text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-[#821D38]"
                     />
                   </div>
@@ -337,10 +335,10 @@ export const CartPage = () => {
               {/* 3. Target Scheduled Delivery Date */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl border border-[#ECE7EC] bg-[#FFF9F5]">
                 <div className="flex items-center gap-2.5">
-                  <Calendar size={18} className="text-[#821D38] shrink-0" />
+                  <Calendar size={18} className="text-[#C9A45C] shrink-0" />
                   <div>
                     <span className="text-xs sm:text-sm font-bold text-[#1E1217] block">
-                      Target Occasion Delivery Date
+                      When to Deliver
                     </span>
                     <span className="text-[11px] text-[#6F6870]">
                       Ensure your gift arrives on the exact special day
@@ -351,6 +349,7 @@ export const CartPage = () => {
                 <input
                   type="date"
                   value={deliveryDate}
+                  min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setDeliveryDate(e.target.value)}
                   className="px-3 py-1.5 rounded-xl border border-[#ECE7EC] bg-white text-xs text-neutral-800 focus:outline-none focus:border-[#821D38] cursor-pointer"
                 />
@@ -362,11 +361,11 @@ export const CartPage = () => {
 
           {/* Right Column: Order Summary (4 cols) */}
           <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-24">
-            
+
             {/* Promo Code Input Card */}
             <div className="bg-white rounded-3xl p-5 border border-[#ECE7EC] shadow-xs space-y-3">
               <span className="text-xs font-bold text-[#1E1217] flex items-center gap-1.5">
-                <Tag size={14} className="text-[#821D38]" />
+                <Tag size={14} className="text-[#C9A45C]" />
                 Have a Coupon Code?
               </span>
 
@@ -461,18 +460,6 @@ export const CartPage = () => {
                 <span>Proceed to Secure Checkout</span>
                 <ArrowRight size={15} />
               </button>
-
-              {/* Trust Badges */}
-              <div className="pt-2 border-t border-neutral-100 space-y-2 text-[11px] text-[#6F6870]">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck size={14} className="text-emerald-600 shrink-0" />
-                  <span>256-Bit Encrypted Secure Checkout</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Truck size={14} className="text-[#821D38] shrink-0" />
-                  <span>Handled with Care & Express Dispatch</span>
-                </div>
-              </div>
 
             </div>
 

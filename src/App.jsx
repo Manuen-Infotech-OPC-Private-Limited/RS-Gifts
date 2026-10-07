@@ -1,5 +1,5 @@
-import React from 'react';
-import { Routes, Route, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
@@ -14,9 +14,25 @@ import { CartPage } from './pages/CartPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { BirthdayGiftsPage } from './pages/BirthdayGiftsPage';
 import { ProductDetailsPage } from './pages/ProductDetailsPage';
+import { Contactus } from './pages/Contactus';
 import { CartDrawer } from './components/cart/CartDrawer';
 import { BottomNav } from './components/BottomNav';
 import './App.css';
+
+// Automatically scroll to top on any route navigation
+function ScrollToTop() {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+    const appRoot = document.querySelector('.app-root');
+    if (appRoot) appRoot.scrollTop = 0;
+  }, [pathname]);
+
+  return null;
+}
 
 export function App() {
   const navigate = useNavigate();
@@ -37,6 +53,7 @@ export function App() {
     <AuthProvider>
       <WishlistProvider>
         <CartProvider>
+          <ScrollToTop />
           <div className="app-root flex flex-col min-h-screen bg-[#FFF9F5]">
             <Navbar onSearch={handleSearch} onNavigate={handleNavigate} />
 
@@ -71,6 +88,11 @@ export function App() {
                 {/* User Account & Order Tracking */}
                 <Route path="/account" element={<AccountPage />} />
                 <Route path="/track-order" element={<AccountPage />} />
+
+                {/* Contact Us Page */}
+                <Route path="/contact" element={<Contactus />} />
+                <Route path="/contact-us" element={<Contactus />} />
+                <Route path="/contactus" element={<Contactus />} />
 
                 {/* Fallback to Home for other links */}
                 <Route

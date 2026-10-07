@@ -13,7 +13,6 @@ import {
   ChevronRight,
   ChevronLeft,
   ZoomIn,
-  Sparkles,
   Clock,
   ArrowLeft,
   Box,
@@ -399,13 +398,13 @@ export const ProductDetailsPage = () => {
                   }}
                   className="flex items-center gap-1.5 cursor-pointer group"
                 >
-                  <div className="flex items-center text-[#F59E0B]">
+                  <div className="flex items-center text-[#C9A45C]">
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
                         className={`w-3.5 h-3.5 ${
                           i < Math.round(Number(averageRating))
-                            ? 'fill-[#F59E0B] stroke-[#F59E0B]'
+                            ? 'fill-[#C9A45C] stroke-[#C9A45C]'
                             : 'text-gray-300 stroke-gray-300'
                         }`}
                       />
@@ -566,22 +565,22 @@ export const ProductDetailsPage = () => {
             {/* Trust Highlights Grid (4 Key Pillars) */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3.5 mt-3.5 border-t border-[#ECE3E7]">
               <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <Truck className="w-4 h-4 text-[#821D38] mb-1" />
+                <Truck className="w-4 h-4 text-[#C9A45C] mb-1" />
                 <span className="text-[10.5px] font-bold text-[#1E1217]">Free Shipping</span>
                 <span className="text-[9px] text-[#705E67]">Orders over ₹999</span>
               </div>
               <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <ShieldCheck className="w-4 h-4 text-[#821D38] mb-1" />
+                <ShieldCheck className="w-4 h-4 text-[#C9A45C] mb-1" />
                 <span className="text-[10.5px] font-bold text-[#1E1217]">100% Secure</span>
                 <span className="text-[9px] text-[#705E67]">Encrypted Checkout</span>
               </div>
               <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <RefreshCw className="w-4 h-4 text-[#821D38] mb-1" />
+                <RefreshCw className="w-4 h-4 text-[#C9A45C] mb-1" />
                 <span className="text-[10.5px] font-bold text-[#1E1217]">Easy Returns</span>
                 <span className="text-[9px] text-[#705E67]">7-Day Replacement</span>
               </div>
               <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <Gift className="w-4 h-4 text-[#821D38] mb-1" />
+                <Gift className="w-4 h-4 text-[#C9A45C] mb-1" />
                 <span className="text-[10.5px] font-bold text-[#1E1217]">Gift Ready</span>
                 <span className="text-[9px] text-[#705E67]">Luxury Packaging</span>
               </div>
@@ -633,7 +632,7 @@ export const ProductDetailsPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                   <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
                     <h4 className="font-bold text-[#821D38] mb-1.5 flex items-center gap-1.5">
-                      <Sparkles size={14} /> The RS Gifts Experience
+                      The RS Gifts Experience
                     </h4>
                     <p className="text-xs text-[#705E67]">
                       Curated with high-grade materials and packaged inside our signature luxury box, ensuring an unforgettable unboxing moment.
@@ -641,7 +640,7 @@ export const ProductDetailsPage = () => {
                   </div>
                   <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
                     <h4 className="font-bold text-[#821D38] mb-1.5 flex items-center gap-1.5">
-                      <Gift size={14} /> Perfect Occasions
+                      <Gift size={14} className="text-[#C9A45C]" /> Perfect Occasions
                     </h4>
                     <p className="text-xs text-[#705E67]">
                       Ideal for {product.occasions?.length ? product.occasions.join(', ') : 'Birthdays, Anniversaries, Romantic Surprises, and Festive Celebrations'}.
@@ -657,10 +656,6 @@ export const ProductDetailsPage = () => {
                   Specifications & Material Details
                 </h3>
                 <div className="divide-y divide-[#ECE3E7] border-y border-[#ECE3E7]">
-                  <div className="py-2.5 flex justify-between">
-                    <span className="text-[#705E67] font-medium">SKU</span>
-                    <span className="font-mono font-bold text-[#1E1217]">{product.sku || 'RSG-LUX-001'}</span>
-                  </div>
                   <div className="py-2.5 flex justify-between">
                     <span className="text-[#705E67] font-medium">Category</span>
                     <span className="font-bold text-[#1E1217]">{product.category || 'Gifts'}</span>
@@ -709,13 +704,13 @@ export const ProductDetailsPage = () => {
                   <div>
                     <div className="flex items-center gap-2">
                       <span className="text-3xl font-extrabold text-[#1E1217]">{averageRating}</span>
-                      <div className="flex items-center text-[#F59E0B]">
+                      <div className="flex items-center text-[#C9A45C]">
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
                             className={`w-4 h-4 ${
                               i < Math.round(Number(averageRating))
-                                ? 'fill-[#F59E0B] stroke-[#F59E0B]'
+                                ? 'fill-[#C9A45C] stroke-[#C9A45C]'
                                 : 'text-gray-300 stroke-gray-300'
                             }`}
                           />
@@ -757,9 +752,9 @@ export const ProductDetailsPage = () => {
                               <span className="text-[11px] text-[#8C7D85]">{reviewDate}</span>
                             )}
                           </div>
-                          <div className="flex items-center text-[#F59E0B] mb-2">
+                          <div className="flex items-center text-[#C9A45C] mb-2">
                             {[...Array(stars)].map((_, idx) => (
-                              <Star key={idx} className="w-3.5 h-3.5 fill-[#F59E0B] stroke-[#F59E0B]" />
+                              <Star key={idx} className="w-3.5 h-3.5 fill-[#C9A45C] stroke-[#C9A45C]" />
                             ))}
                           </div>
                           <p className="text-xs text-[#5A4952] leading-relaxed">
@@ -865,9 +860,9 @@ export const ProductDetailsPage = () => {
                         )}
                       </div>
                       <div className="flex items-center gap-1 mb-2.5">
-                        <div className="flex items-center text-[#F59E0B]">
+                        <div className="flex items-center text-[#C9A45C]">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-3 h-3 fill-[#F59E0B] stroke-[#F59E0B]" />
+                            <Star key={i} className="w-3 h-3 fill-[#C9A45C] stroke-[#C9A45C]" />
                           ))}
                         </div>
                         <span className="text-[11px] text-[#7A6E75] font-medium">

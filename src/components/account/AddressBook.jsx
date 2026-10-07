@@ -4,7 +4,7 @@ import { MapPin, Plus, Trash2, Edit3, CheckCircle2, Home, Briefcase, Gift, X } f
 
 export const AddressBook = () => {
   const { addresses, addAddress, updateAddress, deleteAddress, setDefaultAddress } = useAuth();
-  
+
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({
@@ -12,8 +12,8 @@ export const AddressBook = () => {
     phone: '',
     street: '',
     landmark: '',
-    city: 'Hyderabad',
-    state: 'Telangana',
+    city: '',
+    state: '',
     pincode: '',
     tag: 'Home',
     isDefault: false,
@@ -26,8 +26,8 @@ export const AddressBook = () => {
       phone: '',
       street: '',
       landmark: '',
-      city: 'Hyderabad',
-      state: 'Telangana',
+      city: '',
+      state: '',
       pincode: '',
       tag: 'Home',
       isDefault: addresses.length === 0,
@@ -89,96 +89,119 @@ export const AddressBook = () => {
         </div>
 
         <button
+          type="button"
           onClick={openAddModal}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer self-start sm:self-center"
+          title="Add New Delivery Address"
+          className="text-[#821D38] cursor-pointer self-start sm:self-center p-0 bg-transparent border-0 outline-none focus:outline-none"
         >
-          <Plus size={15} />
-          <span>Add New Address</span>
+          <MapPin size={48} strokeWidth={2.2} />
         </button>
       </div>
 
       {/* Addresses Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {addresses.map((addr) => (
-          <div
-            key={addr.id}
-            className={`bg-white rounded-2xl p-5 border transition-all flex flex-col justify-between shadow-xs ${
-              addr.isDefault
-                ? 'border-[#821D38] ring-1 ring-[#821D38]/10'
-                : 'border-[#ECE7EC] hover:border-[#D5CAD0]'
-            }`}
+      {addresses.length === 0 ? (
+        <div className="bg-white rounded-2xl p-10 border border-[#ECE7EC] text-center flex flex-col items-center justify-center space-y-3 shadow-xs">
+          <div className="w-12 h-12 rounded-full bg-[#FAF0F3] text-[#821D38] flex items-center justify-center">
+            <MapPin size={24} />
+          </div>
+          <div>
+            <h3 className="font-bold text-[#1E1217] text-base">No Saved Addresses Yet</h3>
+            <p className="text-xs text-[#6F6870] mt-1 max-w-sm">
+              Add your delivery addresses to enjoy faster checkouts for yourself and your loved ones.
+            </p>
+          </div>
+          <button
+            onClick={openAddModal}
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer mt-2"
           >
-            <div>
-              {/* Top Card Row */}
-              <div className="flex items-center justify-between gap-2 mb-3">
-                <div className="flex items-center gap-2">
-                  <span className="font-bold text-sm text-[#1E1217]">{addr.name}</span>
-                  {getTagBadge(addr.tag)}
+            <Plus size={14} />
+            <span>Add New Address</span>
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {addresses.map((addr) => (
+            <div
+              key={addr.id}
+              className={`bg-white rounded-2xl p-5 border transition-all flex flex-col justify-between shadow-xs ${addr.isDefault
+                  ? 'border-[#821D38] ring-1 ring-[#821D38]/10'
+                  : 'border-[#ECE7EC] hover:border-[#D5CAD0]'
+                }`}
+            >
+              <div>
+                {/* Top Card Row */}
+                <div className="flex items-center justify-between gap-2 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-sm text-[#1E1217]">{addr.name || addr.tag || 'Saved Address'}</span>
+                    {getTagBadge(addr.tag)}
+                  </div>
+
+                  {addr.isDefault && (
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
+                      Default
+                    </span>
+                  )}
                 </div>
 
-                {addr.isDefault && (
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
-                    Default
-                  </span>
-                )}
+                {/* Full Address Details */}
+                <div className="text-xs text-[#6F6870] space-y-1 leading-relaxed">
+                  <p className="text-neutral-800 font-medium">{addr.street}</p>
+                  {addr.landmark && <p>Landmark: {addr.landmark}</p>}
+                  <p>
+                    {addr.city}, {addr.state} - <strong className="text-neutral-800">{addr.pincode}</strong>
+                  </p>
+                  {addr.phone && (
+                    <p className="pt-1 text-[#29252A] font-semibold">
+                      Phone: {addr.phone}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              {/* Full Address Details */}
-              <div className="text-xs text-[#6F6870] space-y-1 leading-relaxed">
-                <p className="text-neutral-800 font-medium">{addr.street}</p>
-                {addr.landmark && <p>Landmark: {addr.landmark}</p>}
-                <p>
-                  {addr.city}, {addr.state} - <strong className="text-neutral-800">{addr.pincode}</strong>
-                </p>
-                <p className="pt-1 text-[#29252A] font-semibold">
-                  Phone: {addr.phone}
-                </p>
-              </div>
-            </div>
+              {/* Bottom Actions */}
+              <div className="pt-4 mt-4 border-t border-[#F2EAEF] flex items-center justify-between text-xs">
+                <div>
+                  {!addr.isDefault && (
+                    <button
+                      onClick={() => setDefaultAddress(addr.id)}
+                      className="text-[#821D38] hover:underline font-semibold cursor-pointer"
+                    >
+                      Set as Default
+                    </button>
+                  )}
+                </div>
 
-            {/* Bottom Actions */}
-            <div className="pt-4 mt-4 border-t border-[#F2EAEF] flex items-center justify-between text-xs">
-              <div>
-                {!addr.isDefault && (
+                <div className="flex items-center gap-3">
                   <button
-                    onClick={() => setDefaultAddress(addr.id)}
-                    className="text-[#821D38] hover:underline font-semibold cursor-pointer"
+                    onClick={() => openEditModal(addr)}
+                    className="inline-flex items-center gap-1 text-[#6F6870] hover:text-[#1E1217] font-semibold cursor-pointer"
                   >
-                    Set as Default
+                    <Edit3 size={13} />
+                    <span>Edit</span>
                   </button>
-                )}
-              </div>
 
-              <div className="flex items-center gap-3">
-                <button
-                  onClick={() => openEditModal(addr)}
-                  className="inline-flex items-center gap-1 text-[#6F6870] hover:text-[#1E1217] font-semibold cursor-pointer"
-                >
-                  <Edit3 size={13} />
-                  <span>Edit</span>
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (window.confirm(`Delete address for ${addr.name}?`)) {
-                      deleteAddress(addr.id);
-                    }
-                  }}
-                  className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
-                >
-                  <Trash2 size={13} />
-                  <span>Delete</span>
-                </button>
+                  <button
+                    onClick={() => {
+                      if (window.confirm('Delete this address?')) {
+                        deleteAddress(addr.id);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                    <span>Delete</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {/* Add / Edit Address Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-          <div 
+          <div
             onClick={(e) => e.stopPropagation()}
             className="relative w-full max-w-[500px] max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-neutral-100 p-6 font-sans"
           >
@@ -195,34 +218,8 @@ export const AddressBook = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-[#29252A] mb-1">Recipient Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="Full name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-neutral-900 focus:outline-none focus:border-[#821D38]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-[#29252A] mb-1">Mobile Number *</label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="+91 98765..."
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-neutral-900 focus:outline-none focus:border-[#821D38]"
-                  />
-                </div>
-              </div>
-
               <div>
-                <label className="block font-bold text-[#29252A] mb-1">Flat, House no., Building, Street *</label>
+                <label className="block font-bold text-[#29252A] mb-1">Flat, House no., Building, Street</label>
                 <input
                   type="text"
                   required
@@ -246,11 +243,11 @@ export const AddressBook = () => {
 
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="block font-bold text-[#29252A] mb-1">Pincode *</label>
+                  <label className="block font-bold text-[#29252A] mb-1">Pincode</label>
                   <input
                     type="text"
                     required
-                    placeholder="500034"
+                    placeholder="Pincode"
                     value={formData.pincode}
                     onChange={(e) => setFormData({ ...formData, pincode: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-neutral-900 focus:outline-none focus:border-[#821D38]"
@@ -258,10 +255,11 @@ export const AddressBook = () => {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#29252A] mb-1">City *</label>
+                  <label className="block font-bold text-[#29252A] mb-1">City</label>
                   <input
                     type="text"
                     required
+                    placeholder="City"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-neutral-900 focus:outline-none focus:border-[#821D38]"
@@ -269,10 +267,11 @@ export const AddressBook = () => {
                 </div>
 
                 <div>
-                  <label className="block font-bold text-[#29252A] mb-1">State *</label>
+                  <label className="block font-bold text-[#29252A] mb-1">State</label>
                   <input
                     type="text"
                     required
+                    placeholder="State"
                     value={formData.state}
                     onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-neutral-900 focus:outline-none focus:border-[#821D38]"
@@ -296,11 +295,10 @@ export const AddressBook = () => {
                         key={t.tag}
                         type="button"
                         onClick={() => setFormData({ ...formData, tag: t.tag })}
-                        className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border font-semibold cursor-pointer transition-colors ${
-                          isSelected
+                        className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border font-semibold cursor-pointer transition-colors ${isSelected
                             ? 'bg-[#821D38] text-white border-[#821D38]'
                             : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
-                        }`}
+                          }`}
                       >
                         <Icon size={13} />
                         <span>{t.label}</span>
@@ -308,20 +306,6 @@ export const AddressBook = () => {
                     );
                   })}
                 </div>
-              </div>
-
-              {/* Default checkbox */}
-              <div className="flex items-center gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="defaultAddressCheck"
-                  checked={formData.isDefault}
-                  onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                  className="accent-[#821D38] w-4 h-4 cursor-pointer"
-                />
-                <label htmlFor="defaultAddressCheck" className="text-neutral-700 font-medium cursor-pointer">
-                  Set as default delivery address
-                </label>
               </div>
 
               {/* Submit Buttons */}
@@ -337,7 +321,7 @@ export const AddressBook = () => {
                   type="submit"
                   className="px-5 py-2 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white font-semibold transition-colors cursor-pointer shadow-xs"
                 >
-                  {editingId ? 'Save Changes' : 'Add Address'}
+                  {editingId ? 'Save Changes' : 'Save'}
                 </button>
               </div>
             </form>

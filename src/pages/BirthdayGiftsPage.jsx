@@ -279,7 +279,7 @@ export const BirthdayGiftsPage = () => {
                   const IconComponent = badge.icon || Gift;
                   return (
                     <div key={badge.id} className="flex items-center gap-1.5">
-                      <IconComponent className="w-3.5 h-3.5 text-[#821D38] stroke-[2] shrink-0" />
+                      <IconComponent className="w-3.5 h-3.5 text-[#C9A45C] stroke-[2] shrink-0" />
                       <span>{badge.label}</span>
                     </div>
                   );
@@ -405,11 +405,11 @@ export const BirthdayGiftsPage = () => {
 
                         {/* Rating */}
                         <div className="flex items-center gap-1 mb-2.5">
-                          <div className="flex items-center text-[#F59E0B]">
+                          <div className="flex items-center text-[#C9A45C]">
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className="w-3 h-3 fill-[#F59E0B] stroke-[#F59E0B]"
+                                className="w-3 h-3 fill-[#C9A45C] stroke-[#C9A45C]"
                               />
                             ))}
                           </div>

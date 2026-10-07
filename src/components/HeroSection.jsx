@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Truck, 
-  ShieldCheck, 
-  Gift, 
-  ArrowRight, 
-  Heart,
-  Sparkles,
+import {
+  ChevronLeft,
+  ChevronRight,
+  Truck,
+  ShieldCheck,
+  Gift,
+  ArrowRight,
   Clock
 } from 'lucide-react';
 
@@ -18,7 +16,6 @@ const slidesData = [
     tagline: 'GIFTS THAT SPEAK FROM THE HEART',
     titleLine1: 'Make Every',
     titleLine2: 'Moment Special',
-    hasHeart: false,
     description: 'Thoughtful Gifts for Every Occasion',
     buttonText: 'Shop Now',
     buttonLink: '/gifts',
@@ -34,13 +31,12 @@ const slidesData = [
     tagline: 'CURATED CELEBRATION HAMPERS',
     titleLine1: 'Crafted With Love,',
     titleLine2: 'Wrapped With Care',
-    hasHeart: true,
     description: 'Discover artisan chocolates, scented candles & bespoke gift baskets made to celebrate life’s moments.',
     buttonText: 'Explore Hampers',
     buttonLink: '/hampers',
     image: '/images/hero-banner-2.jpg',
     badges: [
-      { id: 'b4', icon: Sparkles, label: 'Premium Luxury Packaging' },
+      { id: 'b4', icon: Gift, label: 'Premium Luxury Packaging' },
       { id: 'b5', icon: Clock, label: 'Same-Day Dispatch' },
       { id: 'b6', icon: Gift, label: 'Custom Greeting Cards' },
     ]
@@ -50,13 +46,12 @@ const slidesData = [
     tagline: 'CHERISHED FOR A LIFETIME',
     titleLine1: 'Personalized Gifts,',
     titleLine2: 'Timeless Memories',
-    hasHeart: true,
     description: 'Engraved wooden keepsakes, photo treasures & heirloom gifts designed to tell your unique story.',
     buttonText: 'Personalize Now',
     buttonLink: '/personalized-gifts',
     image: '/images/hero-banner-3.jpg',
     badges: [
-      { id: 'b7', icon: Sparkles, label: 'Custom Laser Engraving' },
+      { id: 'b7', icon: ShieldCheck, label: 'Custom Laser Engraving' },
       { id: 'b8', icon: ShieldCheck, label: '100% Quality Guaranteed' },
       { id: 'b9', icon: Gift, label: 'Complimentary Gift Box' },
     ]
@@ -66,7 +61,6 @@ const slidesData = [
     tagline: 'FRESH BLOOMS & SWEET DELIGHTS',
     titleLine1: 'Floral Whispers,',
     titleLine2: 'Sweet Surprises',
-    hasHeart: true,
     description: 'Exquisite hand-tied pastel peonies, roses & artisanal macarons delivered fresh to your loved ones.',
     buttonText: 'Order Flowers',
     buttonLink: '/flowers-hampers',
@@ -194,7 +188,7 @@ export const HeroSection = ({ onShopNow }) => {
   };
 
   return (
-    <section 
+    <section
       onClick={handleBannerClick}
       className="relative w-full overflow-hidden bg-[#FFF9F5] select-none cursor-pointer"
       onMouseEnter={() => setIsPaused(true)}
@@ -205,27 +199,27 @@ export const HeroSection = ({ onShopNow }) => {
       aria-label="Hero Carousel"
     >
       {/* Slides Container */}
-      <div 
+      <div
         className="flex w-full transition-transform duration-700 ease-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {slides.map((slide, idx) => (
-          <div 
-            key={slide.id || idx} 
+          <div
+            key={slide.id || idx}
             className="w-full shrink-0 relative min-h-[185px] sm:min-h-[260px] lg:min-h-[320px] flex items-center"
           >
             {/* Background Image */}
-            <div 
+            <div
               className="absolute inset-0 w-full h-full bg-cover bg-right sm:bg-center lg:bg-right transition-opacity duration-500"
-              style={{ 
+              style={{
                 backgroundImage: `url("${slide.image || '/images/hero-banner-1.png'}")`,
                 backgroundColor: '#FDF7F4'
               }}
             />
 
             {/* Soft Ambient Gradient Overlay: ensures text readability on the left while keeping the luxury gifts crisp on the right */}
-            <div 
-              className="absolute inset-0 pointer-events-none" 
+            <div
+              className="absolute inset-0 pointer-events-none"
               style={{
                 background: 'linear-gradient(to right, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 36%, rgba(255, 255, 255, 0.70) 58%, rgba(255, 255, 255, 0.15) 82%, rgba(255, 255, 255, 0) 100%)'
               }}
@@ -235,14 +229,14 @@ export const HeroSection = ({ onShopNow }) => {
             <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 sm:px-10 lg:px-12 py-3 sm:py-5 lg:py-6 flex flex-col justify-center">
               <div className="max-w-[210px] sm:max-w-[500px]">
                 {/* Tagline / Subtitle */}
-                <p 
+                <p
                   className="hidden sm:flex text-[10px] sm:text-[11px] font-semibold tracking-[0.16em] text-[#821D38] uppercase mb-1 items-center gap-1.5"
                 >
                   {slide.tagline}
                 </p>
 
                 {/* Main Heading */}
-                <h1 
+                <h1
                   className="text-base sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.14] tracking-tight mb-1 sm:mb-2"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
@@ -250,27 +244,13 @@ export const HeroSection = ({ onShopNow }) => {
                   {slide.titleLine2 && (
                     <>
                       <br />
-                      <span className="inline-flex items-center gap-1.5">
-                        {slide.titleLine2}
-                        {slide.hasHeart && (
-                          <Heart 
-                            className="w-4 h-4 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
-                          />
-                        )}
-                      </span>
+                      <span>{slide.titleLine2}</span>
                     </>
-                  )}
-                  {!slide.titleLine2 && slide.hasHeart && (
-                    <span className="inline-flex items-center gap-1.5 ml-1.5">
-                      <Heart 
-                        className="w-4 h-4 sm:w-6 sm:h-6 text-[#821D38] stroke-[2] fill-transparent inline-block -mt-1 transform hover:scale-110 transition-transform" 
-                      />
-                    </span>
                   )}
                 </h1>
 
                 {/* Description */}
-                <p 
+                <p
                   className="text-[11px] sm:text-[13px] text-[#52454B] leading-snug mb-2 sm:mb-3.5 whitespace-pre-line font-normal"
                 >
                   {slide.description}
@@ -293,7 +273,7 @@ export const HeroSection = ({ onShopNow }) => {
                     const IconComponent = badge.icon || Gift;
                     return (
                       <div key={badge.id} className="flex items-center gap-1.5">
-                        <IconComponent className="w-3.5 h-3.5 text-[#821D38] stroke-[2] shrink-0" />
+                        <IconComponent className="w-3.5 h-3.5 text-[#C9A45C] stroke-[2] shrink-0" />
                         <span>{badge.label}</span>
                       </div>
                     );
@@ -312,11 +292,10 @@ export const HeroSection = ({ onShopNow }) => {
             key={index}
             onClick={() => goToSlide(index)}
             aria-label={`Go to slide ${index + 1}`}
-            className={`transition-all duration-300 rounded-full cursor-pointer ${
-              currentSlide === index
-                ? 'w-2.5 h-2.5 bg-[#821D38] ring-2 ring-[#821D38]/30 scale-110'
-                : 'w-2 h-2 bg-[#D9C4CC] hover:bg-[#B3939F]'
-            }`}
+            className={`transition-all duration-300 rounded-full cursor-pointer ${currentSlide === index
+              ? 'w-2.5 h-2.5 bg-[#821D38] ring-2 ring-[#821D38]/30 scale-110'
+              : 'w-2 h-2 bg-[#D9C4CC] hover:bg-[#B3939F]'
+              }`}
           />
         ))}
       </div>

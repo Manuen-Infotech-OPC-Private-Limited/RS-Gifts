@@ -5,21 +5,26 @@ import { AccountSidebar } from '../components/account/AccountSidebar';
 import { OrdersList } from '../components/account/OrdersList';
 import { ProfileDetails } from '../components/account/ProfileDetails';
 import { AddressBook } from '../components/account/AddressBook';
-import { OccasionReminders } from '../components/account/OccasionReminders';
-import { Lock, Sparkles } from 'lucide-react';
+import { Lock } from 'lucide-react';
 
 export const AccountPage = () => {
   const { user, openAuthModal } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const tabParam = searchParams.get('tab') || 'orders';
+  const rawTab = searchParams.get('tab');
+  const validTabs = ['orders', 'profile', 'addresses'];
+  const tabParam = validTabs.includes(rawTab) ? rawTab : 'orders';
   const [activeTab, setActiveTab] = useState(tabParam);
 
   useEffect(() => {
-    if (searchParams.get('tab')) {
-      setActiveTab(searchParams.get('tab'));
+    const currentTab = searchParams.get('tab');
+    if (currentTab === 'occasions') {
+      setActiveTab('orders');
+      setSearchParams({ tab: 'orders' });
+    } else if (currentTab && validTabs.includes(currentTab)) {
+      setActiveTab(currentTab);
     }
-  }, [searchParams]);
+  }, [searchParams, setSearchParams]);
 
   const handleTabChange = (tabId) => {
     setActiveTab(tabId);
@@ -52,7 +57,7 @@ export const AccountPage = () => {
             Please Sign In to View Your Account
           </h2>
           <p className="text-xs text-[#6F6870] leading-relaxed">
-            Track your ongoing shipments, access previous invoices, manage saved recipient addresses, and personalize gift reminders.
+            Track your ongoing shipments, access previous invoices, and manage saved delivery addresses.
           </p>
 
           <button
@@ -83,7 +88,6 @@ export const AccountPage = () => {
             {activeTab === 'orders' && <OrdersList />}
             {activeTab === 'profile' && <ProfileDetails />}
             {activeTab === 'addresses' && <AddressBook />}
-            {activeTab === 'occasions' && <OccasionReminders />}
           </main>
         </div>
       </div>

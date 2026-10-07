@@ -22,7 +22,8 @@ export const Navbar = ({ onSearch }) => {
     { label: 'Personalized Gifts', path: '/personalized-gifts' },
     { label: 'Festival Gifts', path: '/festival-gifts' },
     { label: 'Hampers', path: '/hampers' },
-    { label: 'New Arrivals', path: '/new-arrivals' }
+    { label: 'New Arrivals', path: '/new-arrivals' },
+    { label: 'Contact Us', path: '/contact' }
   ];
 
   const handleSearch = (e) => {
@@ -101,7 +102,7 @@ export const Navbar = ({ onSearch }) => {
                 {user.role === 'admin' ? 'RS' : (user.firstName?.charAt(0) || user.name?.charAt(0) || 'U')}
               </div>
             ) : (
-              <User size={21} strokeWidth={1.8} />
+              <User size={21} strokeWidth={1.8} className="text-[#C9A45C]" />
             )}
           </button>
 
@@ -110,7 +111,7 @@ export const Navbar = ({ onSearch }) => {
             className="p-1 text-[#1E1217] hover:text-[#821D38] relative cursor-pointer"
             aria-label="Shopping Cart"
           >
-            <ShoppingCart size={21} strokeWidth={1.8} />
+            <ShoppingCart size={21} strokeWidth={1.8} className="text-[#C9A45C]" />
             {cartCount > 0 && (
               <span className="absolute -top-1 -right-1.5 bg-[#E11D48] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
                 {cartCount}
@@ -234,33 +235,12 @@ export const Navbar = ({ onSearch }) => {
                         <p className="text-xs font-bold text-neutral-900 truncate">
                           {user.role === 'admin' ? 'RS Gifts' : (user.name || `${user.firstName || ''} ${user.lastName || ''}`).replace(/Super Admin|Admin/gi, '').trim() || 'RS Gifts'}
                         </p>
-                        {user.role === 'admin' ? (
+                        {user.role === 'admin' && (
                           <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#821D38] text-white font-bold uppercase tracking-wider shrink-0">Admin</span>
-                        ) : (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-bold uppercase tracking-wider shrink-0">Customer</span>
                         )}
                       </div>
                       <p className="text-[11px] text-neutral-500 truncate mt-0.5">{user.email}</p>
                     </div>
-
-                    {user.role !== 'admin' && (
-                      <div className="py-1 border-b border-neutral-100 text-xs">
-                        <button
-                          onClick={() => { setUserMenuOpen(false); navigate('/account'); }}
-                          className="w-full text-left px-4 py-2 text-neutral-700 hover:bg-[#FDF2F4] hover:text-[#821D38] font-medium flex items-center gap-2 cursor-pointer transition-colors"
-                        >
-                          <User size={13} />
-                          <span>My Account Profile</span>
-                        </button>
-                        <button
-                          onClick={() => { setUserMenuOpen(false); navigate('/account?tab=orders'); }}
-                          className="w-full text-left px-4 py-2 text-neutral-700 hover:bg-[#FDF2F4] hover:text-[#821D38] font-medium flex items-center gap-2 cursor-pointer transition-colors"
-                        >
-                          <Package size={13} />
-                          <span>My Orders & Tracking</span>
-                        </button>
-                      </div>
-                    )}
 
                     <div className="pt-1">
                       <button
@@ -280,7 +260,7 @@ export const Navbar = ({ onSearch }) => {
               onClick={() => openAuthModal('login')} 
               className="flex items-center gap-2 text-sm font-medium text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer"
             >
-              <User size={19} strokeWidth={1.8} />
+              <User size={19} strokeWidth={1.8} className="text-[#C9A45C]" />
               <span>Login / Register</span>
             </button>
           )}
@@ -290,7 +270,7 @@ export const Navbar = ({ onSearch }) => {
             className="flex items-center gap-2 text-sm font-medium text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer relative py-1"
           >
             <div className="relative">
-              <Heart size={20} strokeWidth={1.8} />
+              <Heart size={20} strokeWidth={1.8} className="text-[#C9A45C]" />
               {wishlistCount > 0 && (
                 <span className="absolute -top-1.5 -right-2 bg-[#821D38] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-2xs">
                   {wishlistCount}
@@ -305,7 +285,7 @@ export const Navbar = ({ onSearch }) => {
             className="flex items-center gap-2 text-sm font-medium text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer relative py-1"
           >
             <div className="relative">
-              <ShoppingCart size={20} strokeWidth={1.8} />
+              <ShoppingCart size={20} strokeWidth={1.8} className="text-[#C9A45C]" />
               {cartCount > 0 && (
                 <span className="absolute -top-1.5 -right-2 bg-[#821D38] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center shadow-2xs">
                   {cartCount}

@@ -1,11 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { initialUserData, initialAddresses, initialOrders, initialOccasions } from '../data/mockUserData';
 import api from '../services/api';
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // Load state from localStorage or initial mock data
+  // Load state from localStorage
   const [user, setUser] = useState(() => {
     try {
       const saved = localStorage.getItem('rs_gifts_user');
@@ -35,32 +34,42 @@ export const AuthProvider = ({ children }) => {
   const [addresses, setAddresses] = useState(() => {
     try {
       const saved = localStorage.getItem('rs_gifts_addresses');
-      return saved ? JSON.parse(saved) : initialAddresses;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed)
+          ? parsed.filter(a => !['addr_1', 'addr_2', 'addr_3'].includes(a.id))
+          : [];
+      }
+      return [];
     } catch {
-      return initialAddresses;
+      return [];
     }
   });
 
   const [orders, setOrders] = useState(() => {
     try {
       const saved = localStorage.getItem('rs_gifts_orders');
-      return saved ? JSON.parse(saved) : initialOrders;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return Array.isArray(parsed)
+          ? parsed.filter(o => !['RS-84920', 'RS-78142'].includes(o.id))
+          : [];
+      }
+      return [];
     } catch {
-      return initialOrders;
-    }
-  });
-
-  const [occasions, setOccasions] = useState(() => {
-    try {
-      const saved = localStorage.getItem('rs_gifts_occasions');
-      return saved ? JSON.parse(saved) : initialOccasions;
-    } catch {
-      return initialOccasions;
+      return [];
     }
   });
 
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authModalTab, setAuthModalTab] = useState('login'); // 'login' | 'register'
+
+  // Clean legacy occasions from localStorage
+  useEffect(() => {
+    try {
+      localStorage.removeItem('rs_gifts_occasions');
+    } catch {}
+  }, []);
 
   // Sync to localStorage
   useEffect(() => {
@@ -78,10 +87,6 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem('rs_gifts_orders', JSON.stringify(orders));
   }, [orders]);
-
-  useEffect(() => {
-    localStorage.setItem('rs_gifts_occasions', JSON.stringify(occasions));
-  }, [occasions]);
 
   // Auth actions
   const login = async (emailOrPhone, password) => {
@@ -238,18 +243,6 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
-  // Occasions actions
-  const addOccasion = (occasion) => {
-    setOccasions((prev) => [
-      { ...occasion, id: `occ_${Date.now()}` },
-      ...prev,
-    ]);
-  };
-
-  const deleteOccasion = (id) => {
-    setOccasions((prev) => prev.filter((o) => o.id !== id));
-  };
-
   const openAuthModal = (tab = 'login') => {
     setAuthModalTab(tab);
     setAuthModalOpen(true);
@@ -266,7 +259,9 @@ export const AuthProvider = ({ children }) => {
         isAuthenticated: !!user,
         addresses,
         orders,
-        occasions,
+        occasions: [],
+        addOccasion: () => {},
+        deleteOccasion: () => {},
         login,
         register,
         logout,
@@ -276,8 +271,6 @@ export const AuthProvider = ({ children }) => {
         deleteAddress,
         setDefaultAddress,
         cancelOrder,
-        addOccasion,
-        deleteOccasion,
         authModalOpen,
         authModalTab,
         openAuthModal,

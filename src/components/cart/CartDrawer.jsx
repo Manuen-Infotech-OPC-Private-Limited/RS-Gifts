@@ -9,7 +9,6 @@ import {
   ShoppingBag, 
   ArrowRight, 
   Gift, 
-  Sparkles, 
   ShieldCheck
 } from 'lucide-react';
 
@@ -49,7 +48,7 @@ export const CartDrawer = () => {
           {/* Header */}
           <div className="p-4 sm:p-5 border-b border-[#ECE7EC] flex items-center justify-between bg-white shrink-0">
             <div className="flex items-center gap-2">
-              <ShoppingBag size={20} className="text-[#821D38]" />
+              <ShoppingBag size={20} className="text-[#C9A45C]" />
               <h2 className="text-base sm:text-lg font-bold text-[#1E1217]">
                 Shopping Bag
               </h2>
@@ -139,8 +138,10 @@ export const CartDrawer = () => {
                     <div className="flex items-center justify-between mt-2 pt-1 border-t border-neutral-50">
                       <div className="flex items-center border border-[#ECE7EC] rounded-lg overflow-hidden bg-[#FAF8FA]">
                         <button
-                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          className="w-6 h-6 flex items-center justify-center text-neutral-600 hover:bg-white transition-colors cursor-pointer"
+                          disabled={item.quantity <= 1}
+                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                          className="w-6 h-6 flex items-center justify-center text-neutral-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                          title={item.quantity <= 1 ? "Minimum quantity is 1" : "Decrease quantity"}
                         >
                           <Minus size={11} />
                         </button>
@@ -170,7 +171,7 @@ export const CartDrawer = () => {
             <div className="p-4 sm:p-5 border-t border-[#ECE7EC] bg-white space-y-3 shrink-0 shadow-lg">
               {/* Luxury Gifting Note Prompt */}
               <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FDF2F4] border border-[#DFC8D0] text-[11px] text-[#821D38]">
-                <Gift size={14} className="shrink-0" />
+                <Gift size={14} className="shrink-0 text-[#C9A45C]" />
                 <span>Add gift wrap & personal greeting note at checkout!</span>
               </div>
 
@@ -201,7 +202,7 @@ export const CartDrawer = () => {
 
               <div className="flex items-center justify-center gap-3 text-[10px] text-neutral-400 pt-1">
                 <span className="flex items-center gap-1">
-                  <ShieldCheck size={12} className="text-emerald-600" />
+                  <ShieldCheck size={12} className="text-[#C9A45C]" />
                   100% Safe Payments
                 </span>
                 <span>•</span>
