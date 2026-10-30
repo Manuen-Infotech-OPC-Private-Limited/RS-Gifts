@@ -6,31 +6,14 @@ export const WishlistProvider = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState(() => {
     try {
       const saved = localStorage.getItem('rs_gifts_wishlist');
-      return saved ? JSON.parse(saved) : [
-        // Seed with 2 demo items so the wishlist page looks vibrant right away
-        {
-          id: 'prod-2',
-          name: 'Personalized Photo Frame',
-          price: 499,
-          originalPrice: 699,
-          discount: '29% OFF',
-          rating: 4.9,
-          reviews: 98,
-          image: '/images/products/photo-frame.png',
-          categories: ['All', 'Best Sellers', 'Personalized Gifts']
-        },
-        {
-          id: 'prod-4',
-          name: 'LED Moon Lamp',
-          price: 1299,
-          originalPrice: 1699,
-          discount: '24% OFF',
-          rating: 4.7,
-          reviews: 112,
-          image: '/images/products/moon-lamp.png',
-          categories: ['All', 'New Arrivals', 'Home & Decor']
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          // Immediately purge any legacy demo seed items
+          return parsed.filter((item) => item.id !== 'prod-2' && item.id !== 'prod-4');
         }
-      ];
+      }
+      return [];
     } catch {
       return [];
     }

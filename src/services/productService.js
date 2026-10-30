@@ -42,16 +42,16 @@ export const normalizeProduct = (p, activeCoupon = null) => {
     });
   }
 
-  const primaryImg = p.image || (Array.isArray(p.images) && p.images[0]) || '/images/products/teddy-bear.png';
+  const primaryImg = p.image || (Array.isArray(p.images) && p.images[0]) || '';
   let gallery = [];
   if (Array.isArray(p.gallery) && p.gallery.length > 0) {
-    gallery = p.gallery;
+    gallery = p.gallery.filter(Boolean);
   } else if (Array.isArray(p.images) && p.images.length > 0) {
-    gallery = p.images;
+    gallery = p.images.filter(Boolean);
   } else if (primaryImg) {
     gallery = [primaryImg];
   }
-  if (!gallery.includes(primaryImg)) {
+  if (primaryImg && !gallery.includes(primaryImg)) {
     gallery.unshift(primaryImg);
   }
 
@@ -221,6 +221,21 @@ export const fetchProductByIdOrSlug = async (idOrSlug) => {
   }
 };
 
+export const fetchLiveCategories = async () => {
+  try {
+    const data = await api.get('/customer/categories');
+    return data.categories || (Array.isArray(data) ? data : []);
+  } catch (err) {
+    try {
+      const data = await api.get('/categories');
+      return data.categories || (Array.isArray(data) ? data : []);
+    } catch {
+      console.warn('[RS-Gifts API] Could not fetch live categories:', err.message);
+      return [];
+    }
+  }
+};
+
 export const submitProductReview = async ({ productId, rating, comment, customerName, customerEmail }) => {
   return await api.post('/customer/reviews', {
     productId,
@@ -233,6 +248,7 @@ export const submitProductReview = async ({ productId, rating, comment, customer
 
 export default {
   fetchLiveProducts,
+  fetchLiveCategories,
   fetchActiveCoupon,
   fetchProductByIdOrSlug,
   normalizeProduct,

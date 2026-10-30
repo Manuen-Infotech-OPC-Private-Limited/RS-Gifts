@@ -43,57 +43,7 @@ export const BirthdayGiftsPage = () => {
     );
   };
 
-  const getInitialBirthdayProducts = () => {
-    try {
-      const cached = sessionStorage.getItem('rs_gifts_birthday_cache');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
-      }
-      const savedAdmin = localStorage.getItem('rs_gifts_admin_clean_frame_v3');
-      if (savedAdmin) {
-        const parsed = JSON.parse(savedAdmin);
-        const adminProds = parsed.products || [];
-        const matched = adminProds
-          .filter((p) => p.active !== false && isBirthdayMatch(p))
-          .map((p) => ({
-            id: p._id || p.id,
-            name: p.title || p.name || 'Untitled Gift',
-            price: Number(p.salePrice || p.price || 0),
-            originalPrice: Number(p.price || p.salePrice || 0),
-            discount: '₹200 OFF',
-            rating: p.ratings?.average || 5.0,
-            reviews: p.ratings?.count || 0,
-            image: p.image || '',
-            category: p.category || 'Birthday Gifts',
-            targetPage: p.targetPage || 'Birthday Gifts',
-            stock: p.stock ?? 10,
-            featured: !!p.featured
-          }));
-        if (matched.length > 0) return matched;
-      }
-    } catch {
-      // ignore
-    }
-    return [];
-  };
-
-  const birthdayData = {
-    tagline: 'CELEBRATE THEIR SPECIAL DAY',
-    titleLine1: 'Make Every Birthday,',
-    titleLine2: 'Truly Unforgettable',
-    hasHeart: true,
-    description: 'Thoughtful gifts, sweet surprises, and memorable hampers.\nBecause every birthday deserves something magical.',
-    buttonText: 'Shop Birthday Gifts',
-    image: birthdayHeroImg || '/images/birthday-hero.png',
-    badges: [
-      { id: 'b1', icon: Truck, label: 'Fast & Reliable Delivery' },
-      { id: 'b2', icon: ShieldCheck, label: 'Secure Payments' },
-      { id: 'b3', icon: Gift, label: 'Easy Returns' },
-    ]
-  };
-
-  const [products, setProducts] = useState(getInitialBirthdayProducts);
+  const [products, setProducts] = useState([]);
   const [addedItems, setAddedItems] = useState({});
   const [activeCoupon, setActiveCoupon] = useState(null);
 
@@ -112,47 +62,8 @@ export const BirthdayGiftsPage = () => {
         liveItems = await fetchLiveProducts();
       }
 
-      let matched = (liveItems || []).filter(isBirthdayMatch);
-
-      // Also check localStorage in case the admin just added a product in another tab
-      try {
-        const savedAdmin = localStorage.getItem('rs_gifts_admin_clean_frame_v3');
-        if (savedAdmin) {
-          const parsed = JSON.parse(savedAdmin);
-          const adminProds = parsed.products || [];
-          const adminBirthday = adminProds
-            .filter((p) => p.active !== false && isBirthdayMatch(p))
-            .map((p) => ({
-              id: p._id || p.id,
-              name: p.title || p.name || 'Untitled Gift',
-              price: Number(p.salePrice || p.price || 0),
-              originalPrice: Number(p.price || p.salePrice || 0),
-              discount: '₹200 OFF',
-              rating: p.ratings?.average || 5.0,
-              reviews: p.ratings?.count || 0,
-              image: p.image || '',
-              category: p.category || 'Birthday Gifts',
-              targetPage: p.targetPage || 'Birthday Gifts',
-              stock: p.stock ?? 10,
-              featured: !!p.featured
-            }));
-
-          const seen = new Set(matched.map((m) => m.id || m.name));
-          adminBirthday.forEach((ap) => {
-            if (!seen.has(ap.id) && !seen.has(ap.name)) {
-              matched.unshift(ap);
-              seen.add(ap.id);
-            }
-          });
-        }
-      } catch (e) {
-        console.warn('LocalStorage admin sync warning:', e);
-      }
-
+      const matched = (liveItems || []).filter(isBirthdayMatch);
       setProducts(matched);
-      try {
-        sessionStorage.setItem('rs_gifts_birthday_cache', JSON.stringify(matched));
-      } catch {}
     } catch (err) {
       console.error('Failed to load birthday products:', err);
     }
@@ -224,7 +135,7 @@ export const BirthdayGiftsPage = () => {
           />
 
           {/* Inner Content Area */}
-          <div className="relative z-10 w-full max-w-[1280px] mx-auto px-6 sm:px-10 lg:px-12 py-3.5 sm:py-5 lg:py-6 flex flex-col justify-center">
+          <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 sm:py-5 lg:py-6 flex flex-col justify-center">
             <div className="max-w-[500px]">
               {/* Tagline / Subtitle */}
               <p 

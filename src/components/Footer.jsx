@@ -15,19 +15,21 @@ export const Footer = ({
       const saved = localStorage.getItem('rs_gifts_contact_info');
       if (saved) {
         const parsed = JSON.parse(saved);
+        // Ignore legacy hardcoded Hyderabad address
+        const loc = parsed.location || parsed.storeAddress || '';
         return {
-          phone: parsed.phone || parsed.contactPhone || '+91 98765 43210',
-          email: parsed.email || parsed.contactEmail || parsed.supportEmail || 'support@rsgifts.com',
-          location: parsed.location || parsed.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
-          hours: parsed.hours || parsed.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM'
+          phone: parsed.phone || parsed.contactPhone || '',
+          email: parsed.email || parsed.contactEmail || parsed.supportEmail || '',
+          location: loc.includes('Srinagar Colony') ? '' : loc,
+          hours: parsed.hours || parsed.supportHours || ''
         };
       }
     } catch (e) { }
     return {
-      phone: '+91 98765 43210',
-      email: 'support@rsgifts.com',
-      location: '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
-      hours: 'Mon - Sat : 9:00 AM – 7:00 PM'
+      phone: '',
+      email: '',
+      location: '',
+      hours: ''
     };
   });
 
@@ -38,10 +40,10 @@ export const Footer = ({
         const s = res?.settings || res?.data?.settings;
         if (s) {
           const liveContact = {
-            phone: s.contactPhone || '+91 98765 43210',
-            email: s.contactEmail || s.supportEmail || 'support@rsgifts.com',
-            location: s.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
-            hours: s.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM',
+            phone: s.contactPhone || '',
+            email: s.contactEmail || s.supportEmail || '',
+            location: s.storeAddress || '',
+            hours: s.supportHours || '',
           };
           setContactInfo(liveContact);
           try {
@@ -59,11 +61,12 @@ export const Footer = ({
         const saved = localStorage.getItem('rs_gifts_contact_info');
         if (saved) {
           const parsed = JSON.parse(saved);
+          const loc = parsed.location || parsed.storeAddress || '';
           setContactInfo({
-            phone: parsed.phone || parsed.contactPhone || '+91 98765 43210',
-            email: parsed.email || parsed.contactEmail || parsed.supportEmail || 'support@rsgifts.com',
-            location: parsed.location || parsed.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
-            hours: parsed.hours || parsed.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM'
+            phone: parsed.phone || parsed.contactPhone || '',
+            email: parsed.email || parsed.contactEmail || parsed.supportEmail || '',
+            location: loc.includes('Srinagar Colony') ? '' : loc,
+            hours: parsed.hours || parsed.supportHours || ''
           });
         }
       } catch (e) { }
@@ -71,11 +74,12 @@ export const Footer = ({
 
     const handleCustomUpdate = (e) => {
       if (e.detail) {
+        const loc = e.detail.location || e.detail.storeAddress || '';
         setContactInfo({
-          phone: e.detail.phone || e.detail.contactPhone || '+91 98765 43210',
-          email: e.detail.email || e.detail.contactEmail || 'support@rsgifts.com',
-          location: e.detail.location || e.detail.storeAddress || '123 Gift Street, Srinagar Colony, Hyderabad, Telangana 500073',
-          hours: e.detail.hours || e.detail.supportHours || 'Mon - Sat : 9:00 AM – 7:00 PM',
+          phone: e.detail.phone || e.detail.contactPhone || '',
+          email: e.detail.email || e.detail.contactEmail || '',
+          location: loc.includes('Srinagar Colony') ? '' : loc,
+          hours: e.detail.hours || e.detail.supportHours || '',
         });
       }
     };
@@ -110,7 +114,7 @@ export const Footer = ({
       className="w-full font-sans select-none text-[12.5px] leading-normal"
     >
       {/* Main Footer Container with Compact Padding */}
-      <div className="max-w-[1340px] mx-auto px-5 sm:px-8 lg:px-10 pt-6 sm:pt-7 pb-3.5">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-7 pb-3.5">
         <div className="flex flex-col lg:flex-row justify-between items-start gap-6 lg:gap-5">
 
           {/* Column 1: Brand & Tagline & Socials */}
@@ -425,10 +429,10 @@ export const Footer = ({
 
         </div>
 
-        {/* Bottom Bar Separator */}
+        {/* Bottom Bar */}
         <div
-          style={{ borderColor: `${primaryColor}26`, color: secondaryColor }}
-          className="mt-4 sm:mt-5 pt-2.5 border-t flex flex-col sm:flex-row items-center justify-between gap-2 text-[11.5px] sm:text-[12px]"
+          style={{ color: secondaryColor }}
+          className="mt-4 sm:mt-5 pt-2.5 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11.5px] sm:text-[12px]"
         >
           <div>
             © 2024 RS GIFTS. All rights reserved.

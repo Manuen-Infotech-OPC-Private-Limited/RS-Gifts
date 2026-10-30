@@ -1,41 +1,73 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import api from '../services/api';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
   const [cartItems, setCartItems] = useState(() => {
     try {
-      const saved = localStorage.getItem('rs_gifts_cart');
-      return saved ? JSON.parse(saved) : [
-        // Seed with 1 initial demo item so the user immediately sees a realistic cart
-        {
-          id: 'prod-1',
-          name: 'Teddy Bear (Premium)',
-          price: 699,
-          originalPrice: 999,
-          discount: '30% OFF',
-          image: '/images/products/teddy-bear.png',
-          quantity: 1,
+      // Clear legacy storage that held the seeded demo item
+      localStorage.removeItem('rs_gifts_cart');
+      const saved = localStorage.getItem('rs_gifts_cart_v2');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(
+            (item) => item && !String(item.id).startsWith('prod-') && !item.name?.toLowerCase().includes('teddy bear')
+          );
         }
-      ];
+      }
+      return [];
     } catch {
       return [];
     }
   });
 
+  useEffect(() => {
+    // Purge any phantom demo items from in-memory state on mount
+    setCartItems((prev) =>
+      prev.filter(
+        (item) => item && !String(item.id).startsWith('prod-') && !item.name?.toLowerCase().includes('teddy bear')
+      )
+    );
+  }, []);
+
   const [isCartDrawerOpen, setIsCartDrawerOpen] = useState(false);
   
-  // Gifting Add-ons
-  const [giftWrap, setGiftWrap] = useState(false); // ₹99
-  const [giftMessage, setGiftMessage] = useState(''); // ₹49 if filled or chosen
+  // Gifting Add-ons (Complimentary / Inclusive)
+  const [giftWrap, setGiftWrap] = useState(false);
+  const [giftMessage, setGiftMessage] = useState('');
   const [includeGiftNote, setIncludeGiftNote] = useState(false);
   const [deliveryDate, setDeliveryDate] = useState('');
   const [couponCode, setCouponCode] = useState('');
-  const [appliedCoupon, setAppliedCoupon] = useState(null); // { code: 'WELCOME10', discountPercent: 10 }
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+
+  // Dynamic Shipping Settings loaded from Backend
+  const [shippingSettings, setShippingSettings] = useState({
+    freeShippingThreshold: 999,
+    standardShippingFee: 50,
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    api.get('/customer/content/settings')
+      .then((res) => {
+        const s = res?.settings || res?.data?.settings;
+        if (s && isMounted) {
+          setShippingSettings({
+            freeShippingThreshold: Number(s.freeShippingThreshold) || 999,
+            standardShippingFee: Number(s.standardShippingFee ?? 50),
+          });
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   useEffect(() => {
     try {
-      localStorage.setItem('rs_gifts_cart', JSON.stringify(cartItems));
+      localStorage.removeItem('rs_gifts_cart');
+      localStorage.setItem('rs_gifts_cart_v2', JSON.stringify(cartItems));
     } catch (e) {
       console.error('Failed to save cart to localStorage', e);
     }
@@ -86,17 +118,52 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  const applyCoupon = (code) => {
-    const clean = code.trim().toUpperCase();
-    if (clean === 'WELCOME10' || clean === 'RSGIFTS10') {
-      setAppliedCoupon({ code: clean, discountPercent: 10 });
-      return { success: true, message: '10% discount applied successfully!' };
+  const applyCoupon = async (code) => {
+    const clean = (code || '').trim().toUpperCase();
+    if (!clean) {
+      return { success: false, message: 'Please enter a coupon code.' };
     }
-    if (clean === 'FESTIVE20') {
-      setAppliedCoupon({ code: clean, discountPercent: 20 });
-      return { success: true, message: '20% Festive discount applied!' };
+
+    try {
+      const res = await api.post('/customer/coupons/validate', {
+        code: clean,
+        orderTotal: itemsSubtotal,
+      });
+
+      const c = res.coupon;
+      if (c) {
+        const isFlat = c.discountType === 'flat' || c.discountType === 'fixed';
+        setAppliedCoupon({
+          code: c.code,
+          discountType: isFlat ? 'flat' : 'percentage',
+          discountValue: Number(c.discountValue || 0),
+          discountPercent: isFlat ? 0 : Number(c.discountValue || 0),
+          flatDiscount: isFlat ? Number(c.discountValue || 0) : 0,
+        });
+        return { success: true, message: res.message || `Coupon ${c.code} applied!` };
+      }
+      return { success: false, message: res.message || 'Invalid coupon code.' };
+    } catch (err) {
+      // Check active coupon endpoint
+      try {
+        const activeRes = await api.get('/customer/coupons/active');
+        const activeCpn = activeRes.activeCoupon || (Array.isArray(activeRes.coupons) ? activeRes.coupons[0] : null);
+        if (activeCpn && activeCpn.code && activeCpn.code.toUpperCase() === clean) {
+          const isFlat = activeCpn.discountType === 'flat' || activeCpn.discountType === 'fixed';
+          setAppliedCoupon({
+            code: activeCpn.code,
+            discountType: isFlat ? 'flat' : 'percentage',
+            discountValue: Number(activeCpn.discountValue || 0),
+            discountPercent: isFlat ? 0 : Number(activeCpn.discountValue || 0),
+            flatDiscount: isFlat ? Number(activeCpn.discountValue || 0) : 0,
+          });
+          return { success: true, message: `Coupon ${activeCpn.code} applied!` };
+        }
+      } catch {}
+
+      const errMsg = err?.response?.data?.message || err.message || 'Invalid promo code.';
+      return { success: false, message: errMsg };
     }
-    return { success: false, message: 'Invalid promo code. Try WELCOME10' };
   };
 
   const removeCoupon = () => {
@@ -111,18 +178,22 @@ export const CartProvider = ({ children }) => {
     0
   );
 
-  const giftWrapCost = giftWrap ? 99 : 0;
-  const giftNoteCost = includeGiftNote && giftMessage.trim().length > 0 ? 49 : 0;
-  const addonsTotal = giftWrapCost + giftNoteCost;
+  const addonsTotal = 0;
 
-  const discountAmount = appliedCoupon
-    ? Math.round((itemsSubtotal * appliedCoupon.discountPercent) / 100)
-    : 0;
+  let discountAmount = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === 'flat') {
+      discountAmount = Math.min(itemsSubtotal, appliedCoupon.discountValue || appliedCoupon.flatDiscount || 0);
+    } else {
+      discountAmount = Math.round(
+        (itemsSubtotal * (appliedCoupon.discountPercent || appliedCoupon.discountValue || 0)) / 100
+      );
+    }
+  }
 
-  // Free delivery threshold: ₹999
-  const freeShippingThreshold = 999;
+  const freeShippingThreshold = shippingSettings.freeShippingThreshold;
   const isFreeDelivery = itemsSubtotal >= freeShippingThreshold || itemsSubtotal === 0;
-  const deliveryFee = isFreeDelivery ? 0 : 99;
+  const deliveryFee = isFreeDelivery ? 0 : shippingSettings.standardShippingFee;
 
   const grandTotal = Math.max(
     0,

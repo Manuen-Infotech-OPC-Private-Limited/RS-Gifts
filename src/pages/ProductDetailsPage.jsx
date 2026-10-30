@@ -116,7 +116,7 @@ export const ProductDetailsPage = () => {
     ? product.gallery
     : [product?.image].filter(Boolean);
 
-  const activeImage = galleryImages[selectedImageIndex] || product?.image || '/images/products/teddy-bear.png';
+  const activeImage = galleryImages[selectedImageIndex] || product?.image || '';
 
   const handlePrevImage = (e) => {
     e.stopPropagation();

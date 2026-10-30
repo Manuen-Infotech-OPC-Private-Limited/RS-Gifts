@@ -74,7 +74,7 @@ export const WishlistPage = () => {
 
   return (
     <div className="w-full bg-[#FFF9F5] py-6 sm:py-9 font-sans select-none min-h-[80vh]">
-      <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         
         {/* Header with Title and Actions */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[#ECE7EC]">

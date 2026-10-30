@@ -9,87 +9,41 @@ import {
   ArrowRight,
   Clock
 } from 'lucide-react';
+import api from '../services/api';
 
-const slidesData = [
-  {
-    id: 1,
-    tagline: 'GIFTS THAT SPEAK FROM THE HEART',
-    titleLine1: 'Make Every',
-    titleLine2: 'Moment Special',
-    description: 'Thoughtful Gifts for Every Occasion',
-    buttonText: 'Shop Now',
-    buttonLink: '/gifts',
-    image: '/images/hero-banner-1.png',
-    badges: [
-      { id: 'b1', icon: Truck, label: 'Fast & Reliable Delivery' },
-      { id: 'b2', icon: ShieldCheck, label: 'Secure Payments' },
-      { id: 'b3', icon: Gift, label: 'Easy Returns' },
-    ]
-  },
-  {
-    id: 2,
-    tagline: 'CURATED CELEBRATION HAMPERS',
-    titleLine1: 'Crafted With Love,',
-    titleLine2: 'Wrapped With Care',
-    description: 'Discover artisan chocolates, scented candles & bespoke gift baskets made to celebrate life’s moments.',
-    buttonText: 'Explore Hampers',
-    buttonLink: '/hampers',
-    image: '/images/hero-banner-2.jpg',
-    badges: [
-      { id: 'b4', icon: Gift, label: 'Premium Luxury Packaging' },
-      { id: 'b5', icon: Clock, label: 'Same-Day Dispatch' },
-      { id: 'b6', icon: Gift, label: 'Custom Greeting Cards' },
-    ]
-  },
-  {
-    id: 3,
-    tagline: 'CHERISHED FOR A LIFETIME',
-    titleLine1: 'Personalized Gifts,',
-    titleLine2: 'Timeless Memories',
-    description: 'Engraved wooden keepsakes, photo treasures & heirloom gifts designed to tell your unique story.',
-    buttonText: 'Personalize Now',
-    buttonLink: '/personalized-gifts',
-    image: '/images/hero-banner-3.jpg',
-    badges: [
-      { id: 'b7', icon: ShieldCheck, label: 'Custom Laser Engraving' },
-      { id: 'b8', icon: ShieldCheck, label: '100% Quality Guaranteed' },
-      { id: 'b9', icon: Gift, label: 'Complimentary Gift Box' },
-    ]
-  },
-  {
-    id: 4,
-    tagline: 'FRESH BLOOMS & SWEET DELIGHTS',
-    titleLine1: 'Floral Whispers,',
-    titleLine2: 'Sweet Surprises',
-    description: 'Exquisite hand-tied pastel peonies, roses & artisanal macarons delivered fresh to your loved ones.',
-    buttonText: 'Order Flowers',
-    buttonLink: '/flowers-hampers',
-    image: '/images/hero-banner-4.jpg',
-    badges: [
-      { id: 'b10', icon: Truck, label: 'Farm-Fresh Daily Blooms' },
-      { id: 'b11', icon: ShieldCheck, label: 'Hydration Packaged' },
-      { id: 'b12', icon: Gift, label: 'Handwritten Love Notes' },
-    ]
-  }
-];
+const defaultSlide = {
+  id: 'default_banner_1',
+  tagline: 'GIFTS THAT SPEAK FROM THE HEART',
+  titleLine1: 'Make Every Moment,',
+  titleLine2: 'Truly Special',
+  description: 'Thoughtful gifts for every occasion. Because every celebration deserves something memorable.',
+  buttonText: 'Shop Now',
+  buttonLink: '/gifts',
+  image: '/images/hero-banner-1.png',
+  badges: [
+    { id: 'b1', icon: Truck, label: 'Fast & Reliable Delivery' },
+    { id: 'b2', icon: ShieldCheck, label: 'Secure Payments' },
+    { id: 'b3', icon: Gift, label: 'Easy Returns' },
+  ],
+};
 
 export const HeroSection = ({ onShopNow }) => {
   const navigate = useNavigate();
-  const [slides, setSlides] = useState(slidesData);
+  const [slides, setSlides] = useState([defaultSlide]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  // Fetch live banners uploaded by Admin
+  // Fetch live banners from backend
   useEffect(() => {
     let isMounted = true;
     const loadLiveBanners = async () => {
       try {
-        const res = await fetch('http://localhost:5000/api/customer/content/banners');
-        if (!res.ok) return;
-        const data = await res.json();
-        const activeBanners = (data.banners || []).filter(b => b.active !== false && (b.image || b.imageUrl));
+        const data = await api.get('/customer/content/banners');
+        const activeBanners = (data?.banners || []).filter(
+          (b) => b && b.active !== false && (b.image || b.imageUrl)
+        );
         if (activeBanners.length > 0 && isMounted) {
           const dynamicSlides = activeBanners.map((b, idx) => {
             const rawTitle = b.title || "More Than Gifts, It's Emotions";
@@ -114,7 +68,7 @@ export const HeroSection = ({ onShopNow }) => {
           setSlides(dynamicSlides);
         }
       } catch (err) {
-        console.warn('Could not load live banners from backend, using default slides:', err);
+        console.warn('Could not load live banners from backend:', err);
       }
     };
 
@@ -138,13 +92,13 @@ export const HeroSection = ({ onShopNow }) => {
 
   // Autoplay with pause on hover
   useEffect(() => {
-    if (isPaused) return;
+    if (isPaused || totalSlides <= 1) return;
     const timer = setInterval(() => {
       nextSlide();
     }, 5500);
 
     return () => clearInterval(timer);
-  }, [isPaused, nextSlide]);
+  }, [isPaused, nextSlide, totalSlides]);
 
   // Touch swipe handling
   const handleTouchStart = (e) => {
@@ -157,11 +111,9 @@ export const HeroSection = ({ onShopNow }) => {
 
   const handleTouchEnd = () => {
     if (touchStartX.current - touchEndX.current > 50) {
-      // swipe left -> next
       nextSlide();
     }
     if (touchStartX.current - touchEndX.current < -50) {
-      // swipe right -> prev
       prevSlide();
     }
   };
@@ -217,7 +169,7 @@ export const HeroSection = ({ onShopNow }) => {
               }}
             />
 
-            {/* Soft Ambient Gradient Overlay: ensures text readability on the left while keeping the luxury gifts crisp on the right */}
+            {/* Soft Ambient Gradient Overlay */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
@@ -226,7 +178,7 @@ export const HeroSection = ({ onShopNow }) => {
             />
 
             {/* Inner Content Area */}
-            <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 sm:px-10 lg:px-12 py-3 sm:py-5 lg:py-6 flex flex-col justify-center">
+            <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-5 lg:py-6 flex flex-col justify-center">
               <div className="max-w-[210px] sm:max-w-[500px]">
                 {/* Tagline / Subtitle */}
                 <p
@@ -267,7 +219,7 @@ export const HeroSection = ({ onShopNow }) => {
                   </button>
                 </div>
 
-                {/* Trust Badges matching reference (Desktop/Tablet) */}
+                {/* Trust Badges */}
                 <div className="hidden sm:flex flex-wrap items-center gap-3.5 sm:gap-5 text-[10.5px] sm:text-[11.5px] font-medium text-[#483B42]">
                   {(slide.badges || []).map((badge) => {
                     const IconComponent = badge.icon || Gift;
@@ -285,20 +237,22 @@ export const HeroSection = ({ onShopNow }) => {
         ))}
       </div>
 
-      {/* Carousel Dots Pagination (Matching reference) */}
-      <div className="absolute bottom-2 sm:bottom-2.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            aria-label={`Go to slide ${index + 1}`}
-            className={`transition-all duration-300 rounded-full cursor-pointer ${currentSlide === index
-              ? 'w-2.5 h-2.5 bg-[#821D38] ring-2 ring-[#821D38]/30 scale-110'
-              : 'w-2 h-2 bg-[#D9C4CC] hover:bg-[#B3939F]'
-              }`}
-          />
-        ))}
-      </div>
+      {/* Carousel Dots Pagination */}
+      {slides.length > 1 && (
+        <div className="absolute bottom-2 sm:bottom-2.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
+          {slides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              aria-label={`Go to slide ${index + 1}`}
+              className={`transition-all duration-300 rounded-full cursor-pointer ${currentSlide === index
+                ? 'w-2.5 h-2.5 bg-[#821D38] ring-2 ring-[#821D38]/30 scale-110'
+                : 'w-2 h-2 bg-[#D9C4CC] hover:bg-[#B3939F]'
+                }`}
+            />
+          ))}
+        </div>
+      )}
     </section>
   );
 };

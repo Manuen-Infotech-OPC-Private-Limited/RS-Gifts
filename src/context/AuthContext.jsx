@@ -7,6 +7,11 @@ export const AuthProvider = ({ children }) => {
   // Load state from localStorage
   const [user, setUser] = useState(() => {
     try {
+      const token = localStorage.getItem('rs_gifts_token');
+      if (!token) {
+        localStorage.removeItem('rs_gifts_user');
+        return null;
+      }
       const saved = localStorage.getItem('rs_gifts_user');
       if (saved) {
         const parsed = JSON.parse(saved);
@@ -232,9 +237,25 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
+  // Listen for global auth expiration events from API interceptor
+  useEffect(() => {
+    const handleAuthExpired = () => {
+      setUser(null);
+      setOrders([]);
+    };
+    window.addEventListener('rs_auth_expired', handleAuthExpired);
+    return () => window.removeEventListener('rs_auth_expired', handleAuthExpired);
+  }, []);
+
   // Load live customer orders from backend
   useEffect(() => {
     if (!user) return;
+    const token = localStorage.getItem('rs_gifts_token');
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
     const loadMyOrders = async () => {
       try {
         const data = await api.get('/customer/orders/my');
@@ -274,6 +295,14 @@ export const AuthProvider = ({ children }) => {
           })));
         }
       } catch (e) {
+        if (e.response?.status === 401) {
+          // Token expired or invalid: reset user session and stop continuous retry
+          setUser(null);
+          setOrders([]);
+          localStorage.removeItem('rs_gifts_token');
+          localStorage.removeItem('rs_gifts_user');
+          return;
+        }
         console.warn('Could not load live user orders from backend:', e.message);
       }
     };

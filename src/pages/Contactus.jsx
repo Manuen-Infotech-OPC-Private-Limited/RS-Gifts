@@ -195,7 +195,7 @@ export const Contactus = () => {
 
     return (
         <div className="w-full bg-[#FFF9F5] py-6 sm:py-9 font-sans select-none min-h-[85vh]">
-            <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
+            <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
 
                 {/* Page Header */}
                 <div className="space-y-1 pt-1">

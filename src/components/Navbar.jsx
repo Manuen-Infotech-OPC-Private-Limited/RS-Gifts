@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { fetchLiveCategories } from '../services/productService';
 import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
@@ -15,16 +16,41 @@ export const Navbar = ({ onSearch }) => {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const subnavItems = [
+  const [subnavItems, setSubnavItems] = useState([
     { label: 'Home', path: '/' },
     { label: 'Birthday Gifts', path: '/birthday-gifts' },
     { label: 'Anniversary Gifts', path: '/anniversary-gifts' },
     { label: 'Personalized Gifts', path: '/personalized-gifts' },
-    { label: 'Festival Gifts', path: '/festival-gifts' },
-    { label: 'Hampers', path: '/hampers' },
-    { label: 'New Arrivals', path: '/new-arrivals' },
     { label: 'Contact Us', path: '/contact' }
-  ];
+  ]);
+
+  useEffect(() => {
+    let isMounted = true;
+    fetchLiveCategories()
+      .then((cats) => {
+        if (isMounted && Array.isArray(cats) && cats.length > 0) {
+          const dynamicItems = [
+            { label: 'Home', path: '/' },
+            ...cats
+              .filter((c) => c && c.active !== false && !['home-decor', 'home-and-decor'].includes((c.slug || '').toLowerCase()))
+              .slice(0, 6)
+              .map((c) => {
+                const s = (c.slug || '').toLowerCase();
+                let path = `/category/${c.slug}`;
+                if (s.includes('birthday')) path = '/birthday-gifts';
+                else if (s.includes('anniversary')) path = '/anniversary-gifts';
+                else if (s.includes('personalized')) path = '/personalized-gifts';
+                else if (s.includes('festival') || s.includes('festive')) path = '/festival-gifts';
+                return { label: c.name, path };
+              }),
+            { label: 'Contact Us', path: '/contact' }
+          ];
+          setSubnavItems(dynamicItems);
+        }
+      })
+      .catch(() => {});
+    return () => { isMounted = false; };
+  }, []);
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -69,7 +95,7 @@ export const Navbar = ({ onSearch }) => {
             <rect x="9.5" y="19.5" width="25" height="14.5" rx="1" fill="#821D38" />
             <rect x="20.5" y="19.5" width="3" height="14.5" fill="#FFFFFF" />
           </svg>
-          <span 
+          <span
             className="text-[22px] font-bold tracking-tight text-[#821D38]"
             style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
           >
@@ -141,7 +167,7 @@ export const Navbar = ({ onSearch }) => {
       </div>
 
       {/* Desktop Main Row */}
-      <div className="hidden md:flex max-w-[1280px] mx-auto px-6 py-3.5 items-center justify-between gap-6">
+      <div className="hidden md:flex max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 items-center justify-between gap-6">
         {/* Brand Logo matching reference */}
         <div
           onClick={() => { setActiveTab('Home'); navigate('/'); }}
@@ -204,7 +230,7 @@ export const Navbar = ({ onSearch }) => {
         <div className="flex items-center gap-7 mr-14 shrink-0">
           {user ? (
             <div className="flex items-center gap-3">
-              <div 
+              <div
                 className="relative"
                 onMouseEnter={() => setUserMenuOpen(true)}
                 onMouseLeave={() => setUserMenuOpen(false)}
@@ -256,8 +282,8 @@ export const Navbar = ({ onSearch }) => {
               </div>
             </div>
           ) : (
-            <button 
-              onClick={() => openAuthModal('login')} 
+            <button
+              onClick={() => openAuthModal('login')}
               className="flex items-center gap-2 text-sm font-medium text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer"
             >
               <User size={19} strokeWidth={1.8} className="text-[#C9A45C]" />
@@ -265,8 +291,8 @@ export const Navbar = ({ onSearch }) => {
             </button>
           )}
 
-          <button 
-            onClick={() => navigate('/wishlist')} 
+          <button
+            onClick={() => navigate('/wishlist')}
             className="flex items-center gap-2 text-sm font-medium text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer relative py-1"
           >
             <div className="relative">
@@ -280,8 +306,8 @@ export const Navbar = ({ onSearch }) => {
             <span>Wishlist</span>
           </button>
 
-          <button 
-            onClick={openCartDrawer} 
+          <button
+            onClick={openCartDrawer}
             className="flex items-center gap-2 text-sm font-medium text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer relative py-1"
           >
             <div className="relative">
@@ -309,9 +335,8 @@ export const Navbar = ({ onSearch }) => {
                   setActiveTab(item.label);
                   if (item.path) navigate(item.path);
                 }}
-                className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
-                  isActive ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t' : ''
-                }`}
+                className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${isActive ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t' : ''
+                  }`}
               >
                 <span>{item.label}</span>
               </li>
@@ -334,7 +359,7 @@ export const Navbar = ({ onSearch }) => {
             {/* Header */}
             <div className="p-4 border-b border-[#ECE7EC] flex items-center justify-between bg-white">
               <div className="flex items-center gap-2">
-                <span 
+                <span
                   className="font-serif text-xl font-bold text-[#821D38]"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
@@ -365,11 +390,10 @@ export const Navbar = ({ onSearch }) => {
                       setActiveTab(item.label);
                       if (item.path) navigate(item.path);
                     }}
-                    className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
-                      isActive
+                    className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${isActive
                         ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
                         : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
-                    }`}
+                      }`}
                   >
                     <span>{item.label}</span>
                     <ChevronRight size={14} className={isActive ? 'text-[#821D38]' : 'text-[#A89CA2]'} />

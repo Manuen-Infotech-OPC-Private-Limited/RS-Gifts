@@ -109,10 +109,10 @@ export const CartPage = () => {
     }
   }, [user]);
 
-  const handleApplyCoupon = (e) => {
+  const handleApplyCoupon = async (e) => {
     e.preventDefault();
     if (!couponInput.trim()) return;
-    const result = applyCoupon(couponInput);
+    const result = await applyCoupon(couponInput);
     setCouponMessage(result);
     if (result.success) {
       setCouponInput('');
@@ -306,7 +306,7 @@ export const CartPage = () => {
 
   return (
     <div className="w-full bg-[#FFF9F5] py-6 sm:py-9 font-sans select-none min-h-[80vh]">
-      <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
 
         {/* Page Title */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -441,7 +441,9 @@ export const CartPage = () => {
                     <span className="text-xs sm:text-sm font-bold text-[#1E1217]">
                       Add Luxury Velvet Gift Box & Ribbon
                     </span>
-                    <span className="text-xs font-bold text-[#821D38]">+₹99</span>
+                    <span className="text-xs font-semibold text-[#15803D] bg-[#E8F5E9] px-2 py-0.5 rounded-full">
+                      Included
+                    </span>
                   </div>
                   <p className="text-[11px] text-[#6F6870] mt-0.5 leading-relaxed">
                     Hand-wrapped in our signature burgundy presentation box with satin ribbon bow and gold wax seal.
@@ -463,7 +465,9 @@ export const CartPage = () => {
                       <span className="text-xs sm:text-sm font-bold text-[#1E1217]">
                         Handwritten Custom Greeting Card
                       </span>
-                      <span className="text-xs font-bold text-[#821D38]">+₹49</span>
+                      <span className="text-xs font-semibold text-[#15803D] bg-[#E8F5E9] px-2 py-0.5 rounded-full">
+                        Included
+                      </span>
                     </div>
                     <p className="text-[11px] text-[#6F6870] mt-0.5">
                       We print or hand-inscribe your personal warm message on textured cardstock.
@@ -571,11 +575,11 @@ export const CartPage = () => {
                   </span>
                 </div>
 
-                {addonsTotal > 0 && (
+                {(giftWrap || (includeGiftNote && giftMessage.trim().length > 0)) && (
                   <div className="flex justify-between text-neutral-600">
                     <span>Gifting Add-ons</span>
-                    <span className="font-semibold text-neutral-900">
-                      +₹{addonsTotal}
+                    <span className="font-semibold text-[#15803D]">
+                      Included
                     </span>
                   </div>
                 )}

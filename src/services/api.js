@@ -26,8 +26,18 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    const status = error.response?.status;
     const message = error.response?.data?.message || error.message || 'Something went wrong';
-    console.error('API Error:', message);
+
+    if (status === 401) {
+      // Clean up stale/expired authentication tokens to prevent endless 401 retry loops
+      localStorage.removeItem('rs_gifts_token');
+      localStorage.removeItem('rs_gifts_user');
+      window.dispatchEvent(new CustomEvent('rs_auth_expired', { detail: { message } }));
+      console.warn('[RS-Gifts Auth] Session expired or invalid token. Cached credentials cleared.');
+    } else {
+      console.error('API Error:', message);
+    }
     return Promise.reject(error);
   }
 );

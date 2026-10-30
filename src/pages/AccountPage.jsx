@@ -54,7 +54,7 @@ export const AccountPage = () => {
             <Lock size={28} />
           </div>
           <h2 className="text-xl font-bold text-[#1E1217]">
-            Please Sign In to View Your Account
+            Sign In to View Your Account
           </h2>
           <p className="text-xs text-[#6F6870] leading-relaxed">
             Track your ongoing shipments, review past orders, and manage saved delivery addresses.
@@ -64,7 +64,7 @@ export const AccountPage = () => {
             onClick={() => openAuthModal('login')}
             className="w-full py-3 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-2"
           >
-            <span>Sign In / Create Account</span>
+            <span>Sign In</span>
           </button>
         </div>
       </div>
@@ -73,7 +73,7 @@ export const AccountPage = () => {
 
   return (
     <div className="w-full bg-[#FFF9F5] py-6 sm:py-8 font-sans select-none min-h-[75vh]">
-      <div className="max-w-[1340px] mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
 
         {/* Dashboard 2-Column Layout */}
         <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
