@@ -3,22 +3,16 @@ import api from './api';
 export const normalizeProduct = (p, activeCoupon = null) => {
   if (!p) return null;
 
-  const originalPrice = p.price || 0;
-  const salePrice = p.salePrice || p.price || 0;
+  // Calculate discount strictly from product's actual price and salePrice
+  const originalPrice = p.salePrice ? p.price : (p.originalPrice || p.price || 0);
+  const salePrice = p.salePrice ? p.salePrice : (p.price || 0);
 
   let discount = '';
-  // Priority 1: Dynamic active coupon from backend (e.g. ₹200 OFF)
-  if (activeCoupon && activeCoupon.discountValue) {
-    const isFlat = activeCoupon.discountType === 'flat' || activeCoupon.discountType === 'fixed';
-    discount = isFlat ? `₹${activeCoupon.discountValue} OFF` : `${activeCoupon.discountValue}% OFF`;
-  } else if (p.activeCoupon && p.activeCoupon.discountValue) {
-    const isFlat = p.activeCoupon.discountType === 'flat' || p.activeCoupon.discountType === 'fixed';
-    discount = isFlat ? `₹${p.activeCoupon.discountValue} OFF` : `${p.activeCoupon.discountValue}% OFF`;
-  } else if (p.discount) {
+  if (originalPrice > salePrice && originalPrice > 0) {
+    const pct = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+    discount = `${pct}% OFF`;
+  } else if (p.discount && !p.discount.includes('OFF')) {
     discount = p.discount;
-  } else if (p.salePrice && p.price > p.salePrice) {
-    const pct = Math.round(((p.price - p.salePrice) / p.price) * 100);
-    discount = pct + '% OFF';
   }
 
   let categories = ['All'];
@@ -66,8 +60,8 @@ export const normalizeProduct = (p, activeCoupon = null) => {
     originalPrice: p.salePrice ? p.price : (p.originalPrice || salePrice),
     discount,
     activeCoupon: activeCoupon || p.activeCoupon || null,
-    rating: p.ratings?.average || p.rating || 4.9,
-    reviews: p.ratings?.count || p.reviews || 0,
+    rating: Number(p.ratings?.average !== undefined ? p.ratings.average : (p.rating !== undefined ? p.rating : 0)),
+    reviews: Number(p.ratings?.count !== undefined ? p.ratings.count : (p.reviews !== undefined ? p.reviews : 0)),
     image: primaryImg,
     gallery,
     category: p.category || '',

@@ -51,20 +51,11 @@ export const FeaturedProducts = ({ onAddToCart }) => {
     };
   }, []);
 
-  const dynamicDiscountLabel = activeCoupon
-    ? (activeCoupon.discountType === 'flat' || activeCoupon.discountType === 'fixed'
-      ? `₹${activeCoupon.discountValue} OFF`
-      : `${activeCoupon.discountValue}% OFF`)
-    : null;
-
   const validProducts = (liveProducts || []).filter((p) => p && p.active !== false);
 
   // If items are marked featured in backend, show featured first; otherwise show all products from backend
   const featuredOnly = validProducts.filter((p) => p.featured === true);
-  const productList = (featuredOnly.length > 0 ? featuredOnly : validProducts).map((p) => ({
-    ...p,
-    discount: dynamicDiscountLabel || p.discount || '',
-  }));
+  const productList = featuredOnly.length > 0 ? featuredOnly : validProducts;
 
   // Build dynamic filter tabs based on categories in live products
   const categorySet = new Set();
@@ -212,11 +203,18 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                       <div className="flex items-center gap-1 text-[11px] text-[#705E67]">
                         <div className="flex text-[#C9A45C]">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="w-2.5 h-2.5 fill-[#C9A45C] stroke-[#C9A45C]" />
+                            <Star
+                              key={i}
+                              className={`w-2.5 h-2.5 ${
+                                Number(product.reviews) > 0 && i < Math.round(Number(product.rating || 0))
+                                  ? 'fill-[#C9A45C] stroke-[#C9A45C]'
+                                  : 'text-gray-300 stroke-gray-300 fill-none'
+                              }`}
+                            />
                           ))}
                         </div>
                         <span className="text-[10px] font-medium text-[#705E67]">
-                          {product.rating || '4.8'} ({product.reviews || '0'})
+                          {Number(product.reviews) > 0 ? `${product.rating} (${product.reviews})` : '(0)'}
                         </span>
                       </div>
                     </div>
@@ -267,6 +265,9 @@ export const FeaturedProducts = ({ onAddToCart }) => {
               {filteredProducts.map((product) => {
                 const isWishlisted = isInWishlist(product.id);
                 const isAdded = !!addedItems[product.id];
+                const discountPercent = product.originalPrice && product.price < product.originalPrice
+                  ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+                  : 0;
 
                 return (
                   <div
@@ -329,9 +330,9 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                               ₹{Number(product.originalPrice || 0).toLocaleString('en-IN')}
                             </span>
                           )}
-                          {product.discount && (
+                          {discountPercent > 0 && (
                             <span className="text-[10px] sm:text-[11px] font-semibold text-[#18794E] bg-[#E8F5E9] px-1.5 py-0.5 rounded">
-                              {product.discount}
+                              {discountPercent}% OFF
                             </span>
                           )}
                         </div>
@@ -340,11 +341,18 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                         <div className="flex items-center gap-1 mb-2.5">
                           <div className="flex items-center text-[#C9A45C]">
                             {[...Array(5)].map((_, i) => (
-                              <Star key={i} className="w-3 h-3 fill-[#C9A45C] stroke-[#C9A45C]" />
+                              <Star
+                                key={i}
+                                className={`w-3 h-3 ${
+                                  Number(product.reviews) > 0 && i < Math.round(Number(product.rating || 0))
+                                    ? 'fill-[#C9A45C] stroke-[#C9A45C]'
+                                    : 'text-gray-300 stroke-gray-300 fill-none'
+                                }`}
+                              />
                             ))}
                           </div>
                           <span className="text-[11px] text-[#7A6E75] font-medium">
-                            ({product.reviews || 0})
+                            {Number(product.reviews) > 0 ? `${product.rating} (${product.reviews})` : '(0)'}
                           </span>
                         </div>
                       </div>

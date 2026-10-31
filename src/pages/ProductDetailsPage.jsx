@@ -21,7 +21,7 @@ import {
   MessageSquare,
   PackageCheck
 } from 'lucide-react';
-import { fetchProductByIdOrSlug, fetchLiveProducts } from '../services/productService';
+import { fetchProductByIdOrSlug, fetchLiveProducts, submitProductReview } from '../services/productService';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 
@@ -54,6 +54,67 @@ export const ProductDetailsPage = () => {
   // Interactive Feedback States
   const [addedAnimation, setAddedAnimation] = useState(false);
   const [copiedShare, setCopiedShare] = useState(false);
+
+  // Dynamic Customer Review Form States
+  const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [customerReviewName, setCustomerReviewName] = useState('');
+  const [customerReviewEmail, setCustomerReviewEmail] = useState('');
+  const [customerReviewComment, setCustomerReviewComment] = useState('');
+  const [isSubmittingReview, setIsSubmittingReview] = useState(false);
+  const [reviewSuccessMsg, setReviewSuccessMsg] = useState('');
+  const [reviewErrorMsg, setReviewErrorMsg] = useState('');
+
+  const handleCustomerReviewSubmit = async (e) => {
+    e.preventDefault();
+    const trimmedName = customerReviewName.trim();
+    const trimmedComment = customerReviewComment.trim();
+
+    if (!trimmedName || !trimmedComment) {
+      setReviewErrorMsg('Please fill in your name and review comments.');
+      return;
+    }
+
+    if (/^\s*rs\s*gifts?\s*$/i.test(trimmedName)) {
+      setReviewErrorMsg('Please enter your personal name, not the store name.');
+      return;
+    }
+
+    try {
+      setIsSubmittingReview(true);
+      setReviewErrorMsg('');
+      setReviewSuccessMsg('');
+
+      const prodId = product?._id || product?.id;
+      const res = await submitProductReview({
+        productId: prodId,
+        rating: reviewRating,
+        comment: trimmedComment,
+        customerName: trimmedName,
+        customerEmail: customerReviewEmail.trim()
+      });
+
+      const newRev = res?.review || {
+        _id: 'rev_' + Date.now(),
+        customerName: trimmedName,
+        rating: reviewRating,
+        comment: trimmedComment,
+        createdAt: new Date().toISOString(),
+        isApproved: true
+      };
+
+      setReviews((prev) => [newRev, ...prev]);
+      setCustomerReviewComment('');
+      setReviewSuccessMsg('Thank you! Your review has been submitted and is now published.');
+      setIsReviewFormOpen(false);
+    } catch (err) {
+      console.error('Failed to submit review:', err);
+      setReviewErrorMsg(err.message || 'Could not submit review. Please try again.');
+    } finally {
+      setIsSubmittingReview(false);
+    }
+  };
 
   // Dynamically calculated rating
   const averageRating = reviews.length > 0
@@ -700,6 +761,7 @@ export const ProductDetailsPage = () => {
 
             {activeTab === 'reviews' && (
               <div className="space-y-6 max-w-4xl">
+                {/* Header Rating Box & Write Review Button */}
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
                   <div>
                     <div className="flex items-center gap-2">
@@ -720,10 +782,159 @@ export const ProductDetailsPage = () => {
                     <p className="text-xs text-[#705E67] mt-1">
                       {reviews.length > 0
                         ? `Based on ${reviews.length} customer review${reviews.length > 1 ? 's' : ''}`
-                        : 'No reviews yet for this product.'}
+                        : 'No reviews yet for this product. Be the first to share your thoughts!'}
                     </p>
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsReviewFormOpen((prev) => !prev);
+                      setReviewErrorMsg('');
+                      setReviewSuccessMsg('');
+                    }}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#68132B] text-white text-xs font-bold transition-all shadow-xs cursor-pointer self-start sm:self-auto"
+                  >
+                    <Star className="w-4 h-4 fill-white" />
+                    <span>{isReviewFormOpen ? 'Close Form' : 'Write a Review'}</span>
+                  </button>
                 </div>
+
+                {/* Review Success Alert */}
+                {reviewSuccessMsg && (
+                  <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-medium flex items-center justify-between">
+                    <span>{reviewSuccessMsg}</span>
+                    <button
+                      type="button"
+                      onClick={() => setReviewSuccessMsg('')}
+                      className="text-emerald-700 hover:text-emerald-900 font-bold ml-2 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+
+                {/* Dynamic Customer Review Submission Form */}
+                {isReviewFormOpen && (
+                  <form
+                    onSubmit={handleCustomerReviewSubmit}
+                    className="p-5 rounded-2xl bg-[#FFFDFD] border border-[#821D38]/30 shadow-md space-y-4 animate-fade-in"
+                  >
+                    <div className="flex items-center justify-between border-b border-[#ECE3E7] pb-3">
+                      <div>
+                        <h4 className="text-sm font-bold text-[#1E1217]">Write a Customer Review</h4>
+                        <p className="text-xs text-[#705E67] mt-0.5">
+                          Share your honest feedback to help fellow gift shoppers.
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsReviewFormOpen(false)}
+                        className="text-xs text-[#8C7D85] hover:text-[#1E1217] cursor-pointer"
+                      >
+                        ✕ Cancel
+                      </button>
+                    </div>
+
+                    {reviewErrorMsg && (
+                      <div className="p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-medium">
+                        {reviewErrorMsg}
+                      </div>
+                    )}
+
+                    {/* Interactive Star Rating */}
+                    <div>
+                      <label className="block text-xs font-bold text-[#1E1217] mb-1.5">
+                        Your Rating <span className="text-[#821D38]">*</span>
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setReviewRating(star)}
+                              onMouseEnter={() => setHoverRating(star)}
+                              onMouseLeave={() => setHoverRating(0)}
+                              className="p-1 cursor-pointer transition-transform hover:scale-110"
+                            >
+                              <Star
+                                className={`w-5 h-5 ${
+                                  star <= (hoverRating || reviewRating)
+                                    ? 'fill-[#C9A45C] text-[#C9A45C]'
+                                    : 'text-gray-300 stroke-gray-300'
+                                }`}
+                              />
+                            </button>
+                          ))}
+                        </div>
+                        <span className="text-xs font-semibold text-[#821D38] ml-2">
+                          {reviewRating} of 5 Stars
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs font-bold text-[#1E1217] mb-1">
+                          Your Name <span className="text-[#821D38]">*</span>
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={customerReviewName}
+                          onChange={(e) => setCustomerReviewName(e.target.value)}
+                          placeholder="e.g. Pooja Verma"
+                          className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38]"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-xs font-bold text-[#1E1217] mb-1">
+                          Your Email <span className="text-[11px] font-normal text-[#8C7D85]">(Optional, kept private)</span>
+                        </label>
+                        <input
+                          type="email"
+                          value={customerReviewEmail}
+                          onChange={(e) => setCustomerReviewEmail(e.target.value)}
+                          placeholder="e.g. pooja@example.com"
+                          className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38]"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-[#1E1217] mb-1">
+                        Your Review & Experience <span className="text-[#821D38]">*</span>
+                      </label>
+                      <textarea
+                        required
+                        rows={3}
+                        value={customerReviewComment}
+                        onChange={(e) => setCustomerReviewComment(e.target.value)}
+                        placeholder="Tell other shoppers what you liked about the quality, gift box, or presentation..."
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38] resize-none"
+                      />
+                    </div>
+
+                    <div className="flex items-center justify-end gap-3 pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setIsReviewFormOpen(false)}
+                        className="px-4 py-2 rounded-xl border border-[#ECE3E7] text-xs font-semibold text-[#705E67] hover:text-[#1E1217] cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="submit"
+                        disabled={isSubmittingReview}
+                        className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#68132B] text-white text-xs font-bold transition-all shadow-xs cursor-pointer disabled:opacity-50"
+                      >
+                        {isSubmittingReview ? 'Submitting...' : 'Submit Review'}
+                      </button>
+                    </div>
+                  </form>
+                )}
 
                 {/* Customer Reviews List */}
                 {reviews.length > 0 ? (
@@ -743,7 +954,7 @@ export const ProductDetailsPage = () => {
                       const stars = Math.min(5, Math.max(1, Number(rev.rating) || 5));
 
                       return (
-                        <div key={rev._id || rev.id || i} className="p-4 rounded-2xl border border-[#ECE3E7] bg-white">
+                        <div key={rev._id || rev.id || i} className="p-4 rounded-2xl border border-[#ECE3E7] bg-white shadow-xs">
                           <div className="flex items-center justify-between mb-2">
                             <span className="font-bold text-xs sm:text-sm text-[#1E1217]">
                               {reviewerName}
@@ -776,9 +987,20 @@ export const ProductDetailsPage = () => {
                       <MessageSquare size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-[#1E1217] mb-1">No reviews yet</h4>
-                    <p className="text-xs text-[#705E67] max-w-sm mx-auto">
-                      Customer reviews will appear here once approved by our team.
+                    <p className="text-xs text-[#705E67] max-w-sm mx-auto mb-4">
+                      Be the first to share your experience with this gift!
                     </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsReviewFormOpen(true);
+                        setReviewErrorMsg('');
+                      }}
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#68132B] text-white text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    >
+                      <Star className="w-3.5 h-3.5 fill-white" />
+                      <span>Write the First Review</span>
+                    </button>
                   </div>
                 )}
               </div>

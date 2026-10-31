@@ -109,23 +109,18 @@ export const Navbar = ({ onSearch }) => {
           <button
             onClick={() => {
               if (user) {
-                if (user.role === 'admin') {
-                  const token = localStorage.getItem('rs_admin_token') || localStorage.getItem('rs_gifts_token') || '';
-                  window.location.href = `http://localhost:3000?token=${encodeURIComponent(token)}`;
-                } else {
-                  navigate('/account');
-                }
+                navigate('/account');
               } else {
                 openAuthModal('login');
               }
             }}
             className="p-1 text-[#1E1217] hover:text-[#821D38] relative cursor-pointer flex items-center justify-center"
             aria-label={user ? 'My Account' : 'Login / Register'}
-            title={user ? (user.role === 'admin' ? 'Admin Portal' : 'My Account') : 'Login / Register'}
+            title={user ? 'My Account' : 'Login / Register'}
           >
             {user ? (
               <div className="w-6 h-6 rounded-full bg-[#FDF2F4] border border-[#821D38] flex items-center justify-center text-[10.5px] font-bold text-[#821D38]">
-                {user.role === 'admin' ? 'RS' : (user.firstName?.charAt(0) || user.name?.charAt(0) || 'U')}
+                {user.firstName?.charAt(0) || user.name?.charAt(0) || 'U'}
               </div>
             ) : (
               <User size={21} strokeWidth={1.8} className="text-[#C9A45C]" />
@@ -237,20 +232,15 @@ export const Navbar = ({ onSearch }) => {
               >
                 <button
                   onClick={() => {
-                    if (user.role === 'admin') {
-                      const token = localStorage.getItem('rs_admin_token') || localStorage.getItem('rs_gifts_token') || '';
-                      window.location.href = `http://localhost:3000?token=${encodeURIComponent(token)}`;
-                    } else {
-                      navigate('/account');
-                    }
+                    navigate('/account');
                   }}
                   className="flex items-center gap-2 text-sm font-semibold text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer py-1"
-                  title={user.role === 'admin' ? 'Go to Admin Dashboard' : 'View Account'}
+                  title="View Account"
                 >
                   <div className="w-7 h-7 rounded-full bg-[#FDF2F4] border border-[#821D38] flex items-center justify-center text-xs font-bold text-[#821D38]">
-                    {user.role === 'admin' ? 'RS' : (user.firstName?.charAt(0) || 'U')}
+                    {user.firstName?.charAt(0) || user.name?.charAt(0) || 'U'}
                   </div>
-                  <span>{user.role === 'admin' ? 'RS Gifts' : user.firstName}</span>
+                  <span>{user.firstName || user.name?.split(' ')[0] || 'My Account'}</span>
                   <ChevronDown size={14} className={`transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
@@ -259,11 +249,9 @@ export const Navbar = ({ onSearch }) => {
                     <div className="px-4 py-2.5 border-b border-neutral-100">
                       <div className="flex items-center justify-between gap-2">
                         <p className="text-xs font-bold text-neutral-900 truncate">
-                          {user.role === 'admin' ? 'RS Gifts' : (user.name || `${user.firstName || ''} ${user.lastName || ''}`).replace(/Super Admin|Admin/gi, '').trim() || 'RS Gifts'}
+                          user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'My Account'
                         </p>
-                        {user.role === 'admin' && (
-                          <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#821D38] text-white font-bold uppercase tracking-wider shrink-0">Admin</span>
-                        )}
+                        
                       </div>
                       <p className="text-[11px] text-neutral-500 truncate mt-0.5">{user.email}</p>
                     </div>

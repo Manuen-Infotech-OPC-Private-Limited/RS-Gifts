@@ -228,7 +228,7 @@ export const BirthdayGiftsPage = () => {
                 No Birthday Gifts Added Yet
               </h3>
               <p className="text-xs sm:text-sm text-[#705E67] max-w-md mx-auto leading-relaxed">
-                When you add products and select <span className="font-semibold text-[#821D38]">"Birthday Gifts"</span> in the Admin panel, they will appear here automatically with your image, price, and name.
+                We are currently curating new gift items for this collection. Please check back soon!
               </p>
             </div>
           ) : (
@@ -237,11 +237,10 @@ export const BirthdayGiftsPage = () => {
               {products.map((product) => {
                 const isWishlisted = isInWishlist(product.id);
                 const isAdded = !!addedItems[product.id];
-                const displayDiscount = activeCoupon
-                  ? (activeCoupon.discountType === 'flat' || activeCoupon.discountType === 'fixed'
-                      ? `₹${activeCoupon.discountValue} OFF`
-                      : `${activeCoupon.discountValue}% OFF`)
-                  : product.discount || null;
+                const discountPercent = product.originalPrice && product.originalPrice > product.price
+                  ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+                  : 0;
+                const displayDiscount = discountPercent > 0 ? `${discountPercent}% OFF` : null;
 
                 return (
                   <div
@@ -320,12 +319,16 @@ export const BirthdayGiftsPage = () => {
                             {[...Array(5)].map((_, i) => (
                               <Star
                                 key={i}
-                                className="w-3 h-3 fill-[#C9A45C] stroke-[#C9A45C]"
+                                className={`w-3 h-3 ${
+                                  Number(product.reviews) > 0 && i < Math.round(Number(product.rating || 0))
+                                    ? 'fill-[#C9A45C] stroke-[#C9A45C]'
+                                    : 'text-gray-300 stroke-gray-300 fill-none'
+                                }`}
                               />
                             ))}
                           </div>
                           <span className="text-[11px] text-[#7A6E75] font-medium">
-                            ({product.reviews || 0})
+                            {Number(product.reviews) > 0 ? `${product.rating} (${product.reviews})` : '(0)'}
                           </span>
                         </div>
                       </div>

@@ -24,7 +24,7 @@ export const Contactus = () => {
         if (appRoot) appRoot.scrollTop = 0;
     }, []);
 
-    // Dynamic contact info synced with admin/MongoDB/localStorage (no hardcoded defaults)
+    // Dynamic store contact information
     const [contactInfo, setContactInfo] = useState(() => {
         try {
             const saved = localStorage.getItem('rs_gifts_contact_info');
@@ -590,7 +590,7 @@ export const Contactus = () => {
                         )}
                     </div>
 
-                    {/* Navigation Container - Left empty for admin to configure */}
+                    {/* Store Location Navigation Container */}
                     <div className="w-full h-[320px] sm:h-[400px] rounded-2xl overflow-hidden border border-[#ECE7EC] bg-[#FAF8FA] flex items-center justify-center relative">
                         {contactInfo.googleMapUrl ? (
                             <iframe
@@ -613,7 +613,7 @@ export const Contactus = () => {
                                     Google Navigation Map
                                 </p>
                                 <p className="text-xs text-[#6F6870] max-w-sm mx-auto leading-relaxed">
-                                    Google Navigation is currently empty. The store administrator can add the Google Maps navigation embed URL in the admin panel.
+                                    Visit our store or reach out to us directly via phone or email for store location and assistance.
                                 </p>
                             </div>
                         )}

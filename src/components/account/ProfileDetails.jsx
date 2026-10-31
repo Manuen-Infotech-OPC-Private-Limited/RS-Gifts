@@ -52,7 +52,7 @@ export const ProfileDetails = () => {
           {/* First Name */}
           <div>
             <label className="block text-xs font-bold text-[#29252A] mb-1.5">
-              First Name *
+              First Name
             </label>
             <div className="relative flex items-center">
               <User size={16} className="absolute left-3.5 text-neutral-400" />
@@ -82,7 +82,7 @@ export const ProfileDetails = () => {
           {/* Email */}
           <div>
             <label className="block text-xs font-bold text-[#29252A] mb-1.5">
-              Email Address *
+              Email Address
             </label>
             <div className="relative flex items-center">
               <Mail size={16} className="absolute left-3.5 text-neutral-400" />
@@ -99,7 +99,7 @@ export const ProfileDetails = () => {
           {/* Phone */}
           <div>
             <label className="block text-xs font-bold text-[#29252A] mb-1.5">
-              Mobile Number (+91) *
+              Mobile Number (+91)
             </label>
             <div className="relative flex items-center">
               <Phone size={16} className="absolute left-3.5 text-neutral-400" />

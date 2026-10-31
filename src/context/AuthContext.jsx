@@ -17,15 +17,9 @@ export const AuthProvider = ({ children }) => {
         const parsed = JSON.parse(saved);
         if (parsed) {
           if (parsed.avatar) delete parsed.avatar;
-          if (parsed.role === 'admin' || parsed.email === 'admin@rsgifts.com') {
-            parsed.name = 'RS Gifts';
-            parsed.firstName = 'RS';
-            parsed.lastName = 'Gifts';
-          } else {
-            if (parsed.name) parsed.name = parsed.name.replace(/Super Admin|Admin/gi, '').trim();
-            if (parsed.lastName) parsed.lastName = parsed.lastName.replace(/Super Admin|Admin/gi, '').trim();
-          }
-          parsed.role = parsed.role === 'admin' ? 'admin' : 'customer';
+          if (parsed.name) parsed.name = parsed.name.replace(/Super Admin|Admin/gi, '').trim() || 'User';
+          if (parsed.lastName) parsed.lastName = parsed.lastName.replace(/Super Admin|Admin/gi, '').trim();
+          parsed.role = 'customer';
           localStorage.setItem('rs_gifts_user', JSON.stringify(parsed));
           return parsed;
         }
@@ -103,12 +97,10 @@ export const AuthProvider = ({ children }) => {
 
       const token = data.token;
       const backendUser = data.user || {};
-      const rawName = (backendUser.role === 'admin' || backendUser.email === 'admin@rsgifts.com')
-        ? 'RS Gifts'
-        : (backendUser.name || 'User').replace(/Super Admin|Admin/gi, '').trim() || 'User';
+      const rawName = (backendUser.name || 'User').replace(/Super Admin|Admin/gi, '').trim() || 'User';
       const nameParts = rawName.split(' ');
-      const firstName = nameParts[0] || (backendUser.role === 'admin' ? 'RS' : 'User');
-      const lastName = nameParts.slice(1).join(' ') || (backendUser.role === 'admin' ? 'Gifts' : '');
+      const firstName = backendUser.firstName || nameParts[0] || 'User';
+      const lastName = backendUser.lastName || nameParts.slice(1).join(' ') || '';
 
       const loggedUser = {
         id: backendUser.id || backendUser._id || `usr_${Date.now()}`,
@@ -117,15 +109,13 @@ export const AuthProvider = ({ children }) => {
         lastName,
         email: backendUser.email || emailOrPhone,
         phone: backendUser.phone || '',
-        role: backendUser.role === 'admin' ? 'admin' : 'customer',
+        role: 'customer',
         addresses: backendUser.addresses || [],
       };
 
       if (token) {
         localStorage.setItem('rs_gifts_token', token);
-        if (loggedUser.role === 'admin') {
-          localStorage.setItem('rs_admin_token', token);
-        }
+        
       }
 
       setUser(loggedUser);
@@ -164,9 +154,7 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         localStorage.setItem('rs_gifts_token', token);
-        if (backendUser.role === 'admin') {
-          localStorage.setItem('rs_admin_token', token);
-        }
+        
       }
 
       setUser(newUser);
@@ -180,8 +168,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('rs_gifts_token');
-    localStorage.removeItem('rs_admin_token');
-    localStorage.removeItem('rs_gifts_user');
+        localStorage.removeItem('rs_gifts_user');
     setUser(null);
   };
 

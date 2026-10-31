@@ -180,12 +180,16 @@ export const WishlistPage = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className="w-3 h-3 fill-[#C9A45C] stroke-[#C9A45C]"
+                            className={`w-3 h-3 ${
+                              Number(product.reviews) > 0 && i < Math.round(Number(product.rating || 0))
+                                ? 'fill-[#C9A45C] stroke-[#C9A45C]'
+                                : 'text-gray-300 stroke-gray-300 fill-none'
+                            }`}
                           />
                         ))}
                       </div>
                       <span className="text-[11px] text-[#7A6E75] font-medium">
-                        ({product.reviews || 84})
+                        {Number(product.reviews) > 0 ? `${product.rating} (${product.reviews})` : '(0)'}
                       </span>
                     </div>
                   </div>

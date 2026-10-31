@@ -32,19 +32,6 @@ export const AccountPage = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // If user is admin, automatically redirect to admin dashboard
-  useEffect(() => {
-    if (user && user.role === 'admin') {
-      const token = localStorage.getItem('rs_admin_token') || localStorage.getItem('rs_gifts_token') || '';
-      window.location.href = `http://localhost:3000?token=${encodeURIComponent(token)}`;
-    }
-  }, [user]);
-
-  // If user is admin, do NOT show the customer account UI
-  if (user && user.role === 'admin') {
-    return null;
-  }
-
   // If user is not logged in
   if (!user) {
     return (
@@ -74,7 +61,6 @@ export const AccountPage = () => {
   return (
     <div className="w-full bg-[#FFF9F5] py-6 sm:py-8 font-sans select-none min-h-[75vh]">
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-
         {/* Dashboard 2-Column Layout */}
         <div className="flex flex-col lg:flex-row items-start gap-6 lg:gap-8">
           {/* Left Column: Navigation Sidebar */}

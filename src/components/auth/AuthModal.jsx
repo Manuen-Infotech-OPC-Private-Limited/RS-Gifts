@@ -16,15 +16,13 @@ export const AuthModal = () => {
   const [registerPassword, setRegisterPassword] = useState('');
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
-  const [adminToken, setAdminToken] = useState(null);
-
+  
   if (!authModalOpen) return null;
 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setAdminToken(null);
-    if (!emailOrPhone.trim()) {
+        if (!emailOrPhone.trim()) {
       setError('Please enter your email or mobile number.');
       return;
     }
@@ -39,22 +37,12 @@ export const AuthModal = () => {
       return;
     }
 
-    if (res.user?.role === 'admin') {
-      setSuccessMsg('Welcome Administrator! Redirecting to Admin Dashboard...');
-      setAdminToken(res.token);
-      setTimeout(() => {
-        closeAuthModal();
-        const token = res.token || localStorage.getItem('rs_admin_token') || localStorage.getItem('rs_gifts_token') || '';
-        window.location.href = `http://localhost:3000?token=${encodeURIComponent(token)}`;
-      }, 700);
-    } else {
-      setSuccessMsg('Logged in successfully! Redirecting to your account...');
-      setTimeout(() => {
-        setSuccessMsg('');
-        closeAuthModal();
-        navigate('/account');
-      }, 600);
-    }
+    setSuccessMsg('Logged in successfully! Redirecting to your account...');
+    setTimeout(() => {
+      setSuccessMsg('');
+      closeAuthModal();
+      navigate('/account');
+    }, 600);
   };
 
   const handleRegisterSubmit = async (e) => {
