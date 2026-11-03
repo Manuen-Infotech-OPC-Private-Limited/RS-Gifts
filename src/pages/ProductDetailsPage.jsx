@@ -4,7 +4,6 @@ import {
   Heart,
   Star,
   Share2,
-  Sparkles,
   Package,
 
   Gift,
@@ -614,8 +613,7 @@ export const ProductDetailsPage = () => {
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                   <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
-                    <h4 className="font-bold text-[#821D38] mb-1.5 flex items-center gap-1.5">
-                      <Sparkles size={14} className="text-[#C9A45C]" />
+                    <h4 className="font-bold text-[#821D38] mb-1.5">
                       {product.experienceTitle || 'The RS Gifts Experience'}
                     </h4>
                     <p className="text-xs text-[#705E67] leading-relaxed">
