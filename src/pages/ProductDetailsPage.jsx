@@ -4,9 +4,7 @@ import {
   Heart,
   Star,
   Share2,
-  Truck,
-  ShieldCheck,
-  RefreshCw,
+
   Gift,
   ShoppingBag,
   Check,
@@ -445,39 +443,6 @@ export const ProductDetailsPage = () => {
                 {product.name}
               </h1>
 
-              {/* Ratings & Stock Availability Row */}
-              <div className="flex flex-wrap items-center gap-2.5 sm:gap-3.5 pb-3 mb-3.5 border-b border-[#ECE3E7]">
-                {/* Star Rating */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab('reviews');
-                    const el = document.getElementById('product-tabs-section');
-                    if (el) el.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="flex items-center gap-1.5 cursor-pointer group"
-                >
-                  <div className="flex items-center text-[#C9A45C]">
-                    {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-3.5 h-3.5 ${i < Math.round(Number(averageRating))
-                          ? 'fill-[#C9A45C] stroke-[#C9A45C]'
-                          : 'text-gray-300 stroke-gray-300'
-                          }`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-xs font-bold text-[#1E1217]">
-                    {averageRating}
-                  </span>
-                  <span className="text-xs text-[#705E67] group-hover:text-[#821D38] transition-colors">
-                    ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
-                  </span>
-                </button>
-
-
-              </div>
 
               {/* Price Section */}
               <div className="bg-[#FAF4F1] p-3 sm:p-3.5 rounded-xl border border-[#EBE1DC] mb-3.5">
@@ -601,29 +566,7 @@ export const ProductDetailsPage = () => {
               </div>
             </div>
 
-            {/* Trust Highlights Grid (4 Key Pillars) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3.5 mt-3.5 border-t border-[#ECE3E7]">
-              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <Truck className="w-4 h-4 text-[#C9A45C] mb-1" />
-                <span className="text-[10.5px] font-bold text-[#1E1217]">Free Shipping</span>
-                <span className="text-[9px] text-[#705E67]">Orders over ₹999</span>
-              </div>
-              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <ShieldCheck className="w-4 h-4 text-[#C9A45C] mb-1" />
-                <span className="text-[10.5px] font-bold text-[#1E1217]">100% Secure</span>
-                <span className="text-[9px] text-[#705E67]">Encrypted Checkout</span>
-              </div>
-              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <RefreshCw className="w-4 h-4 text-[#C9A45C] mb-1" />
-                <span className="text-[10.5px] font-bold text-[#1E1217]">Easy Returns</span>
-                <span className="text-[9px] text-[#705E67]">7-Day Replacement</span>
-              </div>
-              <div className="flex flex-col items-center text-center p-2 rounded-lg bg-white border border-[#EFEBEF]">
-                <Gift className="w-4 h-4 text-[#C9A45C] mb-1" />
-                <span className="text-[10.5px] font-bold text-[#1E1217]">Gift Ready</span>
-                <span className="text-[9px] text-[#705E67]">Luxury Packaging</span>
-              </div>
-            </div>
+            
           </div>
         </div>
       </section>
