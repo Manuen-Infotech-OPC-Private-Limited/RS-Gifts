@@ -60,7 +60,7 @@ export const normalizeProduct = (p, activeCoupon = null) => {
     originalPrice: p.salePrice ? p.price : (p.originalPrice || salePrice),
     discount,
     activeCoupon: activeCoupon || p.activeCoupon || null,
-    rating: Number(p.ratings?.average !== undefined ? p.ratings.average : (p.rating !== undefined ? p.rating : 0)),
+    rating: Number(p.ratings?.average !== undefined && p.ratings.average !== null ? p.ratings.average : (p.rating !== undefined && p.rating !== null ? p.rating : 5)),
     reviews: Number(p.ratings?.count !== undefined ? p.ratings.count : (p.reviews !== undefined ? p.reviews : 0)),
     image: primaryImg,
     gallery,

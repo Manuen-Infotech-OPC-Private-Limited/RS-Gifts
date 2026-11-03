@@ -310,22 +310,20 @@ export const BirthdayGiftsPage = () => {
                         </div>
 
                         {/* Rating */}
-                        <div className="flex items-center gap-1 mb-2.5">
-                          <div className="flex items-center text-[#C9A45C]">
-                            {[...Array(5)].map((_, i) => (
+                        <div className="flex items-center gap-0.5 mb-2.5" title={`Rated ${product.rating || 5} out of 5 stars`}>
+                          {[1, 2, 3, 4, 5].map((starIndex) => {
+                            const isGold = starIndex <= Math.round(Number(product.rating || 5));
+                            return (
                               <Star
-                                key={i}
+                                key={starIndex}
                                 className={`w-3 h-3 ${
-                                  Number(product.reviews) > 0 && i < Math.round(Number(product.rating || 0))
-                                    ? 'fill-[#C9A45C] stroke-[#C9A45C]'
-                                    : 'text-gray-300 stroke-gray-300 fill-none'
+                                  isGold
+                                    ? 'fill-[#C9A45C] text-[#C9A45C] stroke-[#C9A45C]'
+                                    : 'fill-[#E8DFD8] text-[#D4C8BF] stroke-[#D4C8BF]'
                                 }`}
                               />
-                            ))}
-                          </div>
-                          <span className="text-[11px] text-[#7A6E75] font-medium">
-                            {Number(product.reviews) > 0 ? `${product.rating} (${product.reviews})` : '(0)'}
-                          </span>
+                            );
+                          })}
                         </div>
                       </div>
 
