@@ -476,25 +476,7 @@ export const ProductDetailsPage = () => {
                   </span>
                 </button>
 
-                <span className="text-[#D1C6CB]">•</span>
 
-                {/* Stock Status */}
-                {isOutOfStock ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#DC2626]">
-                    <span className="w-2 h-2 rounded-full bg-[#DC2626]"></span>
-                    Out of Stock
-                  </span>
-                ) : isLowStock ? (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D97706]">
-                    <span className="w-2 h-2 rounded-full bg-[#D97706] animate-ping"></span>
-                    Only {product.stock} left in stock!
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#15803D]">
-                    <span className="w-2 h-2 rounded-full bg-[#15803D]"></span>
-                    In Stock & Ready to Ship
-                  </span>
-                )}
               </div>
 
               {/* Price Section */}
