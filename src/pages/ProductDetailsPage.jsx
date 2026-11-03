@@ -607,31 +607,9 @@ export const ProductDetailsPage = () => {
                 <h3 className="text-base sm:text-lg font-bold text-[#1E1217]">
                   About {product.name}
                 </h3>
-                <p className="leading-relaxed">
+                <div className="leading-relaxed whitespace-pre-line text-sm sm:text-base text-[#5C4A52]">
                   {product.description ||
                     'Each gift from RS Gifts is meticulously handcrafted with love and utmost attention to detail. Designed to evoke genuine smiles, this curated gift piece blends modern luxury with thoughtful emotions.'}
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-                  <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
-                    <h4 className="font-bold text-[#821D38] mb-1.5">
-                      {product.experienceTitle || 'The RS Gifts Experience'}
-                    </h4>
-                    <p className="text-xs text-[#705E67] leading-relaxed">
-                      {product.experienceText ||
-                        'Curated with high-grade materials and packaged inside our signature luxury box, ensuring an unforgettable unboxing moment.'}
-                    </p>
-                  </div>
-                  <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
-                    <h4 className="font-bold text-[#821D38] mb-1.5 flex items-center gap-1.5">
-                      <Gift size={14} className="text-[#C9A45C]" /> Perfect Occasions
-                    </h4>
-                    <p className="text-xs text-[#705E67] leading-relaxed">
-                      Ideal for{' '}
-                      {product.occasions && product.occasions.length > 0
-                        ? product.occasions.join(', ')
-                        : 'Birthdays, Anniversaries, Romantic Surprises, and Festive Celebrations'}.
-                    </p>
-                  </div>
                 </div>
               </div>
             )}
