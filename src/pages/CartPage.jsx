@@ -193,7 +193,7 @@ export const CartPage = () => {
 
       const response = await api.post('/customer/orders', orderPayload);
       const createdOrder = response?.order || {
-        orderNumber: `RS${Math.floor(1000 + Math.random() * 9000)}${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+        orderNumber: `RS${Math.floor(10 + Math.random() * 90)}${Math.random().toString(36).substring(2, 4).toUpperCase()}`, // Strictly 6 characters
         totalAmount: grandTotal,
         orderStatus: 'Pending',
         createdAt: new Date().toISOString(),
@@ -664,12 +664,12 @@ export const CartPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <div>
                     <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
-                      Recipient Full Name *
+                      Recipient Full Name
                     </label>
                     <input
                       type="text"
                       required
-                      placeholder="e.g. Rahul Sharma"
+                      placeholder="e.g.Rahuk"
                       value={checkoutForm.recipientName}
                       onChange={(e) => setCheckoutForm({ ...checkoutForm, recipientName: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
@@ -677,12 +677,12 @@ export const CartPage = () => {
                   </div>
                   <div>
                     <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
-                      Contact Mobile Number *
+                      Contact Number
                     </label>
                     <input
                       type="tel"
                       required
-                      placeholder="e.g. 9876543210"
+                      placeholder="9876543210"
                       value={checkoutForm.phone}
                       onChange={(e) => setCheckoutForm({ ...checkoutForm, phone: e.target.value })}
                       className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
@@ -697,12 +697,12 @@ export const CartPage = () => {
                 </span>
                 <div>
                   <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
-                    Street Address / Flat / House No. *
+                    Street Address / Flat / House No.
                   </label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Flat 402, Lotus Residency, MG Road"
+                    placeholder="e.g. Flat 402 Mg Road"
                     value={checkoutForm.addressLine1}
                     onChange={(e) => setCheckoutForm({ ...checkoutForm, addressLine1: e.target.value })}
                     className="w-full px-3 py-2 rounded-xl border border-[#ECE7EC] bg-[#FAF8FA] text-neutral-900 focus:bg-white focus:border-[#821D38] focus:outline-none"
@@ -712,7 +712,7 @@ export const CartPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>
                     <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
-                      City *
+                      City
                     </label>
                     <input
                       type="text"
@@ -725,7 +725,7 @@ export const CartPage = () => {
                   </div>
                   <div>
                     <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
-                      State *
+                      State
                     </label>
                     <input
                       type="text"
@@ -738,7 +738,7 @@ export const CartPage = () => {
                   </div>
                   <div>
                     <label className="block text-[11px] font-semibold text-neutral-700 mb-1">
-                      PIN Code *
+                      PIN Code
                     </label>
                     <input
                       type="text"
@@ -758,11 +758,10 @@ export const CartPage = () => {
                 </span>
                 <div className="grid grid-cols-2 gap-3">
                   <label
-                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${
-                      checkoutForm.paymentMethod === 'COD'
-                        ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
-                        : 'border-[#ECE7EC] bg-white text-neutral-700'
-                    }`}
+                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${checkoutForm.paymentMethod === 'COD'
+                      ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
+                      : 'border-[#ECE7EC] bg-white text-neutral-700'
+                      }`}
                   >
                     <input
                       type="radio"
@@ -776,11 +775,10 @@ export const CartPage = () => {
                   </label>
 
                   <label
-                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${
-                      checkoutForm.paymentMethod === 'UPI'
-                        ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
-                        : 'border-[#ECE7EC] bg-white text-neutral-700'
-                    }`}
+                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${checkoutForm.paymentMethod === 'UPI'
+                      ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
+                      : 'border-[#ECE7EC] bg-white text-neutral-700'
+                      }`}
                   >
                     <input
                       type="radio"

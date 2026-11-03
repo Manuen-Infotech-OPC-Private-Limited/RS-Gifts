@@ -33,6 +33,27 @@ export const Footer = ({
     };
   });
 
+  const [storeLogo, setStoreLogo] = useState(() => {
+    try {
+      return localStorage.getItem('rs_gifts_store_logo') || '';
+    } catch (e) {
+      return '';
+    }
+  });
+
+  const [socialLinks, setSocialLinks] = useState(() => {
+    try {
+      const saved = localStorage.getItem('rs_gifts_social_links');
+      if (saved) return JSON.parse(saved);
+    } catch (e) { }
+    return {
+      facebook: '',
+      instagram: '',
+      youtube: '',
+      pinterest: '',
+    };
+  });
+
   useEffect(() => {
     // Fetch live public contact settings dynamically from MongoDB
     api.get('/customer/content/settings')
@@ -48,6 +69,22 @@ export const Footer = ({
           setContactInfo(liveContact);
           try {
             localStorage.setItem('rs_gifts_contact_info', JSON.stringify(liveContact));
+          } catch (e) { }
+          if (s.storeLogo !== undefined) {
+            setStoreLogo(s.storeLogo || '');
+            try {
+              localStorage.setItem('rs_gifts_store_logo', s.storeLogo || '');
+            } catch (e) { }
+          }
+          const liveSocial = {
+            facebook: s.facebookUrl || '',
+            instagram: s.instagramUrl || '',
+            youtube: s.youtubeUrl || '',
+            pinterest: s.pinterestUrl || '',
+          };
+          setSocialLinks(liveSocial);
+          try {
+            localStorage.setItem('rs_gifts_social_links', JSON.stringify(liveSocial));
           } catch (e) { }
         }
       })
@@ -69,6 +106,14 @@ export const Footer = ({
             hours: parsed.hours || parsed.supportHours || ''
           });
         }
+        const savedLogo = localStorage.getItem('rs_gifts_store_logo');
+        if (savedLogo !== null) {
+          setStoreLogo(savedLogo);
+        }
+        const savedSocial = localStorage.getItem('rs_gifts_social_links');
+        if (savedSocial) {
+          setSocialLinks(JSON.parse(savedSocial));
+        }
       } catch (e) { }
     };
 
@@ -81,15 +126,33 @@ export const Footer = ({
           location: loc.includes('Srinagar Colony') ? '' : loc,
           hours: e.detail.hours || e.detail.supportHours || '',
         });
+        if (e.detail.storeLogo !== undefined) {
+          setStoreLogo(e.detail.storeLogo || '');
+        }
+        if (
+          e.detail.facebookUrl !== undefined ||
+          e.detail.instagramUrl !== undefined ||
+          e.detail.youtubeUrl !== undefined ||
+          e.detail.pinterestUrl !== undefined
+        ) {
+          setSocialLinks(prev => ({
+            facebook: e.detail.facebookUrl !== undefined ? e.detail.facebookUrl : prev.facebook,
+            instagram: e.detail.instagramUrl !== undefined ? e.detail.instagramUrl : prev.instagram,
+            youtube: e.detail.youtubeUrl !== undefined ? e.detail.youtubeUrl : prev.youtube,
+            pinterest: e.detail.pinterestUrl !== undefined ? e.detail.pinterestUrl : prev.pinterest,
+          }));
+        }
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
     window.addEventListener('rs_gifts_contact_updated', handleCustomUpdate);
+    window.addEventListener('rs_gifts_settings_updated', handleCustomUpdate);
 
     return () => {
       window.removeEventListener('storage', handleStorageChange);
       window.removeEventListener('rs_gifts_contact_updated', handleCustomUpdate);
+      window.removeEventListener('rs_gifts_settings_updated', handleCustomUpdate);
     };
   }, []);
 
@@ -124,53 +187,64 @@ export const Footer = ({
               onClick={() => handleNav('/')}
               className="inline-flex items-center gap-2.5 cursor-pointer group w-fit"
             >
-              {/* Gift Box Icon in #29252A */}
-              <svg width="36" height="32" viewBox="6 6 32 29" fill="none" className="shrink-0 transition-transform duration-200 group-hover:scale-105">
-                {/* Left Bow Loop */}
-                <path
-                  d="M22 12.5C18.5 7.2 11 6.5 11 10.5C11 14 18 13.5 22 13.5"
-                  stroke={primaryColor}
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+              {storeLogo ? (
+                <img
+                  src={storeLogo}
+                  alt="RS Gifts"
+                  onError={() => setStoreLogo('')}
+                  className="h-10 max-w-[160px] object-contain transition-transform duration-200 group-hover:scale-105"
                 />
-                {/* Right Bow Loop */}
-                <path
-                  d="M22 12.5C25.5 7.2 33 6.5 33 10.5C33 14 26 13.5 22 13.5"
-                  stroke={primaryColor}
-                  strokeWidth="2.4"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                {/* Knot */}
-                <circle cx="22" cy="13" r="2" fill={primaryColor} />
+              ) : (
+                <>
+                  {/* Gift Box Icon in #29252A */}
+                  <svg width="36" height="32" viewBox="6 6 32 29" fill="none" className="shrink-0 transition-transform duration-200 group-hover:scale-105">
+                    {/* Left Bow Loop */}
+                    <path
+                      d="M22 12.5C18.5 7.2 11 6.5 11 10.5C11 14 18 13.5 22 13.5"
+                      stroke={primaryColor}
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {/* Right Bow Loop */}
+                    <path
+                      d="M22 12.5C25.5 7.2 33 6.5 33 10.5C33 14 26 13.5 22 13.5"
+                      stroke={primaryColor}
+                      strokeWidth="2.4"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    {/* Knot */}
+                    <circle cx="22" cy="13" r="2" fill={primaryColor} />
 
-                {/* Lid */}
-                <rect x="7.5" y="13.5" width="29" height="5.5" rx="1" fill={primaryColor} />
-                <rect x="20.5" y="13.5" width="3" height="5.5" fill={bgColor} />
+                    {/* Lid */}
+                    <rect x="7.5" y="13.5" width="29" height="5.5" rx="1" fill={primaryColor} />
+                    <rect x="20.5" y="13.5" width="3" height="5.5" fill={bgColor} />
 
-                {/* Box Body */}
-                <rect x="9.5" y="19" width="25" height="14" rx="1" fill={primaryColor} />
-                <rect x="20.5" y="19" width="3" height="14" fill={bgColor} />
-              </svg>
+                    {/* Box Body */}
+                    <rect x="9.5" y="19" width="25" height="14" rx="1" fill={primaryColor} />
+                    <rect x="20.5" y="19" width="3" height="14" fill={bgColor} />
+                  </svg>
 
-              {/* Brand Typography */}
-              <div className="flex flex-col justify-center">
-                {/* Brand Name: Primary #29252A */}
-                <span
-                  style={{ color: primaryColor }}
-                  className="font-serif text-[25px] sm:text-[27px] font-bold leading-none tracking-[0.03em]"
-                >
-                  RS GIFTS
-                </span>
-                {/* Brand Subtitle: Secondary #6F6870 */}
-                <span
-                  style={{ color: secondaryColor }}
-                  className="text-[6.8px] sm:text-[7.2px] font-semibold tracking-[0.14em] uppercase mt-1 leading-none font-sans"
-                >
-                  GIFTS FOR A BRIGHTER TOMORROW
-                </span>
-              </div>
+                  {/* Brand Typography */}
+                  <div className="flex flex-col justify-center">
+                    {/* Brand Name: Primary #29252A */}
+                    <span
+                      style={{ color: primaryColor }}
+                      className="font-serif text-[25px] sm:text-[27px] font-bold leading-none tracking-[0.03em]"
+                    >
+                      RS GIFTS
+                    </span>
+                    {/* Brand Subtitle: Secondary #6F6870 */}
+                    <span
+                      style={{ color: secondaryColor }}
+                      className="text-[6.8px] sm:text-[7.2px] font-semibold tracking-[0.14em] uppercase mt-1 leading-none font-sans"
+                    >
+                      GIFTS FOR A BRIGHTER TOMORROW
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Brand Description: Secondary #6F6870 */}
@@ -185,11 +259,21 @@ export const Footer = ({
             <div className="flex items-center gap-2 pt-0.5">
               {/* Facebook: White circle with black 'f' */}
               <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noreferrer"
+                href={socialLinks.facebook ? socialLinks.facebook : '#!'}
+                onClick={(e) => {
+                  if (!socialLinks.facebook) {
+                    e.preventDefault();
+                  }
+                }}
+                target={socialLinks.facebook ? "_blank" : undefined}
+                rel={socialLinks.facebook ? "noopener noreferrer" : undefined}
                 aria-label="Facebook"
-                className="w-6.5 h-6.5 rounded-full bg-white flex items-center justify-center text-[#18181B] shadow-xs hover:scale-110 active:scale-95 transition-transform"
+                title={socialLinks.facebook ? "Visit our Facebook page" : "Facebook (Not configured)"}
+                className={`w-6.5 h-6.5 rounded-full bg-white flex items-center justify-center text-[#18181B] shadow-xs transition-transform ${
+                  socialLinks.facebook
+                    ? 'hover:scale-110 active:scale-95 cursor-pointer'
+                    : 'cursor-default opacity-50'
+                }`}
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M13.5 21.5v-8.2h2.8l.4-3.2h-3.2V8.1c0-.9.3-1.6 1.6-1.6h1.7V3.7c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.2H7.5v3.2h2.6v8.2h3.4z" />
@@ -198,11 +282,21 @@ export const Footer = ({
 
               {/* Instagram: Dark circle with white camera icon */}
               <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noreferrer"
+                href={socialLinks.instagram ? socialLinks.instagram : '#!'}
+                onClick={(e) => {
+                  if (!socialLinks.instagram) {
+                    e.preventDefault();
+                  }
+                }}
+                target={socialLinks.instagram ? "_blank" : undefined}
+                rel={socialLinks.instagram ? "noopener noreferrer" : undefined}
                 aria-label="Instagram"
-                className="w-6.5 h-6.5 rounded-full bg-[#29252A] flex items-center justify-center text-white shadow-xs hover:scale-110 active:scale-95 transition-transform border border-white/20"
+                title={socialLinks.instagram ? "Visit our Instagram profile" : "Instagram (Not configured)"}
+                className={`w-6.5 h-6.5 rounded-full bg-[#29252A] flex items-center justify-center text-white shadow-xs transition-transform border border-white/20 ${
+                  socialLinks.instagram
+                    ? 'hover:scale-110 active:scale-95 cursor-pointer'
+                    : 'cursor-default opacity-50'
+                }`}
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -213,11 +307,21 @@ export const Footer = ({
 
               {/* YouTube: Red circle with white play triangle */}
               <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noreferrer"
+                href={socialLinks.youtube ? socialLinks.youtube : '#!'}
+                onClick={(e) => {
+                  if (!socialLinks.youtube) {
+                    e.preventDefault();
+                  }
+                }}
+                target={socialLinks.youtube ? "_blank" : undefined}
+                rel={socialLinks.youtube ? "noopener noreferrer" : undefined}
                 aria-label="YouTube"
-                className="w-6.5 h-6.5 rounded-full bg-[#E50914] flex items-center justify-center text-white shadow-xs hover:scale-110 active:scale-95 transition-transform"
+                title={socialLinks.youtube ? "Visit our YouTube channel" : "YouTube (Not configured)"}
+                className={`w-6.5 h-6.5 rounded-full bg-[#E50914] flex items-center justify-center text-white shadow-xs transition-transform ${
+                  socialLinks.youtube
+                    ? 'hover:scale-110 active:scale-95 cursor-pointer'
+                    : 'cursor-default opacity-50'
+                }`}
               >
                 <svg className="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />
@@ -226,11 +330,21 @@ export const Footer = ({
 
               {/* Pinterest: Red circle with white 'P' */}
               <a
-                href="https://pinterest.com"
-                target="_blank"
-                rel="noreferrer"
+                href={socialLinks.pinterest ? socialLinks.pinterest : '#!'}
+                onClick={(e) => {
+                  if (!socialLinks.pinterest) {
+                    e.preventDefault();
+                  }
+                }}
+                target={socialLinks.pinterest ? "_blank" : undefined}
+                rel={socialLinks.pinterest ? "noopener noreferrer" : undefined}
                 aria-label="Pinterest"
-                className="w-6.5 h-6.5 rounded-full bg-[#CB2027] flex items-center justify-center text-white shadow-xs hover:scale-110 active:scale-95 transition-transform"
+                title={socialLinks.pinterest ? "Visit our Pinterest page" : "Pinterest (Not configured)"}
+                className={`w-6.5 h-6.5 rounded-full bg-[#CB2027] flex items-center justify-center text-white shadow-xs transition-transform ${
+                  socialLinks.pinterest
+                    ? 'hover:scale-110 active:scale-95 cursor-pointer'
+                    : 'cursor-default opacity-50'
+                }`}
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12.5 2c-5.2 0-8.5 3.5-8.5 7.8 0 2.8 1.5 4.8 2.4 4.8.4 0 .6-1 .6-1.4 0-.4-.9-1.2-.9-2.7 0-3.3 2.5-5.9 6.2-5.9 3 0 5.1 1.7 5.1 4.5 0 2.3-1.1 6.5-3.8 6.5-1.2 0-2.1-1-2.1-2.3 0-1.9 1.4-3.8 1.4-5.8 0-1.4-.8-2.5-2.2-2.5-1.7 0-3.1 1.8-3.1 4.1 0 1.5.5 2.5.5 2.5s-1.8 7.5-2.1 8.8c-.4 1.5-.1 3.9 0 4.1.1.1.2.1.3 0 .2-.3 2.5-3.5 3.3-6.6l1.2-4.7c.4.8 1.6 1.5 2.8 1.5 4.3 0 6.6-4.1 6.6-8.5C21.7 6.1 17.8 2 12.5 2z" />

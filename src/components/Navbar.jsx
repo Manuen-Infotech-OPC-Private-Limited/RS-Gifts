@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { fetchLiveCategories } from '../services/productService';
+import api from '../services/api';
 import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
@@ -15,6 +16,53 @@ export const Navbar = ({ onSearch }) => {
   const [activeTab, setActiveTab] = useState('Home');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [storeLogo, setStoreLogo] = useState(() => {
+    try {
+      return localStorage.getItem('rs_gifts_store_logo') || '';
+    } catch (e) {
+      return '';
+    }
+  });
+
+  useEffect(() => {
+    let isMounted = true;
+    api.get('/customer/content/settings')
+      .then(res => {
+        if (!isMounted) return;
+        const s = res?.settings || res?.data?.settings;
+        if (s?.storeLogo !== undefined) {
+          setStoreLogo(s.storeLogo || '');
+          try {
+            localStorage.setItem('rs_gifts_store_logo', s.storeLogo || '');
+          } catch (e) {}
+        }
+      })
+      .catch(() => {});
+
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem('rs_gifts_store_logo');
+        if (saved !== null) {
+          setStoreLogo(saved);
+        }
+      } catch (e) {}
+    };
+
+    const handleSettingsUpdate = (e) => {
+      if (e?.detail?.storeLogo !== undefined) {
+        setStoreLogo(e.detail.storeLogo || '');
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('rs_gifts_settings_updated', handleSettingsUpdate);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('rs_gifts_settings_updated', handleSettingsUpdate);
+    };
+  }, []);
 
   const [subnavItems, setSubnavItems] = useState([
     { label: 'Home', path: '/' },
@@ -74,34 +122,45 @@ export const Navbar = ({ onSearch }) => {
           onClick={() => navigate('/')}
           className="flex items-center gap-1.5 cursor-pointer select-none"
         >
-          <svg width="26" height="26" viewBox="6 6 32 29" fill="none" className="shrink-0">
-            <path
-              d="M22 12.5C18.5 7.2 11 6.5 11 10.5C11 14 18 13.5 22 13.5"
-              stroke="#821D38"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {storeLogo ? (
+            <img
+              src={storeLogo}
+              alt="RS Gifts"
+              onError={() => setStoreLogo('')}
+              className="h-8 max-w-[130px] object-contain"
             />
-            <path
-              d="M22 12.5C25.5 7.2 33 6.5 33 10.5C33 14 26 13.5 22 13.5"
-              stroke="#821D38"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="22" cy="13" r="2" fill="#821D38" />
-            <rect x="7.5" y="13.5" width="29" height="6" rx="1.2" fill="#821D38" />
-            <rect x="20.5" y="13.5" width="3" height="6" fill="#FFFFFF" />
-            <rect x="9.5" y="19.5" width="25" height="14.5" rx="1" fill="#821D38" />
-            <rect x="20.5" y="19.5" width="3" height="14.5" fill="#FFFFFF" />
-          </svg>
-          <span
-            className="text-[22px] font-bold tracking-tight text-[#821D38]"
-            style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-          >
-            <span className="text-[#1E1217]">RS </span>
-            <span className="italic text-[#821D38]">Gifts</span>
-          </span>
+          ) : (
+            <>
+              <svg width="26" height="26" viewBox="6 6 32 29" fill="none" className="shrink-0">
+                <path
+                  d="M22 12.5C18.5 7.2 11 6.5 11 10.5C11 14 18 13.5 22 13.5"
+                  stroke="#821D38"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M22 12.5C25.5 7.2 33 6.5 33 10.5C33 14 26 13.5 22 13.5"
+                  stroke="#821D38"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <circle cx="22" cy="13" r="2" fill="#821D38" />
+                <rect x="7.5" y="13.5" width="29" height="6" rx="1.2" fill="#821D38" />
+                <rect x="20.5" y="13.5" width="3" height="6" fill="#FFFFFF" />
+                <rect x="9.5" y="19.5" width="25" height="14.5" rx="1" fill="#821D38" />
+                <rect x="20.5" y="19.5" width="3" height="14.5" fill="#FFFFFF" />
+              </svg>
+              <span
+                className="text-[22px] font-bold tracking-tight text-[#821D38]"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                <span className="text-[#1E1217]">RS </span>
+                <span className="italic text-[#821D38]">Gifts</span>
+              </span>
+            </>
+          )}
         </div>
 
         {/* Right Account & Cart */}
@@ -168,43 +227,54 @@ export const Navbar = ({ onSearch }) => {
           onClick={() => { setActiveTab('Home'); navigate('/'); }}
           className="flex items-center gap-3 cursor-pointer select-none shrink-0"
         >
-          <svg width="44" height="40" viewBox="6 6 32 29" fill="none" className="shrink-0">
-            {/* Left Bow Loop */}
-            <path
-              d="M22 12.5C18.5 7.2 11 6.5 11 10.5C11 14 18 13.5 22 13.5"
-              stroke="#821D38"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
+          {storeLogo ? (
+            <img
+              src={storeLogo}
+              alt="RS Gifts"
+              onError={() => setStoreLogo('')}
+              className="h-11 max-w-[180px] object-contain"
             />
-            {/* Right Bow Loop */}
-            <path
-              d="M22 12.5C25.5 7.2 33 6.5 33 10.5C33 14 26 13.5 22 13.5"
-              stroke="#821D38"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Knot */}
-            <circle cx="22" cy="13" r="2" fill="#821D38" />
+          ) : (
+            <>
+              <svg width="44" height="40" viewBox="6 6 32 29" fill="none" className="shrink-0">
+                {/* Left Bow Loop */}
+                <path
+                  d="M22 12.5C18.5 7.2 11 6.5 11 10.5C11 14 18 13.5 22 13.5"
+                  stroke="#821D38"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Right Bow Loop */}
+                <path
+                  d="M22 12.5C25.5 7.2 33 6.5 33 10.5C33 14 26 13.5 22 13.5"
+                  stroke="#821D38"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                {/* Knot */}
+                <circle cx="22" cy="13" r="2" fill="#821D38" />
 
-            {/* Lid */}
-            <rect x="7.5" y="13.5" width="29" height="6" rx="1.2" fill="#821D38" />
-            <rect x="20.5" y="13.5" width="3" height="6" fill="#FFFFFF" />
+                {/* Lid */}
+                <rect x="7.5" y="13.5" width="29" height="6" rx="1.2" fill="#821D38" />
+                <rect x="20.5" y="13.5" width="3" height="6" fill="#FFFFFF" />
 
-            {/* Box Body */}
-            <rect x="9.5" y="19.5" width="25" height="14.5" rx="1" fill="#821D38" />
-            <rect x="20.5" y="19.5" width="3" height="14.5" fill="#FFFFFF" />
-          </svg>
-          <div className="flex flex-col justify-center">
-            <span className="font-serif text-[32px] font-bold leading-none tracking-[0.04em] select-none">
-              <span className="text-[#111827]">RS </span>
-              <span className="text-[#821D38]">GIFTS</span>
-            </span>
-            <span className="text-[7.2px] font-semibold text-[#4B5563] tracking-[0.13em] uppercase mt-1 leading-none select-none">
-              GIFTS FOR A BRIGHTER TOMORROW
-            </span>
-          </div>
+                {/* Box Body */}
+                <rect x="9.5" y="19.5" width="25" height="14.5" rx="1" fill="#821D38" />
+                <rect x="20.5" y="19.5" width="3" height="14.5" fill="#FFFFFF" />
+              </svg>
+              <div className="flex flex-col justify-center">
+                <span className="font-serif text-[32px] font-bold leading-none tracking-[0.04em] select-none">
+                  <span className="text-[#111827]">RS </span>
+                  <span className="text-[#821D38]">GIFTS</span>
+                </span>
+                <span className="text-[7.2px] font-semibold text-[#4B5563] tracking-[0.13em] uppercase mt-1 leading-none select-none">
+                  GIFTS FOR A BRIGHTER TOMORROW
+                </span>
+              </div>
+            </>
+          )}
         </div>
 
         {/* Center Search Bar */}

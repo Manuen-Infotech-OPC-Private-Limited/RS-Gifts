@@ -120,11 +120,11 @@ export const ShopByCategory = ({ onSelectCategory }) => {
                   className="flex flex-col items-center shrink-0 cursor-pointer group active:scale-95 transition-transform"
                   style={{ width: '64px' }}
                 >
-                  <div className="w-[54px] h-[54px] flex items-center justify-center p-1 transition-transform duration-200 group-hover:scale-110 group-active:scale-95">
+                  <div className="w-[54px] h-[54px] flex items-center justify-center p-1 transition-transform duration-200 group-hover:scale-110 group-active:scale-95 shrink-0">
                     <img
                       src={category.image}
                       alt={category.displayName || category.name}
-                      className="w-full h-full object-contain"
+                      className="max-w-full max-h-full w-auto h-auto object-contain mix-blend-multiply"
                       loading="lazy"
                       onError={(e) => {
                         if (category.fallbackImage && e.target.src !== category.fallbackImage) {
@@ -145,18 +145,18 @@ export const ShopByCategory = ({ onSelectCategory }) => {
         {/* Desktop Categories Grid - Clean, Borderless Layout */}
         {!loading && (
           <div className="hidden md:block w-full">
-            <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2.5 sm:gap-3.5 lg:gap-4 xl:gap-4.5">
+            <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-9 gap-2.5 sm:gap-3.5 lg:gap-4 xl:gap-4.5 items-start">
               {categoriesList.map((category) => (
                 <div
                   key={category.id}
                   onClick={() => handleCategoryClick(category)}
-                  className="group flex flex-col items-center cursor-pointer select-none"
+                  className="group flex flex-col items-center cursor-pointer select-none w-full h-full justify-start text-center"
                 >
-                  <div className="w-full aspect-square flex items-center justify-center p-1.5 sm:p-2 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-110">
+                  <div className="w-full h-20 sm:h-24 md:h-20 lg:h-24 max-w-[96px] mx-auto flex items-center justify-center p-1 sm:p-1.5 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-110 shrink-0">
                     <img
                       src={category.image}
                       alt={category.displayName || category.name}
-                      className="w-full h-full object-contain transition-transform duration-300"
+                      className="max-w-full max-h-full w-auto h-auto object-contain transition-transform duration-300 mix-blend-multiply"
                       loading="lazy"
                       onError={(e) => {
                         if (category.fallbackImage && e.target.src !== category.fallbackImage) {

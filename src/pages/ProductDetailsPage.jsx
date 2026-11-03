@@ -227,7 +227,7 @@ export const ProductDetailsPage = () => {
         title: product?.name || 'RS Gifts',
         text: `Check out ${product?.name} on RS Gifts!`,
         url: window.location.href,
-      }).catch(() => {});
+      }).catch(() => { });
     } else {
       navigator.clipboard.writeText(window.location.href);
       setCopiedShare(true);
@@ -285,7 +285,7 @@ export const ProductDetailsPage = () => {
           </div>
           <h2 className="text-xl font-bold text-[#1E1217] mb-2">Gift Not Found</h2>
           <p className="text-sm text-[#705E67] mb-6 leading-relaxed">
-            The gift you are looking for might have been moved, updated, or is currently unavailable.
+            The gift your looking for is not available right now try best gifts from our premium collections
           </p>
           <button
             onClick={() => navigate('/')}
@@ -328,7 +328,7 @@ export const ProductDetailsPage = () => {
       {/* Main Product Showcase Section */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-5 sm:pt-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 xl:gap-10 items-start">
-          
+
           {/* LEFT COLUMN: Gallery with Thumbnails (Clean & Compact) */}
           <div className="lg:col-span-5 flex flex-col gap-3 select-none">
             {/* Main Image Stage */}
@@ -354,9 +354,8 @@ export const ProductDetailsPage = () => {
                 className="absolute top-3 right-3 w-9 h-9 rounded-full bg-white/95 hover:bg-white shadow-sm flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-90 cursor-pointer z-10"
               >
                 <Heart
-                  className={`w-4.5 h-4.5 transition-colors ${
-                    isWishlisted ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
-                  }`}
+                  className={`w-4.5 h-4.5 transition-colors ${isWishlisted ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
+                    }`}
                 />
               </button>
 
@@ -414,11 +413,10 @@ export const ProductDetailsPage = () => {
                       key={idx}
                       type="button"
                       onClick={() => setSelectedImageIndex(idx)}
-                      className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-white border-2 transition-all duration-200 cursor-pointer shrink-0 ${
-                        isActive
-                          ? 'border-[#821D38] ring-2 ring-[#821D38]/20 shadow-xs'
-                          : 'border-[#ECE3E7] hover:border-[#821D38]/50 opacity-80 hover:opacity-100'
-                      }`}
+                      className={`relative w-14 h-14 sm:w-16 sm:h-16 rounded-xl overflow-hidden bg-white border-2 transition-all duration-200 cursor-pointer shrink-0 ${isActive
+                        ? 'border-[#821D38] ring-2 ring-[#821D38]/20 shadow-xs'
+                        : 'border-[#ECE3E7] hover:border-[#821D38]/50 opacity-80 hover:opacity-100'
+                        }`}
                     >
                       <img
                         src={imgUrl}
@@ -463,11 +461,10 @@ export const ProductDetailsPage = () => {
                     {[...Array(5)].map((_, i) => (
                       <Star
                         key={i}
-                        className={`w-3.5 h-3.5 ${
-                          i < Math.round(Number(averageRating))
-                            ? 'fill-[#C9A45C] stroke-[#C9A45C]'
-                            : 'text-gray-300 stroke-gray-300'
-                        }`}
+                        className={`w-3.5 h-3.5 ${i < Math.round(Number(averageRating))
+                          ? 'fill-[#C9A45C] stroke-[#C9A45C]'
+                          : 'text-gray-300 stroke-gray-300'
+                          }`}
                       />
                     ))}
                   </div>
@@ -575,11 +572,10 @@ export const ProductDetailsPage = () => {
                   type="button"
                   disabled={isOutOfStock}
                   onClick={handleAddToCart}
-                  className={`w-full py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed ${
-                    addedAnimation
-                      ? 'bg-[#15803D] text-white'
-                      : 'bg-[#E8A0AD] hover:bg-[#df93a1] text-[#29252A]'
-                  }`}
+                  className={`w-full py-2.5 sm:py-3 px-4 rounded-xl text-xs sm:text-sm font-bold transition-all duration-200 shadow-xs flex items-center justify-center gap-2 cursor-pointer active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed ${addedAnimation
+                    ? 'bg-[#15803D] text-white'
+                    : 'bg-[#E8A0AD] hover:bg-[#df93a1] text-[#29252A]'
+                    }`}
                 >
                   {addedAnimation ? (
                     <>
@@ -666,9 +662,8 @@ export const ProductDetailsPage = () => {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`py-4 px-2 sm:px-4 text-xs sm:text-sm font-bold transition-all relative whitespace-nowrap cursor-pointer ${
-                    isActive ? 'text-[#821D38]' : 'text-[#705E67] hover:text-[#1E1217]'
-                  }`}
+                  className={`py-4 px-2 sm:px-4 text-xs sm:text-sm font-bold transition-all relative whitespace-nowrap cursor-pointer ${isActive ? 'text-[#821D38]' : 'text-[#705E67] hover:text-[#1E1217]'
+                    }`}
                 >
                   {tab.label}
                   {isActive && (
@@ -770,11 +765,10 @@ export const ProductDetailsPage = () => {
                         {[...Array(5)].map((_, i) => (
                           <Star
                             key={i}
-                            className={`w-4 h-4 ${
-                              i < Math.round(Number(averageRating))
-                                ? 'fill-[#C9A45C] stroke-[#C9A45C]'
-                                : 'text-gray-300 stroke-gray-300'
-                            }`}
+                            className={`w-4 h-4 ${i < Math.round(Number(averageRating))
+                              ? 'fill-[#C9A45C] stroke-[#C9A45C]'
+                              : 'text-gray-300 stroke-gray-300'
+                              }`}
                           />
                         ))}
                       </div>
@@ -859,11 +853,10 @@ export const ProductDetailsPage = () => {
                               className="p-1 cursor-pointer transition-transform hover:scale-110"
                             >
                               <Star
-                                className={`w-5 h-5 ${
-                                  star <= (hoverRating || reviewRating)
-                                    ? 'fill-[#C9A45C] text-[#C9A45C]'
-                                    : 'text-gray-300 stroke-gray-300'
-                                }`}
+                                className={`w-5 h-5 ${star <= (hoverRating || reviewRating)
+                                  ? 'fill-[#C9A45C] text-[#C9A45C]'
+                                  : 'text-gray-300 stroke-gray-300'
+                                  }`}
                               />
                             </button>
                           ))}
@@ -877,7 +870,7 @@ export const ProductDetailsPage = () => {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-xs font-bold text-[#1E1217] mb-1">
-                          Your Name <span className="text-[#821D38]">*</span>
+                          Your Name <span className="text-[#821D38]"></span>
                         </label>
                         <input
                           type="text"
@@ -946,10 +939,10 @@ export const ProductDetailsPage = () => {
                       }
                       const reviewDate = rev.createdAt
                         ? new Date(rev.createdAt).toLocaleDateString('en-IN', {
-                            day: 'numeric',
-                            month: 'short',
-                            year: 'numeric'
-                          })
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric'
+                        })
                         : rev.date || '';
                       const stars = Math.min(5, Math.max(1, Number(rev.rating) || 5));
 
@@ -1053,9 +1046,8 @@ export const ProductDetailsPage = () => {
                       className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white/95 hover:bg-white shadow-sm flex items-center justify-center transition-transform active:scale-90 cursor-pointer"
                     >
                       <Heart
-                        className={`w-4 h-4 transition-colors ${
-                          isRelWish ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
-                        }`}
+                        className={`w-4 h-4 transition-colors ${isRelWish ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
+                          }`}
                       />
                     </button>
                   </div>

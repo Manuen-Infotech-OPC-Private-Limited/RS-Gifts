@@ -299,7 +299,7 @@ export const AuthProvider = ({ children }) => {
   // Order actions
   const addCustomerOrder = (rawOrder) => {
     const formatted = {
-      id: rawOrder.orderNumber || rawOrder._id || `RS${Math.floor(1000 + Math.random() * 9000)}${Math.random().toString(36).substring(2, 6).toUpperCase()}`,
+      id: rawOrder.orderNumber || rawOrder._id || `RS${Math.floor(10 + Math.random() * 90)}${Math.random().toString(36).substring(2, 4).toUpperCase()}`, // Strictly 6 characters
       _id: rawOrder._id,
       orderNumber: rawOrder.orderNumber,
       date: rawOrder.createdAt || new Date().toISOString(),
