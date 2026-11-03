@@ -4,6 +4,8 @@ import {
   Heart,
   Star,
   Share2,
+  Sparkles,
+  Package,
 
   Gift,
   ShoppingBag,
@@ -613,18 +615,23 @@ export const ProductDetailsPage = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
                   <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
                     <h4 className="font-bold text-[#821D38] mb-1.5 flex items-center gap-1.5">
-                      The RS Gifts Experience
+                      <Sparkles size={14} className="text-[#C9A45C]" />
+                      {product.experienceTitle || 'The RS Gifts Experience'}
                     </h4>
-                    <p className="text-xs text-[#705E67]">
-                      Curated with high-grade materials and packaged inside our signature luxury box, ensuring an unforgettable unboxing moment.
+                    <p className="text-xs text-[#705E67] leading-relaxed">
+                      {product.experienceText ||
+                        'Curated with high-grade materials and packaged inside our signature luxury box, ensuring an unforgettable unboxing moment.'}
                     </p>
                   </div>
                   <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
                     <h4 className="font-bold text-[#821D38] mb-1.5 flex items-center gap-1.5">
                       <Gift size={14} className="text-[#C9A45C]" /> Perfect Occasions
                     </h4>
-                    <p className="text-xs text-[#705E67]">
-                      Ideal for {product.occasions?.length ? product.occasions.join(', ') : 'Birthdays, Anniversaries, Romantic Surprises, and Festive Celebrations'}.
+                    <p className="text-xs text-[#705E67] leading-relaxed">
+                      Ideal for{' '}
+                      {product.occasions && product.occasions.length > 0
+                        ? product.occasions.join(', ')
+                        : 'Birthdays, Anniversaries, Romantic Surprises, and Festive Celebrations'}.
                     </p>
                   </div>
                 </div>
@@ -632,26 +639,74 @@ export const ProductDetailsPage = () => {
             )}
 
             {activeTab === 'details' && (
-              <div className="max-w-2xl">
-                <h3 className="text-base sm:text-lg font-bold text-[#1E1217] mb-4">
-                  Specifications & Material Details
-                </h3>
-                <div className="divide-y divide-[#ECE3E7] border-y border-[#ECE3E7]">
-                  <div className="py-2.5 flex justify-between">
-                    <span className="text-[#705E67] font-medium">Category</span>
-                    <span className="font-bold text-[#1E1217]">{product.category || 'Gifts'}</span>
+              <div className="max-w-2xl space-y-6">
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-[#1E1217] mb-3">
+                    In The Box / Package Contents
+                  </h3>
+                  <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7] flex items-start gap-3">
+                    <Package className="w-5 h-5 text-[#821D38] shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-xs sm:text-sm font-semibold text-[#1E1217]">
+                        {product.inTheBox || `1x ${product.name}, Luxury Gift Box, RS Gifts Greeting Card`}
+                      </p>
+                      <p className="text-[11px] text-[#705E67] mt-0.5">
+                        Delivered securely inside our signature unboxing package.
+                      </p>
+                    </div>
                   </div>
-                  <div className="py-2.5 flex justify-between">
-                    <span className="text-[#705E67] font-medium">Stock Availability</span>
-                    <span className="font-bold text-[#1E1217]">{product.stock || 10} Units</span>
-                  </div>
-                  <div className="py-2.5 flex justify-between">
-                    <span className="text-[#705E67] font-medium">In The Box</span>
-                    <span className="font-bold text-[#1E1217]">1x {product.name}, Luxury Gift Box, Greeting Card</span>
-                  </div>
-                  <div className="py-2.5 flex justify-between">
-                    <span className="text-[#705E67] font-medium">Country of Origin</span>
-                    <span className="font-bold text-[#1E1217]">India</span>
+                </div>
+
+                <div>
+                  <h3 className="text-base sm:text-lg font-bold text-[#1E1217] mb-3">
+                    Specifications & Material Details
+                  </h3>
+                  <div className="divide-y divide-[#ECE3E7] border-y border-[#ECE3E7]">
+                    <div className="py-2.5 flex justify-between">
+                      <span className="text-[#705E67] font-medium">Category</span>
+                      <span className="font-bold text-[#1E1217]">{product.category || 'Gifts'}</span>
+                    </div>
+                    {product.specifications?.material && (
+                      <div className="py-2.5 flex justify-between">
+                        <span className="text-[#705E67] font-medium">Material</span>
+                        <span className="font-bold text-[#1E1217]">{product.specifications.material}</span>
+                      </div>
+                    )}
+                    {product.specifications?.dimensions && (
+                      <div className="py-2.5 flex justify-between">
+                        <span className="text-[#705E67] font-medium">Dimensions</span>
+                        <span className="font-bold text-[#1E1217]">{product.specifications.dimensions}</span>
+                      </div>
+                    )}
+                    {product.specifications?.weight && (
+                      <div className="py-2.5 flex justify-between">
+                        <span className="text-[#705E67] font-medium">Weight</span>
+                        <span className="font-bold text-[#1E1217]">{product.specifications.weight}</span>
+                      </div>
+                    )}
+                    {product.specifications?.color && (
+                      <div className="py-2.5 flex justify-between">
+                        <span className="text-[#705E67] font-medium">Color / Finish</span>
+                        <span className="font-bold text-[#1E1217]">{product.specifications.color}</span>
+                      </div>
+                    )}
+                    <div className="py-2.5 flex justify-between">
+                      <span className="text-[#705E67] font-medium">Country of Origin</span>
+                      <span className="font-bold text-[#1E1217]">{product.specifications?.countryOfOrigin || 'India'}</span>
+                    </div>
+                    {product.specifications?.careInstructions && (
+                      <div className="py-2.5 flex justify-between">
+                        <span className="text-[#705E67] font-medium">Care Instructions</span>
+                        <span className="font-bold text-[#1E1217]">{product.specifications.careInstructions}</span>
+                      </div>
+                    )}
+                    {Array.isArray(product.specifications?.customSpecs) &&
+                      product.specifications.customSpecs.map((spec, idx) => (
+                        <div key={idx} className="py-2.5 flex justify-between">
+                          <span className="text-[#705E67] font-medium">{spec.key}</span>
+                          <span className="font-bold text-[#1E1217]">{spec.value}</span>
+                        </div>
+                      ))}
                   </div>
                 </div>
               </div>
@@ -662,18 +717,26 @@ export const ProductDetailsPage = () => {
                 <h3 className="text-base sm:text-lg font-bold text-[#1E1217]">
                   Shipping Timelines & Return Policy
                 </h3>
-                <ul className="space-y-2 list-disc pl-5 text-[#5A4952]">
+                <ul className="space-y-2.5 list-disc pl-5 text-[#5A4952]">
                   <li>
-                    <strong>Dispatch:</strong> Orders placed before 4:00 PM IST are dispatched within 24 hours.
+                    <strong>Dispatch:</strong>{' '}
+                    {product.shippingDetails?.dispatchTimeline ||
+                      'Orders placed before 4:00 PM IST are dispatched within 24 hours.'}
                   </li>
                   <li>
-                    <strong>Transit Time:</strong> Metro cities: 2-3 business days. Rest of India: 3-5 business days.
+                    <strong>Transit Time:</strong>{' '}
+                    {product.shippingDetails?.transitTimeline ||
+                      'Metro cities: 2-3 business days. Rest of India: 3-5 business days.'}
                   </li>
                   <li>
-                    <strong>Free Delivery:</strong> Applied automatically on all orders above ₹999 across India.
+                    <strong>Free Delivery:</strong>{' '}
+                    {product.shippingDetails?.freeShippingNote ||
+                      'Applied automatically on all orders above ₹999 across India.'}
                   </li>
                   <li>
-                    <strong>Return Policy:</strong> We offer a 7-day hassle-free replacement in the unlikely event of transit damage or manufacturing defect.
+                    <strong>Return Policy:</strong>{' '}
+                    {product.shippingDetails?.returnPolicy ||
+                      'We offer a 7-day hassle-free replacement in the unlikely event of transit damage or manufacturing defect.'}
                   </li>
                 </ul>
               </div>

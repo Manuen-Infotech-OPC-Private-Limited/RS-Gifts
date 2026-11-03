@@ -73,6 +73,11 @@ export const normalizeProduct = (p, activeCoupon = null) => {
     lowStockThreshold: p.lowStockThreshold ?? 5,
     featured: !!p.featured,
     description: p.description || '',
+    experienceTitle: p.experienceTitle || 'The RS Gifts Experience',
+    experienceText: p.experienceText || '',
+    inTheBox: p.inTheBox || '',
+    specifications: p.specifications || {},
+    shippingDetails: p.shippingDetails || {},
     personalization: p.personalization || {
       allowCustomText: false,
       customTextLabel: '',
