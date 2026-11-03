@@ -1,9 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Truck, 
-  ShieldCheck, 
-  Gift, 
   ArrowRight, 
   Heart, 
   Star, 
@@ -50,12 +47,7 @@ export const BirthdayGiftsPage = () => {
     hasHeart: true,
     description: 'Thoughtful gifts, sweet surprises, and memorable hampers.\nBecause every birthday deserves something magical.',
     buttonText: 'Shop Birthday Gifts',
-    image: birthdayHeroImg || '/images/birthday-hero.png',
-    badges: [
-      { id: 'b1', icon: Truck, label: 'Fast & Reliable Delivery' },
-      { id: 'b2', icon: ShieldCheck, label: 'Secure Payments' },
-      { id: 'b3', icon: Gift, label: 'Easy Returns' },
-    ]
+    image: birthdayHeroImg || '/images/birthday-hero.png'
   };
 
   const [products, setProducts] = useState([]);
@@ -199,18 +191,7 @@ export const BirthdayGiftsPage = () => {
                 </button>
               </div>
 
-              {/* Trust Badges matching reference */}
-              <div className="flex flex-wrap items-center gap-3.5 sm:gap-5 text-[10.5px] sm:text-[11.5px] font-medium text-[#483B42]">
-                {birthdayData.badges.map((badge) => {
-                  const IconComponent = badge.icon || Gift;
-                  return (
-                    <div key={badge.id} className="flex items-center gap-1.5">
-                      <IconComponent className="w-3.5 h-3.5 text-[#C9A45C] stroke-[2] shrink-0" />
-                      <span>{badge.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
+              
             </div>
           </div>
         </div>

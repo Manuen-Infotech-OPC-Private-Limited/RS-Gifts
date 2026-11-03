@@ -3,11 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   ChevronLeft,
   ChevronRight,
-  Truck,
-  ShieldCheck,
-  Gift,
-  ArrowRight,
-  Clock
+  ArrowRight
 } from 'lucide-react';
 import api from '../services/api';
 
@@ -20,11 +16,6 @@ const defaultSlide = {
   buttonText: 'Shop Now',
   buttonLink: '/gifts',
   image: '/images/hero-banner-1.png',
-  badges: [
-    { id: 'b1', icon: Truck, label: 'Fast & Reliable Delivery' },
-    { id: 'b2', icon: ShieldCheck, label: 'Secure Payments' },
-    { id: 'b3', icon: Gift, label: 'Easy Returns' },
-  ],
 };
 
 export const HeroSection = ({ onShopNow }) => {
@@ -57,12 +48,7 @@ export const HeroSection = ({ onShopNow }) => {
               description: b.subtitle || 'Thoughtful gifts for every occasion. Because every moment deserves something special.',
               buttonText: b.buttonText || 'Shop Now',
               buttonLink: b.link || b.buttonLink || '/gifts',
-              image: b.image || b.imageUrl || '/images/hero-banner-1.png',
-              badges: [
-                { id: `b_${idx}_1`, icon: Truck, label: 'Fast & Reliable Delivery' },
-                { id: `b_${idx}_2`, icon: ShieldCheck, label: 'Secure Payments' },
-                { id: `b_${idx}_3`, icon: Gift, label: 'Easy Returns' },
-              ]
+              image: b.image || b.imageUrl || '/images/hero-banner-1.png'
             };
           });
           setSlides(dynamicSlides);
@@ -219,18 +205,7 @@ export const HeroSection = ({ onShopNow }) => {
                   </button>
                 </div>
 
-                {/* Trust Badges */}
-                <div className="hidden sm:flex flex-wrap items-center gap-3.5 sm:gap-5 text-[10.5px] sm:text-[11.5px] font-medium text-[#483B42]">
-                  {(slide.badges || []).map((badge) => {
-                    const IconComponent = badge.icon || Gift;
-                    return (
-                      <div key={badge.id} className="flex items-center gap-1.5">
-                        <IconComponent className="w-3.5 h-3.5 text-[#C9A45C] stroke-[2] shrink-0" />
-                        <span>{badge.label}</span>
-                      </div>
-                    );
-                  })}
-                </div>
+                
               </div>
             </div>
           </div>
