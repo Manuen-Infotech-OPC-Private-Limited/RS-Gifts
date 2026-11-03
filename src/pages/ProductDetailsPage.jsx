@@ -603,36 +603,35 @@ export const ProductDetailsPage = () => {
           {/* Tab Content Display */}
           <div className="p-6 sm:p-8 lg:p-10 text-xs sm:text-sm leading-relaxed text-[#483B42]">
             {activeTab === 'description' && (
-              <div className="space-y-4 max-w-4xl">
-                <h3 className="text-base sm:text-lg font-bold text-[#1E1217]">
-                  About {product.name}
-                </h3>
-                {product.description ? (
+              product.description ? (
+                <div className="space-y-4 max-w-4xl">
+                  <h3 className="text-base sm:text-lg font-bold text-[#1E1217]">
+                    About {product.name}
+                  </h3>
                   <div className="leading-relaxed whitespace-pre-line text-sm sm:text-base text-[#5C4A52]">
                     {product.description}
                   </div>
-                ) : null}
-              </div>
+                </div>
+              ) : null
             )}
 
             {activeTab === 'details' && (
               <div className="max-w-2xl space-y-6">
-                <div>
-                  <h3 className="text-base sm:text-lg font-bold text-[#1E1217] mb-3">
-                    In The Box / Package Contents
-                  </h3>
-                  <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7] flex items-start gap-3">
-                    <Package className="w-5 h-5 text-[#821D38] shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-xs sm:text-sm font-semibold text-[#1E1217]">
-                        {product.inTheBox || `1x ${product.name}, Luxury Gift Box, RS Gifts Greeting Card`}
-                      </p>
-                      <p className="text-[11px] text-[#705E67] mt-0.5">
-                        Delivered securely inside our signature unboxing package.
-                      </p>
+                {product.inTheBox ? (
+                  <div>
+                    <h3 className="text-base sm:text-lg font-bold text-[#1E1217] mb-3">
+                      In The Box / Package Contents
+                    </h3>
+                    <div className="p-4 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7] flex items-start gap-3">
+                      <Package className="w-5 h-5 text-[#821D38] shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs sm:text-sm font-semibold text-[#1E1217]">
+                          {product.inTheBox}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                ) : null}
 
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-[#1E1217] mb-3">
