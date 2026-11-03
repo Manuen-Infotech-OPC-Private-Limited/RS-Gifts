@@ -607,10 +607,11 @@ export const ProductDetailsPage = () => {
                 <h3 className="text-base sm:text-lg font-bold text-[#1E1217]">
                   About {product.name}
                 </h3>
-                <div className="leading-relaxed whitespace-pre-line text-sm sm:text-base text-[#5C4A52]">
-                  {product.description ||
-                    'Each gift from RS Gifts is meticulously handcrafted with love and utmost attention to detail. Designed to evoke genuine smiles, this curated gift piece blends modern luxury with thoughtful emotions.'}
-                </div>
+                {product.description ? (
+                  <div className="leading-relaxed whitespace-pre-line text-sm sm:text-base text-[#5C4A52]">
+                    {product.description}
+                  </div>
+                ) : null}
               </div>
             )}
 
