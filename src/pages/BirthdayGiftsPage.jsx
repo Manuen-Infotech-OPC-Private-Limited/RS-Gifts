@@ -43,6 +43,21 @@ export const BirthdayGiftsPage = () => {
     );
   };
 
+  const birthdayData = {
+    tagline: 'CELEBRATE THEIR SPECIAL DAY',
+    titleLine1: 'Make Every Birthday,',
+    titleLine2: 'Truly Unforgettable',
+    hasHeart: true,
+    description: 'Thoughtful gifts, sweet surprises, and memorable hampers.\nBecause every birthday deserves something magical.',
+    buttonText: 'Shop Birthday Gifts',
+    image: birthdayHeroImg || '/images/birthday-hero.png',
+    badges: [
+      { id: 'b1', icon: Truck, label: 'Fast & Reliable Delivery' },
+      { id: 'b2', icon: ShieldCheck, label: 'Secure Payments' },
+      { id: 'b3', icon: Gift, label: 'Easy Returns' },
+    ]
+  };
+
   const [products, setProducts] = useState([]);
   const [addedItems, setAddedItems] = useState({});
   const [activeCoupon, setActiveCoupon] = useState(null);
