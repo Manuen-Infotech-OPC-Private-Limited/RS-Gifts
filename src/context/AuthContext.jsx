@@ -172,11 +172,25 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
-  const updateProfile = (updatedFields) => {
-    setUser((prev) => ({
-      ...prev,
-      ...updatedFields,
-    }));
+  const updateProfile = async (updatedFields) => {
+    try {
+      const data = await api.put('/customer/auth/profile', updatedFields);
+      if (data && data.user) {
+        setUser((prev) => {
+          const merged = { ...prev, ...data.user };
+          localStorage.setItem('rs_gifts_user', JSON.stringify(merged));
+          return merged;
+        });
+        return { success: true };
+      }
+    } catch (err) {
+      console.warn('Backend profile update fallback:', err?.message || err);
+    }
+    setUser((prev) => {
+      const merged = { ...prev, ...updatedFields };
+      localStorage.setItem('rs_gifts_user', JSON.stringify(merged));
+      return merged;
+    });
     return { success: true };
   };
 

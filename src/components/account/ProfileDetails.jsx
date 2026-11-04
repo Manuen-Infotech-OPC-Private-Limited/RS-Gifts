@@ -21,9 +21,9 @@ export const ProfileDetails = () => {
     setSavedSuccess(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    updateProfile(formData);
+    await updateProfile(formData);
     setSavedSuccess(true);
     setTimeout(() => setSavedSuccess(false), 3000);
   };
