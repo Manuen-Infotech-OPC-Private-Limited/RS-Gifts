@@ -19,6 +19,15 @@ export const Navbar = ({ onSearch }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [giftsDropdownOpen, setGiftsDropdownOpen] = useState(false);
   const [mobileGiftsOpen, setMobileGiftsOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 6);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
   const [storeLogo, setStoreLogo] = useState(() => {
     try {
       return localStorage.getItem('rs_gifts_store_logo') || '';
@@ -116,7 +125,12 @@ export const Navbar = ({ onSearch }) => {
   };
 
   return (
-    <header className="w-full bg-white border-b border-[#ECE7EC] sticky top-0 z-50 font-sans">
+    <header
+      style={{ position: 'sticky', top: 0, zIndex: 1000 }}
+      className={`w-full bg-white border-b border-[#ECE7EC] sticky top-0 z-50 font-sans transition-shadow duration-200 ${
+        isScrolled ? 'shadow-md bg-white/98 backdrop-blur-xs' : 'shadow-none'
+      }`}
+    >
       {/* Mobile Top Row: Hamburger | Centered Logo | Wishlist & Cart */}
       <div className="flex md:hidden items-center justify-between px-4 py-2.5 bg-white">
         <button
