@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
@@ -9,6 +9,7 @@ import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, 
 
 export const Navbar = ({ onSearch }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, openAuthModal, logout } = useAuth();
   const { cartCount, openCartDrawer } = useCart();
   const { wishlistCount } = useWishlist();
@@ -16,6 +17,8 @@ export const Navbar = ({ onSearch }) => {
   const [activeTab, setActiveTab] = useState('Home');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [giftsDropdownOpen, setGiftsDropdownOpen] = useState(false);
+  const [mobileGiftsOpen, setMobileGiftsOpen] = useState(false);
   const [storeLogo, setStoreLogo] = useState(() => {
     try {
       return localStorage.getItem('rs_gifts_store_logo') || '';
@@ -64,41 +67,48 @@ export const Navbar = ({ onSearch }) => {
     };
   }, []);
 
-  const [subnavItems, setSubnavItems] = useState([
-    { label: 'Home', path: '/' },
-    { label: 'Birthday Gifts', path: '/birthday-gifts' },
+  const defaultGiftCategories = [
+    { label: 'Accessories', path: '/category/accessories' },
     { label: 'Anniversary Gifts', path: '/anniversary-gifts' },
-    { label: 'Personalized Gifts', path: '/personalized-gifts' },
-    { label: 'Contact Us', path: '/contact' }
-  ]);
+    { label: 'Birthday Gifts', path: '/birthday-gifts' },
+    { label: 'Corporate Gifts', path: '/category/corporate-gifts' },
+    { label: 'Festival Gifts', path: '/festival-gifts' },
+    { label: 'Flowers and Hampers', path: '/category/flowers-hampers' }
+  ];
+
+  const [giftCategories, setGiftCategories] = useState(defaultGiftCategories);
 
   useEffect(() => {
     let isMounted = true;
     fetchLiveCategories()
       .then((cats) => {
         if (isMounted && Array.isArray(cats) && cats.length > 0) {
-          const dynamicItems = [
-            { label: 'Home', path: '/' },
-            ...cats
-              .filter((c) => c && c.active !== false && !['home-decor', 'home-and-decor'].includes((c.slug || '').toLowerCase()))
-              .slice(0, 6)
-              .map((c) => {
-                const s = (c.slug || '').toLowerCase();
-                let path = `/category/${c.slug}`;
-                if (s.includes('birthday')) path = '/birthday-gifts';
-                else if (s.includes('anniversary')) path = '/anniversary-gifts';
-                else if (s.includes('personalized')) path = '/personalized-gifts';
-                else if (s.includes('festival') || s.includes('festive')) path = '/festival-gifts';
-                return { label: c.name, path };
-              }),
-            { label: 'Contact Us', path: '/contact' }
-          ];
-          setSubnavItems(dynamicItems);
+          const activeCats = cats
+            .filter((c) => c && c.active !== false && !['home-decor', 'home-and-decor'].includes((c.slug || '').toLowerCase()))
+            .map((c) => {
+              const s = (c.slug || '').toLowerCase();
+              const n = (c.name || '').toLowerCase();
+              let path = `/category/${c.slug}`;
+              if (s.includes('birthday') || n.includes('birthday')) path = '/birthday-gifts';
+              else if (s.includes('anniversary') || n.includes('anniversary')) path = '/anniversary-gifts';
+              else if (s.includes('personalized') || n.includes('personalized')) path = '/personalized-gifts';
+              else if (s.includes('festival') || s.includes('festive') || n.includes('festival')) path = '/festival-gifts';
+              else if (s.includes('corporate') || n.includes('corporate')) path = '/category/corporate-gifts';
+              else if (s.includes('flower') || n.includes('flower') || s.includes('hamper') || n.includes('hamper')) path = '/category/flowers-hampers';
+              else if (s.includes('accessori') || n.includes('accessori')) path = '/category/accessories';
+              return { label: c.name, path };
+            });
+
+          if (activeCats.length > 0) {
+            setGiftCategories(activeCats);
+          }
         }
       })
       .catch(() => {});
     return () => { isMounted = false; };
   }, []);
+
+  const isGiftsActive = giftCategories.some((cat) => location.pathname === cat.path) || location.pathname.startsWith('/category/') || location.pathname.includes('-gifts');
 
   const handleSearch = (e) => {
     e.preventDefault();
@@ -384,22 +394,101 @@ export const Navbar = ({ onSearch }) => {
       {/* Subnavigation Row: Centered with equal left/right gap, hidden on mobile */}
       <nav className="hidden md:block bg-white pb-1">
         <ul className="flex items-center justify-center gap-8 text-[13.5px] font-medium text-neutral-800 list-none m-0 p-0">
-          {subnavItems.map((item) => {
-            const isActive = activeTab === item.label;
-            return (
-              <li
-                key={item.label}
-                onClick={() => {
-                  setActiveTab(item.label);
-                  if (item.path) navigate(item.path);
-                }}
-                className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${isActive ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t' : ''
-                  }`}
+          {/* Home */}
+          <li
+            onClick={() => {
+              setActiveTab('Home');
+              navigate('/');
+            }}
+            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
+              location.pathname === '/'
+                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+                : ''
+            }`}
+          >
+            <span>Home</span>
+          </li>
+
+          {/* Gifts with Dropdown on Hover or Click */}
+          <li
+            className="relative py-2"
+            onMouseEnter={() => setGiftsDropdownOpen(true)}
+            onMouseLeave={() => setGiftsDropdownOpen(false)}
+          >
+            <button
+              type="button"
+              onClick={() => setGiftsDropdownOpen((prev) => !prev)}
+              className={`cursor-pointer flex items-center gap-1.5 hover:text-[#821D38] transition-colors py-0.5 select-none ${
+                isGiftsActive
+                  ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+                  : ''
+              }`}
+            >
+              <span>Gifts</span>
+              <ChevronDown
+                size={14}
+                className={`transition-transform duration-200 ${
+                  giftsDropdownOpen ? 'rotate-180 text-[#821D38]' : 'text-neutral-500'
+                }`}
+              />
+            </button>
+
+            {/* Dropdown Menu */}
+            {giftsDropdownOpen && (
+              <div
+                className="absolute top-full left-1/2 -translate-x-1/2 pt-1 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
               >
-                <span>{item.label}</span>
-              </li>
-            );
-          })}
+                <div className="bg-white min-w-[230px] rounded-2xl shadow-xl border border-neutral-100 p-1.5">
+                  <div className="px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100 mb-1">
+                    All Gifts & Occasions
+                  </div>
+                  <div className="space-y-0.5">
+                    {giftCategories.map((cat) => {
+                      const isCatActive = location.pathname === cat.path;
+                      return (
+                        <div
+                          key={cat.label}
+                          onClick={() => {
+                            setGiftsDropdownOpen(false);
+                            setActiveTab('Gifts');
+                            navigate(cat.path);
+                          }}
+                          className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors group ${
+                            isCatActive
+                              ? 'bg-[#FDF2F4] text-[#821D38]'
+                              : 'text-neutral-800 hover:text-[#821D38] hover:bg-[#FFF9F5]'
+                          }`}
+                        >
+                          <span>{cat.label}</span>
+                          <ChevronRight
+                            size={13}
+                            className={`transition-transform text-neutral-400 group-hover:text-[#821D38] group-hover:translate-x-0.5 ${
+                              isCatActive ? 'text-[#821D38]' : 'opacity-60'
+                            }`}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            )}
+          </li>
+
+          {/* Contact Us */}
+          <li
+            onClick={() => {
+              setActiveTab('Contact Us');
+              navigate('/contact');
+            }}
+            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
+              location.pathname === '/contact' || location.pathname === '/contact-us'
+                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+                : ''
+            }`}
+          >
+            <span>Contact Us</span>
+          </li>
         </ul>
       </nav>
 
@@ -438,26 +527,82 @@ export const Navbar = ({ onSearch }) => {
               <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C7D85] px-3 py-1.5">
                 Navigation
               </p>
-              {subnavItems.map((item) => {
-                const isActive = activeTab === item.label;
-                return (
-                  <button
-                    key={item.label}
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      setActiveTab(item.label);
-                      if (item.path) navigate(item.path);
-                    }}
-                    className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${isActive
-                        ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
-                        : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
-                      }`}
-                  >
-                    <span>{item.label}</span>
-                    <ChevronRight size={14} className={isActive ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
-                  </button>
-                );
-              })}
+              {/* Home */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/');
+                }}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                  location.pathname === '/'
+                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                }`}
+              >
+                <span>Home</span>
+                <ChevronRight size={14} className={location.pathname === '/' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
+              </button>
+
+              {/* Gifts Accordion */}
+              <div>
+                <button
+                  onClick={() => setMobileGiftsOpen((prev) => !prev)}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                    isGiftsActive
+                      ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                      : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                  }`}
+                >
+                  <span className="flex items-center gap-1.5">Gifts</span>
+                  <ChevronDown
+                    size={14}
+                    className={`transition-transform duration-200 ${
+                      mobileGiftsOpen ? 'rotate-180 text-[#821D38]' : 'text-[#A89CA2]'
+                    }`}
+                  />
+                </button>
+
+                {mobileGiftsOpen && (
+                  <div className="pl-3 pr-1 py-1 space-y-1 bg-[#FAF6F4]/60 rounded-xl mt-1">
+                    {giftCategories.map((cat) => {
+                      const isCatActive = location.pathname === cat.path;
+                      return (
+                        <button
+                          key={cat.label}
+                          onClick={() => {
+                            setMobileMenuOpen(false);
+                            navigate(cat.path);
+                          }}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                            isCatActive
+                              ? 'text-[#821D38] font-bold bg-[#FDF2F4]'
+                              : 'text-neutral-700 hover:text-[#821D38]'
+                          }`}
+                        >
+                          <span>{cat.label}</span>
+                          <ChevronRight size={12} className="text-neutral-400" />
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Contact Us */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/contact');
+                }}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                  location.pathname === '/contact' || location.pathname === '/contact-us'
+                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                }`}
+              >
+                <span>Contact Us</span>
+                <ChevronRight size={14} className={location.pathname === '/contact' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
+              </button>
 
               <div className="pt-2 border-t border-[#ECE7EC] mt-2">
                 <p className="text-[10px] font-bold uppercase tracking-wider text-[#8C7D85] px-3 py-1.5">
