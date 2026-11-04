@@ -317,13 +317,7 @@ export const Navbar = ({ onSearch }) => {
                 {userMenuOpen && (
                   <div className="absolute top-full right-0 bg-white min-w-[230px] rounded-2xl shadow-xl border border-neutral-100 py-2 z-50 animate-in fade-in duration-150">
                     <div className="px-4 py-2.5 border-b border-neutral-100">
-                      <div className="flex items-center justify-between gap-2">
-                        <p className="text-xs font-bold text-neutral-900 truncate">
-                          user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'My Account'
-                        </p>
-                        
-                      </div>
-                      <p className="text-[11px] text-neutral-500 truncate mt-0.5">{user.email}</p>
+                      <p className="text-xs font-semibold text-neutral-900 truncate">{user.email}</p>
                     </div>
 
                     <div className="pt-1">
