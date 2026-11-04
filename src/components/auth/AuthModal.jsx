@@ -202,20 +202,7 @@ export const AuthModal = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">
-                  Address <span className="text-neutral-400 font-normal">(Optional)</span>
-                </label>
-                <input
-                  type="text"
-                  placeholder="Flat / house no., street, city"
-                  value={registerAddress}
-                  onChange={(e) => setRegisterAddress(e.target.value)}
-                  className="w-full px-3 py-1.5 rounded-xl border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#821D38]"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">Password *</label>
+                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">Password</label>
                 <div className="relative flex items-center">
                   <Lock size={15} className="absolute left-3 text-neutral-400" />
                   <input
@@ -292,7 +279,7 @@ export const AuthModal = () => {
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">First Name *</label>
+                  <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">First Name</label>
                   <input
                     type="text"
                     placeholder="First name"
@@ -314,7 +301,7 @@ export const AuthModal = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">Email Address *</label>
+                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">Email Address</label>
                 <input
                   type="email"
                   placeholder="name@example.com"
@@ -349,7 +336,7 @@ export const AuthModal = () => {
               </div>
 
               <div>
-                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">Password *</label>
+                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">Password</label>
                 <input
                   type="password"
                   placeholder="Create a strong password"
