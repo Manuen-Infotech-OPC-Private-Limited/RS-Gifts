@@ -358,16 +358,6 @@ export const CartPage = () => {
                       <span className="text-sm font-bold text-[#821D38]">
                         ₹{item.price.toLocaleString('en-IN')}
                       </span>
-                      {item.originalPrice > item.price && (
-                        <span className="text-xs text-neutral-400 line-through">
-                          ₹{item.originalPrice.toLocaleString('en-IN')}
-                        </span>
-                      )}
-                      {item.discount && (
-                        <span className="text-[10px] font-semibold text-[#18794E] bg-[#E8F5E9] px-1.5 py-0.5 rounded">
-                          {item.discount}
-                        </span>
-                      )}
                     </div>
 
                     {/* Move to Wishlist / Remove Actions */}

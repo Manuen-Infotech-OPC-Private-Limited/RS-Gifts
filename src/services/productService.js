@@ -3,17 +3,10 @@ import api from './api';
 export const normalizeProduct = (p, activeCoupon = null) => {
   if (!p) return null;
 
-  // Calculate discount strictly from product's actual price and salePrice
-  const originalPrice = p.salePrice ? p.price : (p.originalPrice || p.price || 0);
-  const salePrice = p.salePrice ? p.salePrice : (p.price || 0);
-
-  let discount = '';
-  if (originalPrice > salePrice && originalPrice > 0) {
-    const pct = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
-    discount = `${pct}% OFF`;
-  } else if (p.discount && !p.discount.includes('OFF')) {
-    discount = p.discount;
-  }
+  const actualPrice = Number(p.salePrice || p.price || 0);
+  const originalPrice = actualPrice;
+  const salePrice = actualPrice;
+  const discount = '';
 
   let categories = ['All'];
   if (p.category) categories.push(p.category);

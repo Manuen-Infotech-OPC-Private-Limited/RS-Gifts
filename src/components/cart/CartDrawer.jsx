@@ -116,11 +116,6 @@ export const CartDrawer = () => {
                           <span className="text-xs font-bold text-[#821D38]">
                             ₹{item.price.toLocaleString('en-IN')}
                           </span>
-                          {item.originalPrice > item.price && (
-                            <span className="text-[10px] text-neutral-400 line-through">
-                              ₹{item.originalPrice.toLocaleString('en-IN')}
-                            </span>
-                          )}
                         </div>
                       </div>
 

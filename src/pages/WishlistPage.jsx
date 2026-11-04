@@ -162,16 +162,6 @@ export const WishlistPage = () => {
                       <span className="text-sm sm:text-[15px] font-bold text-[#1E1217]">
                         ₹{product.price.toLocaleString('en-IN')}
                       </span>
-                      {product.originalPrice > product.price && (
-                        <span className="text-[11px] sm:text-xs text-gray-400 line-through">
-                          ₹{product.originalPrice.toLocaleString('en-IN')}
-                        </span>
-                      )}
-                      {product.discount && (
-                        <span className="text-[10px] sm:text-[11px] font-semibold text-[#18794E] bg-[#E8F5E9] px-1.5 py-0.5 rounded">
-                          {product.discount}
-                        </span>
-                      )}
                     </div>
 
                     {/* Rating */}

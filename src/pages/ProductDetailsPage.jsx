@@ -451,16 +451,6 @@ export const ProductDetailsPage = () => {
                   <span className="text-xl sm:text-2xl font-extrabold text-[#1E1217]">
                     ₹{Number(product.price).toLocaleString('en-IN')}
                   </span>
-                  {product.originalPrice && product.originalPrice > product.price && (
-                    <span className="text-sm text-gray-400 line-through">
-                      ₹{Number(product.originalPrice).toLocaleString('en-IN')}
-                    </span>
-                  )}
-                  {product.discount && (
-                    <span className="text-[11px] font-bold text-[#15803D] bg-[#DCFCE7] px-2 py-0.5 rounded-md">
-                      {product.discount}
-                    </span>
-                  )}
                 </div>
                 <p className="text-[10.5px] text-[#705E67] mt-0.5">
                   Inclusive of all taxes. Free shipping on orders over ₹999.
@@ -1026,16 +1016,6 @@ export const ProductDetailsPage = () => {
                         <span className="text-sm font-bold text-[#1E1217]">
                           ₹{Number(relProd.price).toLocaleString('en-IN')}
                         </span>
-                        {relProd.originalPrice && relProd.originalPrice > relProd.price && (
-                          <span className="text-[11px] text-gray-400 line-through">
-                            ₹{Number(relProd.originalPrice).toLocaleString('en-IN')}
-                          </span>
-                        )}
-                        {relProd.discount && (
-                          <span className="text-[10px] font-semibold text-[#18794E] bg-[#E8F5E9] px-1.5 py-0.5 rounded">
-                            {relProd.discount}
-                          </span>
-                        )}
                       </div>
                       <div className="flex items-center gap-0.5 mb-2.5" title={`Rated ${relProd.rating || 5} out of 5 stars`}>
                         {[1, 2, 3, 4, 5].map((starIndex) => {

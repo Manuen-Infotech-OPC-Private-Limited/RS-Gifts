@@ -292,21 +292,11 @@ export const BirthdayGiftsPage = () => {
                           {product.name}
                         </h3>
 
-                        {/* Price & Discount */}
+                        {/* Price */}
                         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-1.5">
                           <span className="text-sm sm:text-[15px] font-bold text-[#1E1217]">
                             ₹{Number(product.price).toLocaleString('en-IN')}
                           </span>
-                          {product.originalPrice && product.originalPrice > product.price && (
-                            <span className="text-[11px] sm:text-xs text-gray-400 line-through">
-                              ₹{Number(product.originalPrice).toLocaleString('en-IN')}
-                            </span>
-                          )}
-                          {displayDiscount && (
-                            <span className="text-[10px] sm:text-[11px] font-semibold text-[#18794E] bg-[#E8F5E9] px-1.5 py-0.5 rounded">
-                              {displayDiscount}
-                            </span>
-                          )}
                         </div>
 
                         {/* Rating */}
