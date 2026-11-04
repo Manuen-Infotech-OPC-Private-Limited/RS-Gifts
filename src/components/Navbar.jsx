@@ -177,10 +177,12 @@ export const Navbar = ({ onSearch }) => {
             aria-label={user ? 'My Account' : 'Login / Register'}
             title={user ? 'My Account' : 'Login / Register'}
           >
-            {user ? (
-              <div className="w-6 h-6 rounded-full bg-[#FDF2F4] border border-[#821D38] flex items-center justify-center text-[10.5px] font-bold text-[#821D38]">
-                {user.firstName?.charAt(0) || user.name?.charAt(0) || 'U'}
-              </div>
+            {user?.avatar || user?.image ? (
+              <img
+                src={user.avatar || user.image}
+                alt="Profile"
+                className="w-6 h-6 rounded-full object-cover border border-[#821D38]"
+              />
             ) : (
               <User size={21} strokeWidth={1.8} className="text-[#C9A45C]" />
             )}
@@ -307,9 +309,13 @@ export const Navbar = ({ onSearch }) => {
                   className="flex items-center gap-2 text-sm font-semibold text-neutral-800 hover:text-[#821D38] transition-colors cursor-pointer py-1"
                   title="View Account"
                 >
-                  <div className="w-7 h-7 rounded-full bg-[#FDF2F4] border border-[#821D38] flex items-center justify-center text-xs font-bold text-[#821D38]">
-                    {user.firstName?.charAt(0) || user.name?.charAt(0) || 'U'}
-                  </div>
+                  {user?.avatar || user?.image ? (
+                    <img
+                      src={user.avatar || user.image}
+                      alt="Profile"
+                      className="w-7 h-7 rounded-full object-cover border border-[#821D38]"
+                    />
+                  ) : null}
                   <span>{user.firstName || user.name?.split(' ')[0] || 'My Account'}</span>
                   <ChevronDown size={14} className={`transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </button>

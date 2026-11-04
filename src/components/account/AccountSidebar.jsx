@@ -42,13 +42,14 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
       {/* User Mini Profile Card */}
       <div className="bg-white rounded-2xl p-5 border border-[#ECE7EC] shadow-xs">
         <div className="flex items-center gap-3.5">
-          {/* Branded Initials Avatar Badge */}
-          <div className="relative w-13 h-13 rounded-full bg-[#FDF2F4] border-2 border-[#821D38] flex items-center justify-center shrink-0 shadow-xs">
-            <span className="text-lg font-bold text-[#821D38] tracking-wider select-none">
-              {user.firstName?.charAt(0) || 'A'}
-              {user.lastName?.charAt(0) || 'R'}
-            </span>
-          </div>
+          {/* User Profile Image if uploaded, otherwise left empty */}
+          {(user?.avatar || user?.image) ? (
+            <img
+              src={user.avatar || user.image}
+              alt={user.firstName || user.name || 'Profile'}
+              className="w-13 h-13 rounded-full object-cover border-2 border-[#821D38] shrink-0 shadow-xs"
+            />
+          ) : null}
 
           <div className="flex flex-col min-w-0">
             <span className="font-bold text-sm text-[#111827] truncate">
