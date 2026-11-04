@@ -475,6 +475,21 @@ export const Navbar = ({ onSearch }) => {
             )}
           </li>
 
+          {/* About Us */}
+          <li
+            onClick={() => {
+              setActiveTab('About Us');
+              navigate('/about');
+            }}
+            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
+              location.pathname === '/about' || location.pathname === '/about-us'
+                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+                : ''
+            }`}
+          >
+            <span>About Us</span>
+          </li>
+
           {/* Contact Us */}
           <li
             onClick={() => {
@@ -587,6 +602,22 @@ export const Navbar = ({ onSearch }) => {
                   </div>
                 )}
               </div>
+
+              {/* About Us */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/about');
+                }}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                  location.pathname === '/about' || location.pathname === '/about-us'
+                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                }`}
+              >
+                <span>About Us</span>
+                <ChevronRight size={14} className={location.pathname === '/about' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
+              </button>
 
               {/* Contact Us */}
               <button

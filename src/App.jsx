@@ -15,6 +15,7 @@ import { WishlistPage } from './pages/WishlistPage';
 import { BirthdayGiftsPage } from './pages/BirthdayGiftsPage';
 import { ProductDetailsPage } from './pages/ProductDetailsPage';
 import { Contactus } from './pages/Contactus';
+import { AboutUsPage } from './pages/AboutUsPage';
 import { CartDrawer } from './components/cart/CartDrawer';
 import { BottomNav } from './components/BottomNav';
 import './App.css';
@@ -88,6 +89,11 @@ export function App() {
                 {/* User Account & Order Tracking */}
                 <Route path="/account" element={<AccountPage />} />
                 <Route path="/track-order" element={<AccountPage />} />
+
+                {/* About Us Page */}
+                <Route path="/about" element={<AboutUsPage />} />
+                <Route path="/about-us" element={<AboutUsPage />} />
+                <Route path="/aboutus" element={<AboutUsPage />} />
 
                 {/* Contact Us Page */}
                 <Route path="/contact" element={<Contactus />} />
