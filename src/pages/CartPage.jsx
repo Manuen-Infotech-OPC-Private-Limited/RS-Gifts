@@ -383,10 +383,9 @@ export const CartPage = () => {
                   <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-2 pt-2 sm:pt-0">
                     <div className="flex items-center border border-[#ECE7EC] rounded-xl overflow-hidden bg-[#FFF9F5]">
                       <button
-                        disabled={item.quantity <= 1}
-                        onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                        className="w-7 h-7 flex items-center justify-center text-neutral-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                        title={item.quantity <= 1 ? "Minimum quantity is 1" : "Decrease quantity"}
+                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                        className="w-7 h-7 flex items-center justify-center text-neutral-600 hover:bg-white hover:text-rose-600 transition-colors cursor-pointer"
+                        title={item.quantity <= 1 ? "Remove item from cart" : "Decrease quantity"}
                       >
                         <Minus size={12} />
                       </button>

@@ -133,10 +133,9 @@ export const CartDrawer = () => {
                     <div className="flex items-center justify-between mt-2 pt-1 border-t border-neutral-50">
                       <div className="flex items-center border border-[#ECE7EC] rounded-lg overflow-hidden bg-[#FAF8FA]">
                         <button
-                          disabled={item.quantity <= 1}
-                          onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                          className="w-6 h-6 flex items-center justify-center text-neutral-600 hover:bg-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors cursor-pointer"
-                          title={item.quantity <= 1 ? "Minimum quantity is 1" : "Decrease quantity"}
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          className="w-6 h-6 flex items-center justify-center text-neutral-600 hover:bg-white hover:text-rose-600 transition-colors cursor-pointer"
+                          title={item.quantity <= 1 ? "Remove item from cart" : "Decrease quantity"}
                         >
                           <Minus size={11} />
                         </button>
