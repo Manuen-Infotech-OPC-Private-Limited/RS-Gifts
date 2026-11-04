@@ -14,6 +14,7 @@ export const ProfileDetails = () => {
     dob: user?.dob || '',
     gender: user?.gender || 'Male',
     avatar: user?.avatar || user?.image || '',
+    address: user?.address || (user?.addresses?.[0]?.addressLine1 || ''),
   });
 
   const [uploading, setUploading] = useState(false);
@@ -221,6 +222,20 @@ export const ProfileDetails = () => {
               />
             </div>
           </div>
+        </div>
+
+        {/* Address */}
+        <div>
+          <label className="block text-xs font-bold text-[#29252A] mb-1.5">
+            Delivery / Permanent Address
+          </label>
+          <input
+            type="text"
+            value={formData.address}
+            placeholder="Flat / house no., street, city"
+            onChange={(e) => handleChange('address', e.target.value)}
+            className="w-full px-4 py-2.5 rounded-xl border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#821D38]"
+          />
         </div>
 
         {/* Gender Selection */}

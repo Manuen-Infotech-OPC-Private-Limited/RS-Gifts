@@ -108,6 +108,8 @@ export const AuthProvider = ({ children }) => {
         lastName,
         email: backendUser.email || emailOrPhone,
         phone: backendUser.phone || '',
+        avatar: backendUser.avatar || '',
+        address: backendUser.address || '',
         role: 'customer',
         addresses: backendUser.addresses || [],
       };
@@ -137,6 +139,7 @@ export const AuthProvider = ({ children }) => {
         password: formData.password,
         phone: formData.phone || '',
         avatar: formData.avatar || '',
+        address: formData.address?.trim() || '',
       });
 
       const token = data.token;
@@ -151,6 +154,7 @@ export const AuthProvider = ({ children }) => {
         email: backendUser.email || formData.email,
         phone: backendUser.phone || formData.phone || '',
         avatar: backendUser.avatar || formData.avatar || '',
+        address: backendUser.address || formData.address || '',
         role: backendUser.role || 'customer',
         addresses: backendUser.addresses || [],
       };

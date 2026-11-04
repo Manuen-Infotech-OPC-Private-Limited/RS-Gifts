@@ -14,6 +14,7 @@ export const AuthModal = () => {
   const [lastName, setLastName] = useState('');
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPhone, setRegisterPhone] = useState('');
+  const [registerAddress, setRegisterAddress] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
   const [avatar, setAvatar] = useState('');
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -102,6 +103,7 @@ export const AuthModal = () => {
       phone: registerPhone,
       password: registerPassword,
       avatar,
+      address: registerAddress,
     });
 
     if (!res.success) {
@@ -197,6 +199,19 @@ export const AuthModal = () => {
                     className="w-full pl-8 pr-3 py-2 rounded-xl border border-neutral-300 text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-[#821D38]"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">
+                  Address <span className="text-neutral-400 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Flat / house no., street, city"
+                  value={registerAddress}
+                  onChange={(e) => setRegisterAddress(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-xl border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#821D38]"
+                />
               </div>
 
               <div>
@@ -316,6 +331,19 @@ export const AuthModal = () => {
                   placeholder="+91 98765 43210"
                   value={registerPhone}
                   onChange={(e) => setRegisterPhone(e.target.value)}
+                  className="w-full px-3 py-1.5 rounded-xl border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#821D38]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-semibold text-neutral-700 mb-0.5">
+                  Address <span className="text-neutral-400 font-normal">(Optional)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Flat / house no., street, city"
+                  value={registerAddress}
+                  onChange={(e) => setRegisterAddress(e.target.value)}
                   className="w-full px-3 py-1.5 rounded-xl border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#821D38]"
                 />
               </div>
