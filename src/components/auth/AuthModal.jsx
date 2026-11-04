@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { X, Lock, Mail, Phone, User, CheckCircle2 } from 'lucide-react';
+import api from '../../services/api';
+import { X, Lock, Mail, Phone, User, CheckCircle2, Camera, Trash2, Loader2 } from 'lucide-react';
 
 export const AuthModal = () => {
   const { authModalOpen, authModalTab, closeAuthModal, setAuthModalTab, login, register } = useAuth();
@@ -14,15 +15,56 @@ export const AuthModal = () => {
   const [registerEmail, setRegisterEmail] = useState('');
   const [registerPhone, setRegisterPhone] = useState('');
   const [registerPassword, setRegisterPassword] = useState('');
+  const [avatar, setAvatar] = useState('');
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   
   if (!authModalOpen) return null;
 
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setError('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError('Image size must be less than 5MB.');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    setError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      const res = await api.post('/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (res && res.url) {
+        setAvatar(res.url);
+      } else {
+        const reader = new FileReader();
+        reader.onloadend = () => setAvatar(reader.result);
+        reader.readAsDataURL(file);
+      }
+    } catch {
+      const reader = new FileReader();
+      reader.onloadend = () => setAvatar(reader.result);
+      reader.readAsDataURL(file);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
-        if (!emailOrPhone.trim()) {
+    if (!emailOrPhone.trim()) {
       setError('Please enter your email or mobile number.');
       return;
     }
@@ -59,6 +101,7 @@ export const AuthModal = () => {
       email: registerEmail,
       phone: registerPhone,
       password: registerPassword,
+      avatar,
     });
 
     if (!res.success) {
@@ -66,7 +109,7 @@ export const AuthModal = () => {
       return;
     }
 
-    setSuccessMsg('Account created successfully! Redirecting to your account...');
+    setSuccessMsg('Account created successfully! Welcome to RS Gifts.');
     setTimeout(() => {
       setSuccessMsg('');
       closeAuthModal();
@@ -78,7 +121,7 @@ export const AuthModal = () => {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
       <div
         onClick={(e) => e.stopPropagation()}
-        className="relative w-full max-w-[460px] bg-white rounded-3xl shadow-2xl border border-neutral-100 overflow-hidden font-sans"
+        className="relative w-full max-w-[460px] max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-neutral-100 font-sans"
       >
         {/* Top Header with Gift Accent */}
         <div className="bg-[#FFF9F5] px-6 pt-6 pb-4 border-b border-[#ECE5DE] relative">
@@ -98,39 +141,41 @@ export const AuthModal = () => {
             Thoughtful gifts, personalized keepsakes & memorable moments
           </p>
 
-          {/* Tab Selector */}
-          <div className="flex items-center bg-[#F3ECE6] p-1 rounded-xl mt-4">
+          {/* Toggle Tabs */}
+          <div className="flex bg-[#EFE9E4] p-1 rounded-2xl mt-4">
             <button
               onClick={() => { setAuthModalTab('login'); setError(''); }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${authModalTab === 'login'
-                  ? 'bg-white text-[#821D38] shadow-xs'
-                  : 'text-neutral-600 hover:text-neutral-900'
-                }`}
+              className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+                authModalTab === 'login'
+                  ? 'bg-white text-neutral-900 shadow-xs'
+                  : 'text-neutral-500 hover:text-neutral-800'
+              }`}
             >
               Sign In
             </button>
             <button
               onClick={() => { setAuthModalTab('register'); setError(''); }}
-              className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${authModalTab === 'register'
+              className={`flex-1 py-2 text-xs font-semibold rounded-xl transition-all cursor-pointer ${
+                authModalTab === 'register'
                   ? 'bg-white text-[#821D38] shadow-xs'
-                  : 'text-neutral-600 hover:text-neutral-900'
-                }`}
+                  : 'text-neutral-500 hover:text-neutral-800'
+              }`}
             >
               Create Account
             </button>
           </div>
         </div>
 
-        {/* Modal Body */}
+        {/* Modal Form Content */}
         <div className="p-6">
           {error && (
-            <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2">
-              <span>{error}</span>
+            <div className="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700 animate-in fade-in">
+              {error}
             </div>
           )}
 
           {successMsg && (
-            <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-center gap-2">
+            <div className="mb-4 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 flex items-center gap-2 animate-in fade-in">
               <CheckCircle2 size={16} className="text-emerald-600 shrink-0" />
               <span>{successMsg}</span>
             </div>
@@ -141,13 +186,13 @@ export const AuthModal = () => {
             <form onSubmit={handleLoginSubmit} className="space-y-3.5">
               <div>
                 <label className="block text-xs font-semibold text-neutral-700 mb-1">
-                  Email or Mobile Number
+                  Email Address or Mobile Number
                 </label>
                 <div className="relative flex items-center">
-                  <Mail size={16} className="absolute left-3 text-neutral-400" />
+                  <User size={15} className="absolute left-3 text-neutral-400" />
                   <input
                     type="text"
-                    placeholder="Enter email or +91 phone number"
+                    placeholder="Enter email or mobile"
                     value={emailOrPhone}
                     onChange={(e) => setEmailOrPhone(e.target.value)}
                     className="w-full pl-9 pr-3.5 py-2.5 rounded-xl border border-neutral-300 text-xs text-neutral-900 placeholder-neutral-400 focus:outline-none focus:border-[#821D38]"
@@ -156,14 +201,9 @@ export const AuthModal = () => {
               </div>
 
               <div>
-                <div className="flex items-center justify-between mb-1">
-                  <label className="text-xs font-semibold text-neutral-700">Password</label>
-                  <a href="#forgot" className="text-[11px] text-[#821D38] hover:underline">
-                    Forgot password?
-                  </a>
-                </div>
+                <label className="block text-xs font-semibold text-neutral-700 mb-1">Password</label>
                 <div className="relative flex items-center">
-                  <Lock size={16} className="absolute left-3 text-neutral-400" />
+                  <Lock size={15} className="absolute left-3 text-neutral-400" />
                   <input
                     type="password"
                     placeholder="Enter your password"
@@ -227,6 +267,58 @@ export const AuthModal = () => {
                   onChange={(e) => setRegisterPhone(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-xs text-neutral-900 focus:outline-none focus:border-[#821D38]"
                 />
+              </div>
+
+              {/* Optional Profile Photo Upload */}
+              <div>
+                <label className="block text-xs font-semibold text-neutral-700 mb-1">
+                  Profile Photo <span className="text-neutral-400 font-normal">(Optional)</span>
+                </label>
+
+                {avatar ? (
+                  <div className="flex items-center gap-3 p-2 bg-[#FFF9F5] border border-[#ECE5DE] rounded-xl">
+                    <img
+                      src={avatar}
+                      alt="Profile preview"
+                      className="w-10 h-10 rounded-full object-cover border-2 border-[#821D38] shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-neutral-800 truncate">Photo selected</p>
+                      <p className="text-[10.5px] text-neutral-500">Will be set as your account photo</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setAvatar('')}
+                      className="p-1.5 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-white transition-colors cursor-pointer"
+                      title="Remove photo"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex items-center gap-2.5 px-3 py-2 border border-dashed border-neutral-300 rounded-xl hover:border-[#821D38] hover:bg-[#FFF9F5]/50 transition-colors cursor-pointer group">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      disabled={uploadingAvatar}
+                      className="hidden"
+                    />
+                    <div className="w-8 h-8 rounded-full bg-neutral-100 group-hover:bg-[#FDF2F4] flex items-center justify-center text-neutral-500 group-hover:text-[#821D38] transition-colors shrink-0">
+                      {uploadingAvatar ? (
+                        <Loader2 size={15} className="animate-spin text-[#821D38]" />
+                      ) : (
+                        <Camera size={15} />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-medium text-neutral-700 group-hover:text-[#821D38] transition-colors">
+                        {uploadingAvatar ? 'Uploading photo...' : 'Upload your photo'}
+                      </span>
+                      <p className="text-[10px] text-neutral-400">JPG, PNG or WebP up to 5MB</p>
+                    </div>
+                  </label>
+                )}
               </div>
 
               <div>

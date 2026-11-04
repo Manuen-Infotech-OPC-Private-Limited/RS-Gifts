@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import { User, Mail, Phone, Calendar, CheckCircle2, Save } from 'lucide-react';
+import api from '../../services/api';
+import { User, Mail, Phone, Calendar, CheckCircle2, Save, Camera, X, Loader2 } from 'lucide-react';
 
 export const ProfileDetails = () => {
   const { user, updateProfile } = useAuth();
@@ -12,13 +13,55 @@ export const ProfileDetails = () => {
     phone: user?.phone || '',
     dob: user?.dob || '',
     gender: user?.gender || 'Male',
+    avatar: user?.avatar || user?.image || '',
   });
 
+  const [uploading, setUploading] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+  const [uploadError, setUploadError] = useState('');
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setSavedSuccess(false);
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      setUploadError('Please select a valid image file (JPG, PNG, WebP).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setUploadError('Photo size must be less than 5MB.');
+      return;
+    }
+
+    setUploading(true);
+    setUploadError('');
+
+    try {
+      const data = new FormData();
+      data.append('image', file);
+      const res = await api.post('/upload', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      if (res && res.url) {
+        handleChange('avatar', res.url);
+      } else {
+        const reader = new FileReader();
+        reader.onloadend = () => handleChange('avatar', reader.result);
+        reader.readAsDataURL(file);
+      }
+    } catch {
+      const reader = new FileReader();
+      reader.onloadend = () => handleChange('avatar', reader.result);
+      reader.readAsDataURL(file);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -47,6 +90,56 @@ export const ProfileDetails = () => {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Profile Photo Upload (Optional) */}
+        <div className="flex items-center gap-4 pb-5 border-b border-[#F2EAEF]">
+          {formData.avatar ? (
+            <div className="relative">
+              <img
+                src={formData.avatar}
+                alt="Profile"
+                className="w-16 h-16 rounded-full object-cover border-2 border-[#821D38] shadow-xs"
+              />
+              <button
+                type="button"
+                onClick={() => handleChange('avatar', '')}
+                className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-rose-600 text-white flex items-center justify-center hover:bg-rose-700 transition-colors shadow-xs cursor-pointer"
+                title="Remove photo"
+              >
+                <X size={12} />
+              </button>
+            </div>
+          ) : (
+            <div className="w-16 h-16 rounded-full border-2 border-dashed border-neutral-300 bg-neutral-50 flex items-center justify-center text-neutral-400">
+              <Camera size={22} />
+            </div>
+          )}
+
+          <div>
+            <label className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-neutral-300 hover:border-[#821D38] bg-white text-xs font-semibold text-neutral-700 hover:text-[#821D38] transition-colors cursor-pointer shadow-2xs">
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                disabled={uploading}
+                className="hidden"
+              />
+              {uploading ? (
+                <>
+                  <Loader2 size={13} className="animate-spin text-[#821D38]" />
+                  <span>Uploading...</span>
+                </>
+              ) : (
+                <>
+                  <Camera size={13} />
+                  <span>{formData.avatar ? 'Change Photo' : 'Upload Photo (Optional)'}</span>
+                </>
+              )}
+            </label>
+            <p className="text-[11px] text-neutral-400 mt-1">Optional. JPG, PNG or WebP up to 5MB.</p>
+            {uploadError && <p className="text-[11px] text-rose-600 mt-0.5">{uploadError}</p>}
+          </div>
+        </div>
+
         {/* Basic Details Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
           {/* First Name */}
@@ -157,7 +250,7 @@ export const ProfileDetails = () => {
             className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-all active:scale-98 cursor-pointer"
           >
             <Save size={15} />
-            <span>Save</span>
+            <span>Save Profile</span>
           </button>
         </div>
       </form>

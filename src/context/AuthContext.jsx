@@ -16,7 +16,6 @@ export const AuthProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (parsed) {
-          if (parsed.avatar) delete parsed.avatar;
           if (parsed.name) parsed.name = parsed.name.replace(/Super Admin|Admin/gi, '').trim() || 'User';
           if (parsed.lastName) parsed.lastName = parsed.lastName.replace(/Super Admin|Admin/gi, '').trim();
           parsed.role = 'customer';
@@ -132,9 +131,12 @@ export const AuthProvider = ({ children }) => {
       const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim() || 'New User';
       const data = await api.post('/customer/auth/register', {
         name: fullName,
+        firstName: formData.firstName?.trim() || '',
+        lastName: formData.lastName?.trim() || '',
         email: formData.email?.trim(),
         password: formData.password,
         phone: formData.phone || '',
+        avatar: formData.avatar || '',
       });
 
       const token = data.token;
@@ -144,10 +146,11 @@ export const AuthProvider = ({ children }) => {
       const newUser = {
         id: backendUser.id || backendUser._id || `usr_${Date.now()}`,
         name: backendUser.name || fullName,
-        firstName: nameParts[0] || 'New',
-        lastName: nameParts.slice(1).join(' ') || '',
+        firstName: backendUser.firstName || nameParts[0] || 'New',
+        lastName: backendUser.lastName || nameParts.slice(1).join(' ') || '',
         email: backendUser.email || formData.email,
         phone: backendUser.phone || formData.phone || '',
+        avatar: backendUser.avatar || formData.avatar || '',
         role: backendUser.role || 'customer',
         addresses: backendUser.addresses || [],
       };
