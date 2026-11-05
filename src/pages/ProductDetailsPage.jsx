@@ -28,7 +28,14 @@ import { useAuth } from '../context/AuthContext';
 export const ProductDetailsPage = () => {
   const { idOrSlug } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, openAuthModal } = useAuth();
+  const accountCustomerName = (
+    user?.name ||
+    `${user?.firstName || ''} ${user?.lastName || ''}`.trim() ||
+    user?.email?.split('@')[0] ||
+    'Verified Customer'
+  ).trim();
+
   const { addToCart, closeCartDrawer } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
@@ -59,8 +66,7 @@ export const ProductDetailsPage = () => {
   // Dynamic Customer Review Form States
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
-  const [customerReviewName, setCustomerReviewName] = useState('');
-  const [customerReviewEmail, setCustomerReviewEmail] = useState('');
+  
   const [customerReviewComment, setCustomerReviewComment] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewSuccessMsg, setReviewSuccessMsg] = useState('');
@@ -68,7 +74,12 @@ export const ProductDetailsPage = () => {
 
   const handleCustomerReviewSubmit = async (e) => {
     e.preventDefault();
-    const trimmedName = customerReviewName.trim();
+
+    if (!user) {
+      openAuthModal('login');
+      return;
+    }
+
     const trimmedComment = customerReviewComment.trim();
 
     if (!reviewRating || reviewRating < 1) {
@@ -76,13 +87,8 @@ export const ProductDetailsPage = () => {
       return;
     }
 
-    if (!trimmedName || !trimmedComment) {
-      setReviewErrorMsg('Please fill in your name and review comments.');
-      return;
-    }
-
-    if (/^\s*rs\s*gifts?\s*$/i.test(trimmedName)) {
-      setReviewErrorMsg('Please enter your personal name, not the store name.');
+    if (!trimmedComment) {
+      setReviewErrorMsg('Please enter your review message.');
       return;
     }
 
@@ -96,13 +102,13 @@ export const ProductDetailsPage = () => {
         productId: prodId,
         rating: reviewRating,
         comment: trimmedComment,
-        customerName: trimmedName,
-        customerEmail: user?.email || ''
+        customerName: accountCustomerName,
+        customerEmail: user.email || ''
       });
 
       const newRev = res?.review || {
         _id: 'rev_' + Date.now(),
-        customerName: trimmedName,
+        customerName: accountCustomerName,
         rating: reviewRating,
         comment: trimmedComment,
         createdAt: new Date().toISOString(),
@@ -112,7 +118,7 @@ export const ProductDetailsPage = () => {
       setReviews((prev) => [newRev, ...prev]);
       setCustomerReviewComment('');
       setReviewRating(0);
-      setReviewSuccessMsg('Thank you! Your review has been submitted and is now published.');
+      setReviewSuccessMsg('Thank you! Your review has been submitted.');
       setIsReviewFormOpen(false);
     } catch (err) {
       console.error('Failed to submit review:', err);
@@ -744,6 +750,10 @@ export const ProductDetailsPage = () => {
                   <button
                     type="button"
                     onClick={() => {
+                      if (!user) {
+                        openAuthModal('login');
+                        return;
+                      }
                       setIsReviewFormOpen((prev) => !prev);
                       setReviewErrorMsg('');
                       setReviewSuccessMsg('');
@@ -784,7 +794,11 @@ export const ProductDetailsPage = () => {
                       </div>
                       <button
                         type="button"
-                        onClick={() => setIsReviewFormOpen(false)}
+                        onClick={() => {
+                          setIsReviewFormOpen(false);
+                          setReviewRating(0);
+                          setReviewErrorMsg('');
+                        }}
                         className="text-xs text-[#8C7D85] hover:text-[#1E1217] cursor-pointer"
                       >
                         ✕ Cancel
@@ -797,7 +811,22 @@ export const ProductDetailsPage = () => {
                       </div>
                     )}
 
-                    {/* Interactive Star Rating */}
+                    {/* 1. Customer Name (Auto-fetched from Account, no input box) */}
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-[#FAF6F4] border border-[#ECE3E7]">
+                      <div className="w-8 h-8 rounded-full bg-[#821D38] text-white flex items-center justify-center font-bold text-xs uppercase overflow-hidden shrink-0">
+                        {user?.avatar || user?.image ? (
+                          <img src={user.avatar || user.image} alt={accountCustomerName} className="w-full h-full object-cover" />
+                        ) : (
+                          accountCustomerName.charAt(0)
+                        )}
+                      </div>
+                      <div>
+                        <span className="text-[10px] uppercase font-bold text-[#8C7D85] tracking-wider block">Customer</span>
+                        <span className="text-xs font-bold text-[#1E1217]">{accountCustomerName}</span>
+                      </div>
+                    </div>
+
+                    {/* 2. Star Rating (1 to 5) */}
                     <div>
                       <label className="block text-xs font-bold text-[#1E1217] mb-1.5">
                         Your Rating <span className="text-[#821D38]">*</span>
@@ -813,7 +842,7 @@ export const ProductDetailsPage = () => {
                                 setReviewErrorMsg('');
                               }}
                               className="p-1 cursor-pointer transition-colors"
-                              aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                              aria-label={`Rate ${star} stars`}
                             >
                               <Star
                                 className={`w-5 h-5 transition-colors ${
@@ -833,23 +862,10 @@ export const ProductDetailsPage = () => {
                       </div>
                     </div>
 
+                    {/* 3. Review Message */}
                     <div>
                       <label className="block text-xs font-bold text-[#1E1217] mb-1">
-                        Your Name <span className="text-[#821D38]">*</span>
-                      </label>
-                      <input
-                        type="text"
-                        required
-                        value={customerReviewName}
-                        onChange={(e) => setCustomerReviewName(e.target.value)}
-                        placeholder="e.g. Pooja Verma"
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38]"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-xs font-bold text-[#1E1217] mb-1">
-                        Your Review & Experience <span className="text-[#821D38]">*</span>
+                        Your Message <span className="text-[#821D38]">*</span>
                       </label>
                       <textarea
                         required
