@@ -452,10 +452,7 @@ export const Navbar = ({ onSearch }) => {
               <div
                 className="absolute top-full left-1/2 -translate-x-1/2 pt-1 z-50 animate-in fade-in slide-in-from-top-1 duration-150"
               >
-                <div className="bg-white min-w-[230px] rounded-2xl shadow-xl border border-neutral-100 p-1.5">
-                  <div className="px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-neutral-400 border-b border-neutral-100 mb-1">
-                    All Gifts & Occasions
-                  </div>
+                <div className="bg-white min-w-[210px] rounded-2xl shadow-xl border border-neutral-100 p-1.5">
                   <div className="space-y-0.5">
                     {giftCategories.map((cat) => {
                       const isCatActive = location.pathname === cat.path;
@@ -467,19 +464,13 @@ export const Navbar = ({ onSearch }) => {
                             setActiveTab('Gifts');
                             navigate(cat.path);
                           }}
-                          className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between cursor-pointer transition-colors group ${
+                          className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center cursor-pointer transition-colors group ${
                             isCatActive
                               ? 'bg-[#FDF2F4] text-[#821D38]'
                               : 'text-neutral-800 hover:text-[#821D38] hover:bg-[#FFF9F5]'
                           }`}
                         >
                           <span>{cat.label}</span>
-                          <ChevronRight
-                            size={13}
-                            className={`transition-transform text-neutral-400 group-hover:text-[#821D38] group-hover:translate-x-0.5 ${
-                              isCatActive ? 'text-[#821D38]' : 'opacity-60'
-                            }`}
-                          />
                         </div>
                       );
                     })}
@@ -605,14 +596,13 @@ export const Navbar = ({ onSearch }) => {
                             setMobileMenuOpen(false);
                             navigate(cat.path);
                           }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center justify-between transition-colors cursor-pointer ${
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center transition-colors cursor-pointer ${
                             isCatActive
                               ? 'text-[#821D38] font-bold bg-[#FDF2F4]'
                               : 'text-neutral-700 hover:text-[#821D38]'
                           }`}
                         >
                           <span>{cat.label}</span>
-                          <ChevronRight size={12} className="text-neutral-400" />
                         </button>
                       );
                     })}
