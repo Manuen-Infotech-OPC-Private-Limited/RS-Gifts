@@ -126,8 +126,8 @@ export const Navbar = ({ onSearch }) => {
 
   return (
     <header
-      style={{ position: 'sticky', top: 0, zIndex: 1000 }}
-      className={`w-full bg-white border-b border-[#ECE7EC] sticky top-0 z-50 font-sans transition-shadow duration-200 ${
+      style={{ position: 'sticky', top: 0, zIndex: 40 }}
+      className={`w-full bg-white border-b border-[#ECE7EC] sticky top-0 z-40 font-sans transition-shadow duration-200 ${
         isScrolled ? 'shadow-md bg-white/98 backdrop-blur-xs' : 'shadow-none'
       }`}
     >
@@ -523,7 +523,10 @@ export const Navbar = ({ onSearch }) => {
 
       {/* Mobile Slide-Over Navigation Drawer */}
       {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 md:hidden flex">
+        <div
+          style={{ zIndex: 9999 }}
+          className="fixed inset-0 z-[9999] md:hidden flex"
+        >
           {/* Backdrop */}
           <div
             onClick={() => setMobileMenuOpen(false)}

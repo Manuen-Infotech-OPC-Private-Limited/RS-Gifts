@@ -13,7 +13,10 @@ export const OrderTrackerModal = ({ order, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <div
+      style={{ zIndex: 9999 }}
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200"
+    >
       <div 
         onClick={(e) => e.stopPropagation()}
         className="relative w-full max-w-[560px] max-h-[90vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border border-neutral-200 font-sans"

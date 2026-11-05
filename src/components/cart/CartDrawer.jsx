@@ -35,7 +35,10 @@ export const CartDrawer = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden font-sans select-none">
+    <div
+      style={{ zIndex: 9999 }}
+      className="fixed inset-0 z-[9999] overflow-hidden font-sans select-none"
+    >
       {/* Dimmed Backdrop */}
       <div
         onClick={closeCartDrawer}
@@ -43,7 +46,7 @@ export const CartDrawer = () => {
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col transform transition-transform duration-300 ease-in-out">
+        <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col h-full transform transition-transform duration-300 ease-in-out relative z-10">
           
           {/* Header */}
           <div className="p-4 sm:p-5 border-b border-[#ECE7EC] flex items-center justify-between bg-white shrink-0">
