@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { 
@@ -27,6 +27,19 @@ export const CartDrawer = () => {
 
   const navigate = useNavigate();
 
+  useEffect(() => {
+    if (isCartDrawerOpen) {
+      const prevBodyOverflow = document.body.style.overflow;
+      const prevHtmlOverflow = document.documentElement.style.overflow;
+      document.body.style.overflow = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      return () => {
+        document.body.style.overflow = prevBodyOverflow;
+        document.documentElement.style.overflow = prevHtmlOverflow;
+      };
+    }
+  }, [isCartDrawerOpen]);
+
   if (!isCartDrawerOpen) return null;
 
   const handleGoToCart = () => {
@@ -49,7 +62,7 @@ export const CartDrawer = () => {
         <div className="w-screen max-w-md bg-white shadow-2xl flex flex-col h-full transform transition-transform duration-300 ease-in-out relative z-10">
           
           {/* Header */}
-          <div className="p-4 sm:p-5 border-b border-[#ECE7EC] flex items-center justify-between bg-white shrink-0">
+          <div className="p-4 sm:p-5 flex items-center justify-between bg-white shrink-0">
             <div className="flex items-center gap-2">
               <ShoppingBag size={20} className="text-[#C9A45C]" />
               <h2 className="text-base sm:text-lg font-bold text-[#1E1217]">
@@ -71,7 +84,10 @@ export const CartDrawer = () => {
 
 
           {/* Cart Items List */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+          <div
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="flex-1 overflow-y-auto no-scrollbar scrollbar-none p-4 sm:p-5 space-y-4"
+          >
             {cartItems.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-4">
                 <div className="w-20 h-20 rounded-full bg-[#FDF2F4] flex items-center justify-center text-[#821D38]">
@@ -165,7 +181,7 @@ export const CartDrawer = () => {
 
           {/* Footer & Checkout Action */}
           {cartItems.length > 0 && (
-            <div className="p-4 sm:p-5 border-t border-[#ECE7EC] bg-white space-y-3 shrink-0 shadow-lg">
+            <div className="p-4 sm:p-5 bg-white space-y-3 shrink-0">
               {/* Luxury Gifting Note Prompt */}
               <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FDF2F4] border border-[#DFC8D0] text-[11px] text-[#821D38]">
                 <Gift size={14} className="shrink-0 text-[#C9A45C]" />
