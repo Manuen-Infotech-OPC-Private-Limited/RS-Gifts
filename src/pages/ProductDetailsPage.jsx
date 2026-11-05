@@ -23,10 +23,12 @@ import {
 import { fetchProductByIdOrSlug, fetchLiveProducts, submitProductReview } from '../services/productService';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
+import { useAuth } from '../context/AuthContext';
 
 export const ProductDetailsPage = () => {
   const { idOrSlug } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { addToCart, closeCartDrawer } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
@@ -95,7 +97,7 @@ export const ProductDetailsPage = () => {
         rating: reviewRating,
         comment: trimmedComment,
         customerName: trimmedName,
-        customerEmail: customerReviewEmail.trim()
+        customerEmail: user?.email || ''
       });
 
       const newRev = res?.review || {
@@ -831,33 +833,18 @@ export const ProductDetailsPage = () => {
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-xs font-bold text-[#1E1217] mb-1">
-                          Your Name <span className="text-[#821D38]"></span>
-                        </label>
-                        <input
-                          type="text"
-                          required
-                          value={customerReviewName}
-                          onChange={(e) => setCustomerReviewName(e.target.value)}
-                          placeholder="e.g. Pooja Verma"
-                          className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38]"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="block text-xs font-bold text-[#1E1217] mb-1">
-                          Your Email <span className="text-[11px] font-normal text-[#8C7D85]">(Optional, kept private)</span>
-                        </label>
-                        <input
-                          type="email"
-                          value={customerReviewEmail}
-                          onChange={(e) => setCustomerReviewEmail(e.target.value)}
-                          placeholder="e.g. pooja@example.com"
-                          className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38]"
-                        />
-                      </div>
+                    <div>
+                      <label className="block text-xs font-bold text-[#1E1217] mb-1">
+                        Your Name <span className="text-[#821D38]">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={customerReviewName}
+                        onChange={(e) => setCustomerReviewName(e.target.value)}
+                        placeholder="e.g. Pooja Verma"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38]"
+                      />
                     </div>
 
                     <div>
