@@ -56,8 +56,7 @@ export const ProductDetailsPage = () => {
 
   // Dynamic Customer Review Form States
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
-  const [reviewRating, setReviewRating] = useState(5);
-  const [hoverRating, setHoverRating] = useState(0);
+  const [reviewRating, setReviewRating] = useState(0);
   const [customerReviewName, setCustomerReviewName] = useState('');
   const [customerReviewEmail, setCustomerReviewEmail] = useState('');
   const [customerReviewComment, setCustomerReviewComment] = useState('');
@@ -69,6 +68,11 @@ export const ProductDetailsPage = () => {
     e.preventDefault();
     const trimmedName = customerReviewName.trim();
     const trimmedComment = customerReviewComment.trim();
+
+    if (!reviewRating || reviewRating < 1) {
+      setReviewErrorMsg('Please select a star rating by clicking on the stars.');
+      return;
+    }
 
     if (!trimmedName || !trimmedComment) {
       setReviewErrorMsg('Please fill in your name and review comments.');
@@ -105,6 +109,7 @@ export const ProductDetailsPage = () => {
 
       setReviews((prev) => [newRev, ...prev]);
       setCustomerReviewComment('');
+      setReviewRating(0);
       setReviewSuccessMsg('Thank you! Your review has been submitted and is now published.');
       setIsReviewFormOpen(false);
     } catch (err) {
@@ -801,23 +806,28 @@ export const ProductDetailsPage = () => {
                             <button
                               key={star}
                               type="button"
-                              onClick={() => setReviewRating(star)}
-                              onMouseEnter={() => setHoverRating(star)}
-                              onMouseLeave={() => setHoverRating(0)}
-                              className="p-1 cursor-pointer transition-transform hover:scale-110"
+                              onClick={() => {
+                                setReviewRating(star);
+                                setReviewErrorMsg('');
+                              }}
+                              className="p-1 cursor-pointer transition-colors"
+                              aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
                             >
                               <Star
-                                className={`w-5 h-5 ${star <= (hoverRating || reviewRating)
-                                  ? 'fill-[#C9A45C] text-[#C9A45C]'
-                                  : 'text-gray-300 stroke-gray-300'
-                                  }`}
+                                className={`w-5 h-5 transition-colors ${
+                                  star <= reviewRating
+                                    ? 'fill-[#C9A45C] text-[#C9A45C]'
+                                    : 'fill-white text-[#D1D5DB] stroke-[#D1D5DB]'
+                                }`}
                               />
                             </button>
                           ))}
                         </div>
-                        <span className="text-xs font-semibold text-[#821D38] ml-2">
-                          {reviewRating} of 5 Stars
-                        </span>
+                        {reviewRating > 0 && (
+                          <span className="text-xs font-semibold text-[#821D38] ml-2">
+                            {reviewRating} of 5 Stars
+                          </span>
+                        )}
                       </div>
                     </div>
 
