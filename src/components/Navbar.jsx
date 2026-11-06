@@ -171,8 +171,18 @@ export const Navbar = ({ onSearch }) => {
   const isGiftsActive = giftCategories.some((cat) => location.pathname === cat.path) || location.pathname.startsWith('/category/') || location.pathname.includes('-gifts');
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (onSearch) onSearch(query);
+    if (e && e.preventDefault) e.preventDefault();
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    setShowDropdown(false);
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+    if (onSearch) onSearch(trimmed);
+  };
+
+  const handleSelectProduct = (product) => {
+    setShowDropdown(false);
+    setQuery('');
+    navigate(`/product/${product.slug || product.id}`);
   };
 
   return (
@@ -278,8 +288,8 @@ export const Navbar = ({ onSearch }) => {
         </div>
       </div>
 
-      {/* Mobile Search Row (Matching Reference Screenshot) */}
-      <div className="px-4 pb-2.5 md:hidden bg-white">
+      {/* Mobile Search Row */}
+      <div ref={mobileSearchRef} className="relative px-4 pb-2.5 md:hidden bg-white">
         <form
           onSubmit={handleSearch}
           className="flex items-center h-10 px-4 bg-[#FAF6F4] border border-[#E8DFE3] rounded-full focus-within:border-[#821D38] focus-within:bg-white shadow-2xs transition-all"
@@ -288,13 +298,89 @@ export const Navbar = ({ onSearch }) => {
             type="text"
             placeholder="Search for gifts, occasions..."
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              setQuery(e.target.value);
+              setShowDropdown(true);
+            }}
+            onFocus={() => {
+              if (query.trim().length >= 2) setShowDropdown(true);
+            }}
             className="flex-1 text-xs text-[#1E1217] placeholder-[#8C7D85] bg-transparent outline-none"
           />
+          {query && (
+            <button
+              type="button"
+              onClick={() => {
+                setQuery('');
+                setLiveResults([]);
+                setShowDropdown(false);
+              }}
+              className="text-[#705E67] px-1 cursor-pointer"
+            >
+              <X size={14} />
+            </button>
+          )}
           <button type="submit" className="text-[#705E67] hover:text-[#821D38] pl-2 cursor-pointer">
-            <Search size={16} strokeWidth={2} />
+            {isSearching ? (
+              <Loader2 size={16} className="animate-spin text-[#821D38]" />
+            ) : (
+              <Search size={16} strokeWidth={2} />
+            )}
           </button>
         </form>
+
+        {/* Mobile Live Dropdown */}
+        {showDropdown && query.trim().length >= 2 && (
+          <div className="absolute top-full left-4 right-4 mt-1 bg-white rounded-2xl shadow-2xl border border-[#ECE7EC] overflow-hidden z-50">
+            {isSearching && liveResults.length === 0 ? (
+              <div className="p-3 text-center text-xs text-[#705E67] flex items-center justify-center gap-2">
+                <Loader2 size={14} className="animate-spin text-[#821D38]" />
+                <span>Searching gifts...</span>
+              </div>
+            ) : liveResults.length > 0 ? (
+              <div className="divide-y divide-[#F5EFF2]">
+                {liveResults.map((item) => (
+                  <div
+                    key={item.id}
+                    onClick={() => handleSelectProduct(item)}
+                    className="px-3 py-2 flex items-center gap-2.5 active:bg-[#FAF6F4] cursor-pointer"
+                  >
+                    <div className="w-9 h-9 rounded-md bg-[#FAF6F4] border border-[#ECE7EC] flex items-center justify-center shrink-0 overflow-hidden p-0.5">
+                      {item.image ? (
+                        <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                      ) : (
+                        <Package size={16} className="text-[#A89CA2]" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs font-semibold text-[#1E1217] truncate">
+                        {item.title || item.name}
+                      </p>
+                      <p className="text-[10px] text-[#705E67] truncate">
+                        {item.category || 'Gifts'}
+                      </p>
+                    </div>
+                    <span className="text-xs font-bold text-[#821D38] shrink-0">
+                      ₹{Number(item.price || 0).toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                ))}
+                <div
+                  onClick={handleSearch}
+                  className="px-3 py-2.5 bg-[#FAF6F4] text-xs font-bold text-[#821D38] flex items-center justify-center gap-1 cursor-pointer"
+                >
+                  <span>View all results for "{query.trim()}"</span>
+                  <ChevronRight size={13} />
+                </div>
+              </div>
+            ) : (
+              <div className="p-3 text-center">
+                <p className="text-xs font-semibold text-[#1E1217]">No direct matches</p>
+                <p className="text-[10px] text-[#705E67] mt-0.5">Press search to see recommendations</p>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Desktop Main Row */}
@@ -354,19 +440,102 @@ export const Navbar = ({ onSearch }) => {
           )}
         </div>
 
-        {/* Center Search Bar */}
-        <form onSubmit={handleSearch} className="flex-1 max-w-[520px] mx-4 flex items-center h-11 border border-neutral-300 rounded-lg overflow-hidden focus-within:border-[#821D38]">
-          <input
-            type="text"
-            placeholder="Search for gifts, personalized items, hampers..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 h-full px-4 text-[13.5px] text-neutral-800 placeholder-neutral-400 outline-none bg-transparent"
-          />
-          <button type="submit" className="w-14 h-full bg-[#821D38] hover:bg-[#6E162E] text-white flex items-center justify-center shrink-0 transition-colors">
-            <Search size={17} strokeWidth={2.2} />
-          </button>
-        </form>
+        {/* Center Search Bar Container */}
+        <div ref={searchRef} className="relative flex-1 max-w-[520px] mx-4">
+          <form onSubmit={handleSearch} className="flex items-center h-11 border border-neutral-300 rounded-lg overflow-hidden focus-within:border-[#821D38] bg-white transition-colors">
+            <input
+              type="text"
+              placeholder="Search for gifts, personalized items, hampers..."
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => {
+                if (query.trim().length >= 2) setShowDropdown(true);
+              }}
+              className="flex-1 h-full px-4 text-[13.5px] text-neutral-800 placeholder-neutral-400 outline-none bg-transparent"
+            />
+            {query && (
+              <button
+                type="button"
+                onClick={() => {
+                  setQuery('');
+                  setLiveResults([]);
+                  setShowDropdown(false);
+                }}
+                className="text-neutral-400 hover:text-neutral-600 px-2 cursor-pointer"
+                title="Clear"
+              >
+                <X size={15} />
+              </button>
+            )}
+            <button type="submit" className="w-14 h-full bg-[#821D38] hover:bg-[#6E162E] text-white flex items-center justify-center shrink-0 transition-colors cursor-pointer">
+              {isSearching ? (
+                <Loader2 size={17} className="animate-spin text-white" />
+              ) : (
+                <Search size={17} strokeWidth={2.2} />
+              )}
+            </button>
+          </form>
+
+          {/* Live Search Floating Dropdown */}
+          {showDropdown && query.trim().length >= 2 && (
+            <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-xl shadow-2xl border border-[#ECE7EC] overflow-hidden z-50 animate-in fade-in duration-150">
+              {isSearching && liveResults.length === 0 ? (
+                <div className="p-4 flex items-center justify-center gap-2 text-xs text-[#705E67]">
+                  <Loader2 size={15} className="animate-spin text-[#821D38]" />
+                  <span>Searching gifts in store...</span>
+                </div>
+              ) : liveResults.length > 0 ? (
+                <div className="divide-y divide-[#F5EFF2]">
+                  <div className="px-3.5 py-2 bg-[#FFF9F5] text-[11px] font-bold text-[#821D38] uppercase tracking-wider flex items-center justify-between">
+                    <span>Matching Products</span>
+                    <span className="text-[10px] text-[#705E67] font-normal">Press Enter to view all</span>
+                  </div>
+                  {liveResults.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => handleSelectProduct(item)}
+                      className="px-3.5 py-2.5 flex items-center gap-3 hover:bg-[#FAF6F4] transition-colors cursor-pointer group"
+                    >
+                      <div className="w-10 h-10 rounded-lg bg-[#FAF6F4] border border-[#ECE7EC] flex items-center justify-center shrink-0 overflow-hidden p-1">
+                        {item.image ? (
+                          <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
+                        ) : (
+                          <Package size={18} className="text-[#A89CA2]" />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-semibold text-[#1E1217] truncate group-hover:text-[#821D38] transition-colors">
+                          {item.title || item.name}
+                        </p>
+                        <p className="text-[10px] text-[#705E67] truncate">
+                          {item.category || 'Gifts'}
+                        </p>
+                      </div>
+                      <span className="text-xs font-bold text-[#821D38] shrink-0">
+                        ₹{Number(item.price || 0).toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                  ))}
+                  <div
+                    onClick={handleSearch}
+                    className="px-3.5 py-2.5 bg-[#FAF6F4] hover:bg-[#F3ECEF] text-xs font-bold text-[#821D38] flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
+                  >
+                    <span>View all matching results for "{query.trim()}"</span>
+                    <ChevronRight size={14} />
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 text-center">
+                  <p className="text-xs font-semibold text-[#1E1217]">No direct matches for "{query.trim()}"</p>
+                  <p className="text-[11px] text-[#705E67] mt-0.5">Press Enter to explore related gifts & recommendations</p>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Right Actions: Shifted left with gap on right */}
         <div className="flex items-center gap-7 mr-14 shrink-0">

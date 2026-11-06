@@ -304,3 +304,4 @@ export const SearchResultsPage = () => {
 };
 
 export default SearchResultsPage;
+

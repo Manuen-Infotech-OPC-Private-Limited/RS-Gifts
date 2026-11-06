@@ -40,7 +40,9 @@ export function App() {
   const navigate = useNavigate();
 
   const handleSearch = (query) => {
-    console.log('Search:', query);
+    if (query && String(query).trim()) {
+      navigate('/search?q=' + encodeURIComponent(String(query).trim()));
+    }
   };
 
   const handleNavigate = (page) => {
