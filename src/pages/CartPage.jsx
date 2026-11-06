@@ -745,39 +745,19 @@ export const CartPage = () => {
                 <span className="text-xs font-bold text-[#1E1217] uppercase tracking-wider block">
                   3. Payment Method
                 </span>
-                <div className="grid grid-cols-2 gap-3">
+                <div>
                   <label
-                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${checkoutForm.paymentMethod === 'COD'
-                      ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
-                      : 'border-[#ECE7EC] bg-white text-neutral-700'
-                      }`}
+                    className="flex items-center gap-2.5 p-3 rounded-2xl border border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold cursor-pointer"
                   >
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="COD"
-                      checked={checkoutForm.paymentMethod === 'COD'}
-                      onChange={() => setCheckoutForm({ ...checkoutForm, paymentMethod: 'COD' })}
+                      checked={true}
+                      readOnly
                       className="accent-[#821D38]"
                     />
                     <span>Cash on Delivery (COD)</span>
-                  </label>
-
-                  <label
-                    className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${checkoutForm.paymentMethod === 'UPI'
-                      ? 'border-[#821D38] bg-[#FDF2F4] text-[#821D38] font-bold'
-                      : 'border-[#ECE7EC] bg-white text-neutral-700'
-                      }`}
-                  >
-                    <input
-                      type="radio"
-                      name="paymentMethod"
-                      value="UPI"
-                      checked={checkoutForm.paymentMethod === 'UPI'}
-                      onChange={() => setCheckoutForm({ ...checkoutForm, paymentMethod: 'UPI' })}
-                      className="accent-[#821D38]"
-                    />
-                    <span>UPI / Scan & Pay</span>
                   </label>
                 </div>
               </div>
