@@ -82,9 +82,9 @@ export const AboutUsPage = () => {
             <span className="text-neutral-600">About Us</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
-            <div className="md:col-span-6 lg:col-span-7">
+            <div className="md:col-span-5 lg:col-span-5">
               <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
                 About <span className="text-[#821D38] italic font-normal">RS Gifts</span>
               </h1>
@@ -98,8 +98,8 @@ export const AboutUsPage = () => {
             </div>
 
             {/* Right Hero Image */}
-            <div className="md:col-span-6 lg:col-span-5 flex justify-center md:justify-end">
-              <div className="relative max-w-[360px] sm:max-w-[400px] w-full rounded-2xl overflow-hidden shadow-xs">
+            <div className="md:col-span-7 lg:col-span-7 flex justify-center md:justify-end">
+              <div className="relative w-full max-w-[650px] rounded-2xl overflow-hidden shadow-md border border-[#EFE5DC]/70">
                 <img
                   src={rsgiftsHeroImg}
                   alt="RS Gifts Signature Gift Box"
