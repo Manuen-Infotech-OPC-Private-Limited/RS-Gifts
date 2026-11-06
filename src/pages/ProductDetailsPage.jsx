@@ -36,7 +36,7 @@ export const ProductDetailsPage = () => {
     'Verified Customer'
   ).trim();
 
-  const { addToCart, closeCartDrawer } = useCart();
+  const { addToCart, closeCartDrawer, freeShippingThreshold, deliveryFee } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
   // Core Data States
@@ -466,7 +466,7 @@ export const ProductDetailsPage = () => {
                   </span>
                 </div>
                 <p className="text-[10.5px] text-[#705E67] mt-0.5">
-                  Inclusive of all taxes. Free shipping on orders over ₹999.
+                  Inclusive of all taxes. {deliveryFee === 0 ? 'Free delivery on this order.' : freeShippingThreshold > 0 ? `Free shipping on orders over ₹${freeShippingThreshold}.` : `Standard delivery charge ₹${deliveryFee}.`}
                 </p>
               </div>
 
@@ -710,7 +710,11 @@ export const ProductDetailsPage = () => {
                   <li>
                     <strong>Free Delivery:</strong>{' '}
                     {product.shippingDetails?.freeShippingNote ||
-                      'Applied automatically on all orders above ₹999 across India.'}
+                      (deliveryFee === 0
+                        ? 'Free delivery applied on all orders across India.'
+                        : freeShippingThreshold > 0
+                        ? `Applied automatically on all orders above ₹${freeShippingThreshold} across India.`
+                        : `Standard delivery fee of ₹${deliveryFee} applies across India.`)}
                   </li>
                   <li>
                     <strong>Return Policy:</strong>{' '}

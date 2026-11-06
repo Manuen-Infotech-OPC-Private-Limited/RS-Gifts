@@ -44,24 +44,37 @@ export const CartProvider = ({ children }) => {
 
   // Dynamic Shipping Settings loaded from Backend
   const [shippingSettings, setShippingSettings] = useState({
-    freeShippingThreshold: 999,
-    standardShippingFee: 50,
+    freeShippingThreshold: 0,
+    standardShippingFee: 0,
   });
 
   useEffect(() => {
     let isMounted = true;
-    api.get('/customer/content/settings')
-      .then((res) => {
-        const s = res?.settings || res?.data?.settings;
-        if (s && isMounted) {
-          setShippingSettings({
-            freeShippingThreshold: Number(s.freeShippingThreshold) || 999,
-            standardShippingFee: Number(s.standardShippingFee ?? 50),
-          });
-        }
-      })
-      .catch(() => {});
-    return () => { isMounted = false; };
+    const fetchShippingSettings = () => {
+      api.get('/customer/content/settings')
+        .then((res) => {
+          const s = res?.settings || res?.data?.settings;
+          if (s && isMounted) {
+            setShippingSettings({
+              freeShippingThreshold: s.freeShippingThreshold !== undefined && s.freeShippingThreshold !== null ? Number(s.freeShippingThreshold) : 0,
+              standardShippingFee: s.standardShippingFee !== undefined && s.standardShippingFee !== null ? Number(s.standardShippingFee) : 0,
+            });
+          }
+        })
+        .catch(() => {});
+    };
+
+    fetchShippingSettings();
+
+    const handleSettingsUpdated = () => fetchShippingSettings();
+    window.addEventListener('storage', handleSettingsUpdated);
+    window.addEventListener('rs_gifts_settings_updated', handleSettingsUpdated);
+
+    return () => {
+      isMounted = false;
+      window.removeEventListener('storage', handleSettingsUpdated);
+      window.removeEventListener('rs_gifts_settings_updated', handleSettingsUpdated);
+    };
   }, []);
 
   useEffect(() => {
@@ -194,9 +207,10 @@ export const CartProvider = ({ children }) => {
     }
   }
 
-  const freeShippingThreshold = shippingSettings.freeShippingThreshold;
-  const isFreeDelivery = itemsSubtotal >= freeShippingThreshold || itemsSubtotal === 0;
-  const deliveryFee = isFreeDelivery ? 0 : shippingSettings.standardShippingFee;
+  const freeShippingThreshold = Number(shippingSettings.freeShippingThreshold || 0);
+  const standardShippingFee = Number(shippingSettings.standardShippingFee || 0);
+  const isFreeDelivery = itemsSubtotal === 0 || standardShippingFee <= 0 || (freeShippingThreshold > 0 && itemsSubtotal >= freeShippingThreshold);
+  const deliveryFee = isFreeDelivery ? 0 : standardShippingFee;
 
   const grandTotal = Math.max(
     0,
