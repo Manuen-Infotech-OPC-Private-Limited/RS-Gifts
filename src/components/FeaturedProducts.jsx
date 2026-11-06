@@ -54,12 +54,12 @@ export const FeaturedProducts = ({ onAddToCart }) => {
   const validProducts = (liveProducts || []).filter((p) => p && p.active !== false);
 
   // If items are marked featured in backend, show featured first; otherwise show all products from backend
-  const featuredOnly = validProducts.filter((p) => p.featured === true);
-  const productList = featuredOnly.length > 0 ? featuredOnly : validProducts;
+  // Always show all active products, with featured products sorted first
+  const productList = [...validProducts].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
 
-  // Build dynamic filter tabs based on categories in live products
+  // Build dynamic filter tabs based on all categories in valid products
   const categorySet = new Set();
-  productList.forEach((p) => {
+  validProducts.forEach((p) => {
     if (Array.isArray(p.categories)) {
       p.categories.forEach((c) => {
         if (c && c !== 'All') categorySet.add(c);
@@ -68,7 +68,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
       categorySet.add(p.category);
     }
   });
-  const filterTabs = ['All', ...Array.from(categorySet).slice(0, 5)];
+  const filterTabs = ['All', ...Array.from(categorySet)];
 
   const filteredProducts = activeTab === 'All'
     ? productList
@@ -129,7 +129,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
         {/* Mobile Horizontal Swipeable Products Carousel */}
         {!loading && (
           <div
-            className="md:hidden flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x mb-2"
+            className="md:hidden flex gap-3.5 overflow-x-auto no-scrollbar pb-2.5 pt-1 px-4 -mx-4 sm:mx-0 sm:px-0 snap-x mb-3"
             style={{
               scrollbarWidth: 'none',
               msOverflowStyle: 'none',
@@ -146,7 +146,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                 <div
                   key={product.id}
                   onClick={() => navigate(`/product/${product.slug || product.id}`)}
-                  className="w-[148px] shrink-0 snap-start bg-white rounded-2xl border border-[#ECE7EC] shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer select-none active:scale-[0.98] transition-transform"
+                  className="w-[155px] shrink-0 snap-start bg-white rounded-2xl border border-[#ECE7EC] shadow-2xs overflow-hidden flex flex-col justify-between cursor-pointer select-none active:scale-[0.98] transition-transform"
                 >
                   {/* Image Box */}
                   <div className="relative w-full aspect-[4/3.8] bg-[#FAF6F4] overflow-hidden">
@@ -265,13 +265,13 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                     {/* Top Image Box */}
                     <div
                       onClick={() => navigate(`/product/${product.slug || product.id}`)}
-                      className="relative w-full aspect-[314/276] overflow-hidden bg-[#FAF6F4] cursor-pointer"
+                      className="relative w-full aspect-[314/276] overflow-hidden bg-[#FAF6F4] flex items-center justify-center p-2.5 cursor-pointer"
                     >
                       {product.image ? (
                         <img
                           src={product.image}
                           alt={product.name}
-                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
                         />
                       ) : (
@@ -287,7 +287,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                           toggleWishlist(product);
                         }}
                         aria-label="Add to Wishlist"
-                        className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white/95 hover:bg-white shadow-sm flex items-center justify-center transition-transform active:scale-90 cursor-pointer"
+                        className="absolute top-2.5 right-2.5 z-10 w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white/95 hover:bg-white shadow-sm flex items-center justify-center transition-transform active:scale-90 cursor-pointer"
                       >
                         <Heart
                           className={`w-4 h-4 transition-colors ${

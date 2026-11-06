@@ -144,7 +144,7 @@ export const HeroSection = ({ onShopNow }) => {
         {slides.map((slide, idx) => (
           <div
             key={slide.id || idx}
-            className="w-full shrink-0 relative min-h-[185px] sm:min-h-[260px] lg:min-h-[320px] flex items-center"
+            className="w-full shrink-0 relative min-h-[210px] sm:min-h-[270px] lg:min-h-[320px] flex items-center"
           >
             {/* Background Image */}
             <div
@@ -159,13 +159,13 @@ export const HeroSection = ({ onShopNow }) => {
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 36%, rgba(255, 255, 255, 0.70) 58%, rgba(255, 255, 255, 0.15) 82%, rgba(255, 255, 255, 0) 100%)'
+                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.93) 48%, rgba(255, 255, 255, 0.60) 70%, rgba(255, 255, 255, 0.15) 88%, rgba(255, 255, 255, 0) 100%)'
               }}
             />
 
             {/* Inner Content Area */}
             <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-5 lg:py-6 flex flex-col justify-center">
-              <div className="max-w-[210px] sm:max-w-[500px]">
+              <div className="max-w-[250px] xs:max-w-[280px] sm:max-w-[500px]">
                 {/* Tagline / Subtitle */}
                 <p
                   className="hidden sm:flex text-[10px] sm:text-[11px] font-semibold tracking-[0.16em] text-[#821D38] uppercase mb-1 items-center gap-1.5"
@@ -175,7 +175,7 @@ export const HeroSection = ({ onShopNow }) => {
 
                 {/* Main Heading */}
                 <h1
-                  className="text-base sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.14] tracking-tight mb-1 sm:mb-2"
+                  className="text-[17px] sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.16] tracking-tight mb-1 sm:mb-2"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
                   <span>{slide.titleLine1}</span>
@@ -189,7 +189,7 @@ export const HeroSection = ({ onShopNow }) => {
 
                 {/* Description */}
                 <p
-                  className="text-[11px] sm:text-[13px] text-[#52454B] leading-snug mb-2 sm:mb-3.5 whitespace-pre-line font-normal"
+                  className="text-[11px] sm:text-[13px] text-[#52454B] leading-snug mb-2 sm:mb-3.5 line-clamp-2 sm:line-clamp-none font-normal"
                 >
                   {slide.description}
                 </p>

@@ -131,11 +131,11 @@ export const WishlistPage = () => {
                 className="group bg-white rounded-2xl border border-[#EFEBEF] hover:border-[#DFC8D0] overflow-hidden flex flex-col justify-between transition-all duration-300 hover:shadow-lg hover:-translate-y-1.5 select-none"
               >
                 {/* Image Box (Flush to top/sides) */}
-                <div className="relative w-full aspect-[314/276] overflow-hidden bg-[#FAF6F4]">
+                <div className="relative w-full aspect-[314/276] overflow-hidden bg-[#FAF6F4] flex items-center justify-center p-2.5">
                   <img
                     src={product.image}
                     alt={product.name}
-                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
                     loading="lazy"
                   />
 
@@ -143,7 +143,7 @@ export const WishlistPage = () => {
                   <button
                     onClick={() => removeFromWishlist(product.id)}
                     aria-label="Remove from Wishlist"
-                    className="absolute top-2.5 right-2.5 w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white/95 hover:bg-white shadow-sm flex items-center justify-center transition-transform active:scale-90 cursor-pointer text-[#E11D48]"
+                    className="absolute top-2.5 right-2.5 z-10 w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-white/95 hover:bg-white shadow-sm flex items-center justify-center transition-transform active:scale-90 cursor-pointer text-[#E11D48]"
                     title="Remove from wishlist"
                   >
                     <Heart size={15} className="fill-[#E11D48] text-[#E11D48]" />

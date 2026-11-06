@@ -78,11 +78,14 @@ export const Navbar = ({ onSearch }) => {
 
   const defaultGiftCategories = [
     { label: 'Accessories', path: '/category/accessories' },
-    { label: 'Anniversary Gifts', path: '/anniversary-gifts' },
-    { label: 'Birthday Gifts', path: '/birthday-gifts' },
+    { label: 'Anniversary Gifts', path: '/category/anniversary-gifts' },
+    { label: 'Birthday Gifts', path: '/category/birthday-gifts' },
     { label: 'Corporate Gifts', path: '/category/corporate-gifts' },
-    { label: 'Festival Gifts', path: '/festival-gifts' },
-    { label: 'Flowers and Hampers', path: '/category/flowers-hampers' }
+    { label: 'Festival Gifts', path: '/category/festival-gifts' },
+    { label: 'Flowers and Hampers', path: '/category/flowers-and-hampers' },
+    { label: 'Gifts', path: '/category/gifts' },
+    { label: 'Personalized Gifts', path: '/category/personalized-gifts' },
+    { label: 'Toys and Kids', path: '/category/toys-and-kids' }
   ];
 
   const [giftCategories, setGiftCategories] = useState(defaultGiftCategories);
@@ -105,10 +108,15 @@ export const Navbar = ({ onSearch }) => {
               else if (s.includes('corporate') || n.includes('corporate')) path = '/category/corporate-gifts';
               else if (s.includes('flower') || n.includes('flower') || s.includes('hamper') || n.includes('hamper')) path = '/category/flowers-hampers';
               else if (s.includes('accessori') || n.includes('accessori')) path = '/category/accessories';
+              else if (s.includes('toy') || n.includes('toy') || s.includes('kid') || n.includes('kid')) path = '/category/toys-kids';
               return { label: c.name, path };
             });
 
           if (activeCats.length > 0) {
+            const hasToys = activeCats.some(c => c.path === '/category/toys-kids' || (c.label || '').toLowerCase().includes('toy'));
+            if (!hasToys) {
+              activeCats.unshift({ label: 'Toys and Kids', path: '/category/toys-kids' });
+            }
             setGiftCategories(activeCats);
           }
         }

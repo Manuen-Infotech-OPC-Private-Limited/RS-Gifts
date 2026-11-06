@@ -13,11 +13,11 @@ import { AccountPage } from './pages/AccountPage';
 import { CartPage } from './pages/CartPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { BirthdayGiftsPage } from './pages/BirthdayGiftsPage';
+import { CategoryPage } from './pages/CategoryPage';
 import { ProductDetailsPage } from './pages/ProductDetailsPage';
 import { Contactus } from './pages/Contactus';
 import { AboutUsPage } from './pages/AboutUsPage';
 import { CartDrawer } from './components/cart/CartDrawer';
-import { BottomNav } from './components/BottomNav';
 import './App.css';
 
 // Automatically scroll to top on any route navigation
@@ -58,7 +58,7 @@ export function App() {
           <div className="app-root flex flex-col min-h-screen bg-[#FFF9F5]">
             <Navbar onSearch={handleSearch} onNavigate={handleNavigate} />
 
-            <main className="flex-1 bg-[#FFF9F5] pb-16 md:pb-0">
+            <main className="flex-1 bg-[#FFF9F5]">
               <Routes>
                 {/* Home Storefront */}
                 <Route
@@ -75,6 +75,19 @@ export function App() {
                 {/* Birthday Gifts Page */}
                 <Route path="/birthday-gifts" element={<BirthdayGiftsPage />} />
                 <Route path="/category/birthday-gifts" element={<BirthdayGiftsPage />} />
+
+                {/* Category Landing Pages */}
+                <Route path="/category/:categorySlug" element={<CategoryPage />} />
+                <Route path="/toys-kids" element={<CategoryPage />} />
+                <Route path="/toys-and-kids" element={<CategoryPage />} />
+                <Route path="/anniversary-gifts" element={<CategoryPage />} />
+                <Route path="/personalized-gifts" element={<CategoryPage />} />
+                <Route path="/festival-gifts" element={<CategoryPage />} />
+                <Route path="/flowers-hampers" element={<CategoryPage />} />
+                <Route path="/corporate-gifts" element={<CategoryPage />} />
+                <Route path="/accessories" element={<CategoryPage />} />
+                <Route path="/flowers-and-hampers" element={<CategoryPage />} />
+                <Route path="/gifts" element={<CategoryPage />} />
 
                 {/* Product Details Page */}
                 <Route path="/product/:idOrSlug" element={<ProductDetailsPage />} />
@@ -117,7 +130,6 @@ export function App() {
             <Footer />
             <AuthModal />
             <CartDrawer />
-            <BottomNav />
           </div>
         </CartProvider>
       </WishlistProvider>

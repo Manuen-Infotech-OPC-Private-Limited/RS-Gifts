@@ -93,15 +93,35 @@ export const fetchActiveCoupon = async () => {
 };
 
 export const fetchLiveProducts = async (params = {}) => {
+  let list = [];
+  let activeCoupon = null;
   try {
-    const data = await api.get('/customer/products', { params });
+    const queryParams = { limit: 100, ...params };
+    const data = await api.get('/customer/products', { params: queryParams });
     const rawList = data.products || (Array.isArray(data) ? data : []);
-    const activeCoupon = data.activeCoupon || null;
-    return rawList.map((p) => normalizeProduct(p, activeCoupon));
+    activeCoupon = data.activeCoupon || null;
+    list = rawList.map((p) => normalizeProduct(p, activeCoupon));
   } catch (err) {
-    console.warn('[RS-Gifts API] Backend unreachable, using fallback data:', err.message);
-    throw err;
+    console.warn('[RS-Gifts API] Backend unreachable, checking local fallback:', err.message);
   }
+
+  // Cross-origin / localStorage synchronization with Admin portal
+  try {
+    const savedAdmin = localStorage.getItem('rs_gifts_admin_clean_frame_v3');
+    if (savedAdmin) {
+      const parsed = JSON.parse(savedAdmin);
+      const adminProds = (parsed.products || []).filter((p) => p && p.active !== false);
+      const existingIds = new Set(list.map((p) => String(p.id || p._id || p.productId || p.sku)));
+      adminProds.forEach((ap) => {
+        const id = String(ap.id || ap._id || ap.productId || ap.sku);
+        if (!existingIds.has(id)) {
+          list.unshift(normalizeProduct(ap, activeCoupon));
+        }
+      });
+    }
+  } catch {}
+
+  return list;
 };
 
 export const fetchProductByIdOrSlug = async (idOrSlug) => {
@@ -214,18 +234,34 @@ export const fetchProductByIdOrSlug = async (idOrSlug) => {
 };
 
 export const fetchLiveCategories = async () => {
+  let categories = [];
   try {
     const data = await api.get('/customer/categories');
-    return data.categories || (Array.isArray(data) ? data : []);
+    categories = data.categories || (Array.isArray(data) ? data : []);
   } catch (err) {
     try {
       const data = await api.get('/categories');
-      return data.categories || (Array.isArray(data) ? data : []);
-    } catch {
-      console.warn('[RS-Gifts API] Could not fetch live categories:', err.message);
-      return [];
-    }
+      categories = data.categories || (Array.isArray(data) ? data : []);
+    } catch {}
   }
+
+  // If backend returned empty or offline, check admin localStorage
+  try {
+    const savedAdmin = localStorage.getItem('rs_gifts_admin_clean_frame_v3');
+    if (savedAdmin) {
+      const parsed = JSON.parse(savedAdmin);
+      if (Array.isArray(parsed.categories) && parsed.categories.length > 0) {
+        const existingSlugs = new Set(categories.map((c) => (c.slug || '').toLowerCase()));
+        parsed.categories.forEach((c) => {
+          if (c && c.active !== false && !existingSlugs.has((c.slug || '').toLowerCase())) {
+            categories.push(c);
+          }
+        });
+      }
+    }
+  } catch {}
+
+  return categories;
 };
 
 export const submitProductReview = async ({ productId, rating, comment, customerName, customerEmail }) => {
