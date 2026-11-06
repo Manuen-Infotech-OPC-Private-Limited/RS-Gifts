@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
+import { useCart } from '../../context/CartContext';
 import { OrderTrackerModal } from './OrderTrackerModal';
 import { 
   Package, 
@@ -17,9 +18,35 @@ import {
 
 export const OrdersList = () => {
   const { orders, cancelOrder } = useAuth();
+  const { addToCart, openCartDrawer } = useCart();
   const [filter, setFilter] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState(null);
+  const [toastMessage, setToastMessage] = useState(null);
+  const [confirmCancelOrder, setConfirmCancelOrder] = useState(null);
+
+  const handleBuyAgain = (order) => {
+    if (!order || !order.items || order.items.length === 0) return;
+    order.items.forEach((item) => {
+      addToCart(
+        {
+          id: item.productId || item.id || item._id,
+          name: item.name || item.title,
+          price: item.price,
+          originalPrice: item.originalPrice || item.price,
+          image: item.image || item.photoUrl,
+        },
+        item.quantity || 1
+      );
+    });
+    setToastMessage(`Items from Order #${order.id} added to your cart!`);
+    setTimeout(() => {
+      setToastMessage(null);
+    }, 4000);
+    if (openCartDrawer) {
+      openCartDrawer();
+    }
+  };
 
   const filterTabs = ['All', 'In Transit', 'Delivered', 'Cancelled'];
 
@@ -284,11 +311,7 @@ export const OrdersList = () => {
                     <div className="flex items-center gap-2">
                       {!isDelivered && !isCancelled && (
                         <button
-                          onClick={() => {
-                            if (window.confirm(`Are you sure you want to cancel Order #${order.id}?`)) {
-                              cancelOrder(order.id);
-                            }
-                          }}
+                          onClick={() => setConfirmCancelOrder(order)}
                           className="text-xs text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
                         >
                           Cancel Order
@@ -297,7 +320,7 @@ export const OrdersList = () => {
 
                       {isDelivered && (
                         <button
-                          onClick={() => alert(`Items from Order #${order.id} added to your cart!`)}
+                          onClick={() => handleBuyAgain(order)}
                           className="text-xs text-[#821D38] hover:text-[#6E162E] font-semibold flex items-center gap-1 cursor-pointer"
                         >
                           <RotateCcw size={13} />
@@ -310,6 +333,63 @@ export const OrdersList = () => {
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Cancel Order Confirmation Modal */}
+      {confirmCancelOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-neutral-100 space-y-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <XCircle size={22} />
+              </div>
+              <div>
+                <h3 className="font-bold text-neutral-900 text-sm">Cancel Order #{confirmCancelOrder.id}?</h3>
+                <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                  Are you sure you want to cancel this order? This action cannot be reversed.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-neutral-100">
+              <button
+                type="button"
+                onClick={() => setConfirmCancelOrder(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 cursor-pointer transition-colors"
+              >
+                Keep Order
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  cancelOrder(confirmCancelOrder.id);
+                  setToastMessage(`Order #${confirmCancelOrder.id} has been cancelled.`);
+                  setTimeout(() => setToastMessage(null), 4000);
+                  setConfirmCancelOrder(null);
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 cursor-pointer transition-colors shadow-xs"
+              >
+                Yes, Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Elegant In-App Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-4 py-3 bg-[#1E1217] text-white rounded-2xl shadow-2xl border border-white/10 animate-fade-in">
+          <div className="w-6 h-6 rounded-full bg-[#821D38] text-white flex items-center justify-center shrink-0 text-xs font-bold">
+            ✓
+          </div>
+          <span className="text-xs sm:text-sm font-semibold">{toastMessage}</span>
+          <button
+            type="button"
+            onClick={() => setToastMessage(null)}
+            className="ml-2 text-white/50 hover:text-white text-xs cursor-pointer"
+          >
+            ✕
+          </button>
         </div>
       )}
 

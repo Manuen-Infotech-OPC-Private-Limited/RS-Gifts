@@ -7,6 +7,7 @@ export const AddressBook = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [deletingAddrId, setDeletingAddrId] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
@@ -181,11 +182,7 @@ export const AddressBook = () => {
                   </button>
 
                   <button
-                    onClick={() => {
-                      if (window.confirm('Delete this address?')) {
-                        deleteAddress(addr.id);
-                      }
-                    }}
+                    onClick={() => setDeletingAddrId(addr.id)}
                     className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
                   >
                     <Trash2 size={13} />
@@ -325,6 +322,43 @@ export const AddressBook = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Delete Address Confirmation Modal */}
+      {deletingAddrId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-neutral-100 space-y-4 font-sans">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+                <Trash2 size={20} />
+              </div>
+              <div>
+                <h3 className="font-bold text-neutral-900 text-sm">Delete this address?</h3>
+                <p className="text-xs text-neutral-500 mt-1 leading-relaxed">
+                  Are you sure you want to remove this delivery address?
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-neutral-100">
+              <button
+                type="button"
+                onClick={() => setDeletingAddrId(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 cursor-pointer transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  deleteAddress(deletingAddrId);
+                  setDeletingAddrId(null);
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 cursor-pointer transition-colors shadow-xs"
+              >
+                Yes, Delete
+              </button>
+            </div>
           </div>
         </div>
       )}
