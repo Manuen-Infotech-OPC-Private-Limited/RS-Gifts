@@ -155,12 +155,12 @@ export const Contactus = () => {
         setErrorMsg('');
 
         try {
-            // Send inquiry directly to live MongoDB backend API
+            // Send enquiry directly to live MongoDB backend API
             await api.post('/customer/inquiries', {
                 fullName: formData.fullName.trim(),
                 email: formData.email.trim(),
                 phone: formData.phone.trim(),
-                subject: formData.subject.trim() || 'General Inquiry',
+                subject: formData.subject.trim() || 'General Enquiry',
                 message: formData.message.trim(),
             });
         } catch (apiErr) {
@@ -507,12 +507,12 @@ export const Contactus = () => {
                                                     className="w-full pl-10 pr-8 py-2.5 rounded-xl border border-[#ECE7EC] focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38] text-xs sm:text-[13px] text-[#29252A] bg-white transition-all outline-none appearance-none cursor-pointer"
                                                 >
                                                     <option value="">Select a subject</option>
-                                                    <option value="Order Inquiry & Tracking">Order Inquiry & Tracking</option>
+                                                    <option value="Order Enquiry & Tracking">Order Enquiry & Tracking</option>
                                                     <option value="Customization & Laser Engraving">Customization & Laser Engraving</option>
                                                     <option value="Same-Day & Express Delivery">Same-Day & Express Delivery</option>
                                                     <option value="Corporate & Bulk Gifting">Corporate & Bulk Gifting</option>
                                                     <option value="Payment & Billing Question">Payment & Billing Question</option>
-                                                    <option value="Feedback & General Inquiry">Feedback & General Inquiry</option>
+                                                    <option value="Feedback & General Enquiry">Feedback & General Enquiry</option>
                                                 </select>
                                                 <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-[#6F6870]">
                                                     <svg className="w-4 h-4 fill-current" viewBox="0 0 20 20">
