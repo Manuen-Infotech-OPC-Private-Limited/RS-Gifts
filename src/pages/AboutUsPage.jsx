@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import rsgiftsHeroImg from '../assets/rsgifts.png';
 
 // Crisp, standalone inline SVGs matching the design mockup icons
 const DiamondIcon = () => (
@@ -98,11 +99,11 @@ export const AboutUsPage = () => {
 
             {/* Right Hero Image */}
             <div className="md:col-span-6 lg:col-span-5 flex justify-center md:justify-end">
-              <div className="relative max-w-[340px] sm:max-w-[380px] w-full rounded-2xl overflow-hidden shadow-xs">
+              <div className="relative max-w-[360px] sm:max-w-[400px] w-full rounded-2xl overflow-hidden shadow-xs">
                 <img
-                  src="/images/about/about-hero-gift.png"
+                  src={rsgiftsHeroImg}
                   alt="RS Gifts Signature Gift Box"
-                  className="w-full h-auto object-cover"
+                  className="w-full h-auto object-cover rounded-2xl"
                 />
               </div>
             </div>
