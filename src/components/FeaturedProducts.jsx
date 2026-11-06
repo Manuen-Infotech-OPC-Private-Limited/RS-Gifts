@@ -19,7 +19,7 @@ export const FeaturedProducts = ({ onAddToCart }) => {
     let isMounted = true;
     const loadProducts = () => {
       setLoading(true);
-      fetchLiveProducts()
+      fetchLiveProducts({ featured: true })
         .then((items) => {
           if (isMounted) {
             setLiveProducts(Array.isArray(items) ? items : []);
@@ -51,11 +51,11 @@ export const FeaturedProducts = ({ onAddToCart }) => {
     };
   }, []);
 
-  const validProducts = (liveProducts || []).filter((p) => p && p.active !== false);
+  const validProducts = (liveProducts || []).filter(
+    (p) => p && p.active !== false && (p.featured === true || p.featured === 'true')
+  );
 
-  // If items are marked featured in backend, show featured first; otherwise show all products from backend
-  // Always show all active products, with featured products sorted first
-  const productList = [...validProducts].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
+  const productList = [...validProducts];
 
   // Build dynamic filter tabs based on all categories in valid products
   const categorySet = new Set();
