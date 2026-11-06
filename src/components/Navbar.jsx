@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { fetchLiveCategories } from '../services/productService';
+import { fetchLiveCategories, fetchLiveProducts } from '../services/productService';
 import api from '../services/api';
-import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight, Loader2 } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
   const navigate = useNavigate();
@@ -14,6 +14,49 @@ export const Navbar = ({ onSearch }) => {
   const { cartCount, openCartDrawer } = useCart();
   const { wishlistCount } = useWishlist();
   const [query, setQuery] = useState('');
+  const [liveResults, setLiveResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const searchRef = useRef(null);
+  const mobileSearchRef = useRef(null);
+
+  useEffect(() => {
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      setLiveResults([]);
+      setIsSearching(false);
+      setShowDropdown(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const items = await fetchLiveProducts({ search: trimmed, limit: 6 });
+        setLiveResults(items.slice(0, 5));
+        setShowDropdown(true);
+      } catch (err) {
+        console.error('Navbar search error:', err);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 250);
+
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (
+        searchRef.current && !searchRef.current.contains(e.target) &&
+        (!mobileSearchRef.current || !mobileSearchRef.current.contains(e.target))
+      ) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const [activeTab, setActiveTab] = useState('Home');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);

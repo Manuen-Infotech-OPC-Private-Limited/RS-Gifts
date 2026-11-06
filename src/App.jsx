@@ -14,6 +14,7 @@ import { CartPage } from './pages/CartPage';
 import { WishlistPage } from './pages/WishlistPage';
 import { BirthdayGiftsPage } from './pages/BirthdayGiftsPage';
 import { CategoryPage } from './pages/CategoryPage';
+import { SearchResultsPage } from './pages/SearchResultsPage';
 import { ProductDetailsPage } from './pages/ProductDetailsPage';
 import { Contactus } from './pages/Contactus';
 import { AboutUsPage } from './pages/AboutUsPage';
@@ -77,6 +78,7 @@ export function App() {
                 <Route path="/category/birthday-gifts" element={<CategoryPage />} />
 
                 {/* Category Landing Pages */}
+                <Route path="/search" element={<SearchResultsPage />} />
                 <Route path="/category/:categorySlug" element={<CategoryPage />} />
                 <Route path="/toys-kids" element={<CategoryPage />} />
                 <Route path="/toys-and-kids" element={<CategoryPage />} />

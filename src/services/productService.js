@@ -121,6 +121,27 @@ export const fetchLiveProducts = async (params = {}) => {
     }
   } catch {}
 
+  // If search param provided, ensure products match terms
+  if (params && params.search && String(params.search).trim()) {
+    const terms = String(params.search).toLowerCase().trim().split(/[\s,+/_-]+/).filter(Boolean);
+    list = list.filter((p) => {
+      if (!p) return false;
+      const haystack = [
+        p.title,
+        p.name,
+        p.category,
+        p.description,
+        ...(Array.isArray(p.categories) ? p.categories : []),
+        ...(Array.isArray(p.occasions) ? p.occasions : []),
+      ].filter(Boolean).join(' ').toLowerCase();
+
+      return terms.some((t) => {
+        const base = t.replace(/(ies|es|s)$/, '');
+        return haystack.includes(t) || (base.length >= 3 && haystack.includes(base));
+      });
+    });
+  }
+
   return list;
 };
 
