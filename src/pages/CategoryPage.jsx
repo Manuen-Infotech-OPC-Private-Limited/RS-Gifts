@@ -9,18 +9,63 @@ import {
 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
-import { fetchLiveProducts } from '../services/productService';
+import { fetchLiveProducts, fetchLiveCategories } from '../services/productService';
 
 const KNOWN_CATEGORIES = [
-  { name: 'Toys and Kids', slug: 'toys-and-kids', aliases: ['toys-kids', 'toys-and-kids', 'toys', 'kids'] },
-  { name: 'Corporate Gifts', slug: 'corporate-gifts', aliases: ['corporate-gifts', 'corporate'] },
-  { name: 'Festival Gifts', slug: 'festival-gifts', aliases: ['festival-gifts', 'festival', 'festive'] },
-  { name: 'Anniversary Gifts', slug: 'anniversary-gifts', aliases: ['anniversary-gifts', 'anniversary'] },
-  { name: 'Birthday Gifts', slug: 'birthday-gifts', aliases: ['birthday-gifts', 'birthday'] },
-  { name: 'Flowers and Hampers', slug: 'flowers-and-hampers', aliases: ['flowers-and-hampers', 'flowers-hampers', 'flowers', 'hampers'] },
-  { name: 'Accessories', slug: 'accessories', aliases: ['accessories'] },
-  { name: 'Personalized Gifts', slug: 'personalized-gifts', aliases: ['personalized-gifts', 'personalized'] },
-  { name: 'Gifts', slug: 'gifts', aliases: ['gifts'] }
+  { 
+    name: 'Toys and Kids', 
+    slug: 'toys-and-kids', 
+    description: 'Creative toys, board games, learning gifts, and fun surprises for kids',
+    aliases: ['toys-kids', 'toys-and-kids', 'toys', 'kids'] 
+  },
+  { 
+    name: 'Corporate Gifts', 
+    slug: 'corporate-gifts', 
+    description: 'Executive stationery, corporate gift sets, and employee appreciation packs',
+    aliases: ['corporate-gifts', 'corporate'] 
+  },
+  { 
+    name: 'Festival Gifts', 
+    slug: 'festival-gifts', 
+    description: 'Festive gift hampers, sweets, lamps, and holiday season specials',
+    aliases: ['festival-gifts', 'festival', 'festive'] 
+  },
+  { 
+    name: 'Anniversary Gifts', 
+    slug: 'anniversary-gifts', 
+    description: 'Romantic tokens, milestone gifts, and couple surprises',
+    aliases: ['anniversary-gifts', 'anniversary'] 
+  },
+  { 
+    name: 'Birthday Gifts', 
+    slug: 'birthday-gifts', 
+    description: 'Memorable birthday surprises and celebratory presents for all ages',
+    aliases: ['birthday-gifts', 'birthday'] 
+  },
+  { 
+    name: 'Flowers and Hampers', 
+    slug: 'flowers-and-hampers', 
+    description: 'Fresh flower arrangements, gourmet chocolate boxes, and luxury hampers',
+    aliases: ['flowers-and-hampers', 'flowers-hampers', 'flowers', 'hampers'] 
+  },
+  { 
+    name: 'Accessories', 
+    slug: 'accessories', 
+    description: 'Wallets, wristwatches, jewelry, keychains, and lifestyle accessories',
+    aliases: ['accessories'] 
+  },
+  { 
+    name: 'Personalized Gifts', 
+    slug: 'personalized-gifts', 
+    description: 'Customized mugs, frames, engraved items, and custom keepsakes',
+    aliases: ['personalized-gifts', 'personalized'] 
+  },
+  { 
+    name: 'Gifts', 
+    slug: 'gifts', 
+    description: 'Special gifts and thoughtful presents for every occasion',
+    aliases: ['gifts'] 
+  }
 ];
 
 const cleanForCompare = (str) => {
@@ -39,6 +84,12 @@ export const CategoryPage = () => {
   const { addToCart, closeCartDrawer } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
+  const [categoriesList, setCategoriesList] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('featured');
+  const [addedItems, setAddedItems] = useState({});
+
   const rawSlug = useMemo(() => {
     if (paramSlug) return paramSlug.toLowerCase();
     const cleanPath = location.pathname.replace(/^\//, '').toLowerCase();
@@ -48,26 +99,60 @@ export const CategoryPage = () => {
     return cleanPath || 'gifts';
   }, [paramSlug, location.pathname]);
 
-  const categoryName = useMemo(() => {
+  const currentCategory = useMemo(() => {
     const slugClean = cleanForCompare(rawSlug);
-    for (const cat of KNOWN_CATEGORIES) {
-      if (cleanForCompare(cat.name) === slugClean || cleanForCompare(cat.slug) === slugClean) {
-        return cat.name;
-      }
-      if (cat.aliases.some(a => cleanForCompare(a) === slugClean)) {
-        return cat.name;
+
+    // 1. Look in live categories from backend/admin
+    if (categoriesList && categoriesList.length > 0) {
+      const liveFound = categoriesList.find(cat => {
+        if (!cat) return false;
+        return (
+          cleanForCompare(cat.name) === slugClean || 
+          cleanForCompare(cat.slug) === slugClean
+        );
+      });
+      if (liveFound) {
+        return {
+          name: liveFound.name,
+          description: liveFound.description || '',
+          image: liveFound.image || ''
+        };
       }
     }
-    return rawSlug
+
+    // 2. Fallback to KNOWN_CATEGORIES
+    for (const cat of KNOWN_CATEGORIES) {
+      if (cleanForCompare(cat.name) === slugClean || cleanForCompare(cat.slug) === slugClean) {
+        return {
+          name: cat.name,
+          description: cat.description || '',
+          image: cat.image || ''
+        };
+      }
+      if (cat.aliases && cat.aliases.some(a => cleanForCompare(a) === slugClean)) {
+        return {
+          name: cat.name,
+          description: cat.description || '',
+          image: cat.image || ''
+        };
+      }
+    }
+
+    // 3. Fallback name from slug
+    const fallbackName = rawSlug
       .split(/[-_]/)
       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
       .join(' ');
-  }, [rawSlug]);
 
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState('featured');
-  const [addedItems, setAddedItems] = useState({});
+    return {
+      name: fallbackName,
+      description: '',
+      image: ''
+    };
+  }, [rawSlug, categoriesList]);
+
+  const categoryName = currentCategory.name;
+  const categoryDescription = currentCategory.description;
 
   const isMatch = useCallback((p) => {
     if (!p) return false;
@@ -90,27 +175,33 @@ export const CategoryPage = () => {
     return false;
   }, [categoryName, rawSlug]);
 
-  const loadProducts = useCallback(async () => {
+  const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const liveItems = await fetchLiveProducts();
+      const [liveCats, liveItems] = await Promise.all([
+        fetchLiveCategories().catch(() => []),
+        fetchLiveProducts().catch(() => [])
+      ]);
+      if (Array.isArray(liveCats) && liveCats.length > 0) {
+        setCategoriesList(liveCats);
+      }
       const matched = (liveItems || []).filter(isMatch);
       setProducts(matched);
     } catch (err) {
-      console.error('Failed to load category products:', err);
+      console.error('Failed to load category data:', err);
     } finally {
       setLoading(false);
     }
   }, [isMatch]);
 
   useEffect(() => {
-    loadProducts();
-    const handleFocus = () => loadProducts();
+    loadData();
+    const handleFocus = () => loadData();
     window.addEventListener('focus', handleFocus);
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, [loadProducts]);
+  }, [loadData]);
 
   const sortedProducts = useMemo(() => {
     const list = [...products];
@@ -146,6 +237,30 @@ export const CategoryPage = () => {
 
   return (
     <div className="w-full bg-[#FFF9F5] min-h-screen pb-16">
+      {/* Category Name & Description Header */}
+      <div className="w-full bg-white border-b border-[#ECE7EC]">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-[#1E1217] tracking-tight">
+              {categoryName}
+            </h1>
+            {categoryDescription && (
+              <p className="text-xs sm:text-sm text-[#705E67] mt-1 max-w-2xl leading-relaxed">
+                {categoryDescription}
+              </p>
+            )}
+          </div>
+
+          {sortedProducts.length > 0 && (
+            <div className="self-start sm:self-center shrink-0">
+              <span className="text-xs font-semibold text-[#821D38] bg-[#FFF5F7] border border-[#821D38]/15 px-3 py-1.5 rounded-full">
+                {sortedProducts.length} {sortedProducts.length === 1 ? 'Product' : 'Products'}
+              </span>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Products Grid in the Middle - Matching Home Featured Products Card Exactly */}
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8">
         {loading && (

@@ -73,8 +73,8 @@ export function App() {
                 />
 
                 {/* Birthday Gifts Page */}
-                <Route path="/birthday-gifts" element={<BirthdayGiftsPage />} />
-                <Route path="/category/birthday-gifts" element={<BirthdayGiftsPage />} />
+                <Route path="/birthday-gifts" element={<CategoryPage />} />
+                <Route path="/category/birthday-gifts" element={<CategoryPage />} />
 
                 {/* Category Landing Pages */}
                 <Route path="/category/:categorySlug" element={<CategoryPage />} />
