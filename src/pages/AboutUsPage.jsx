@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import rsgiftsHeroImg from '../assets/rsgifts.png';
 
 // Crisp, standalone inline SVGs matching the design mockup icons
@@ -71,17 +71,9 @@ export const AboutUsPage = () => {
   return (
     <div className="min-h-screen bg-[#FCF8F5] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
       
-      {/* 1. HERO SECTION (Breadcrumb, Title, Red underline, Subtitle & Hero Gift Box) */}
+      {/* 1. HERO SECTION (Title, Red underline, Subtitle & Full Hero Image) */}
       <section className="relative overflow-hidden bg-gradient-to-r from-[#FAF3EC] via-[#FFF9F5] to-[#FAF3EB] border-b border-[#EFE5DC]">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-8 sm:pt-8 sm:pb-12">
-          
-          {/* Breadcrumb */}
-          <div className="text-xs text-neutral-400 mb-4 sm:mb-6 font-medium">
-            <Link to="/" className="hover:text-[#821D38] transition-colors">Home</Link>
-            <span className="mx-1.5">/</span>
-            <span className="text-neutral-600">About Us</span>
-          </div>
-
+        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
             {/* Left Content */}
             <div className="md:col-span-5 lg:col-span-5">
@@ -98,12 +90,12 @@ export const AboutUsPage = () => {
             </div>
 
             {/* Right Hero Image */}
-            <div className="md:col-span-7 lg:col-span-7 flex justify-center md:justify-end">
-              <div className="relative w-full max-w-[650px] rounded-2xl overflow-hidden shadow-md border border-[#EFE5DC]/70">
+            <div className="md:col-span-7 lg:col-span-7 flex justify-center md:justify-end w-full">
+              <div className="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-lg border border-[#EFE5DC]/80 bg-white/40">
                 <img
                   src={rsgiftsHeroImg}
                   alt="RS Gifts Signature Gift Box"
-                  className="w-full h-auto object-cover rounded-2xl"
+                  className="w-full h-auto object-cover rounded-2xl md:rounded-3xl"
                 />
               </div>
             </div>
