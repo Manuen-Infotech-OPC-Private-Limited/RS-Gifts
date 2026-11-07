@@ -71,11 +71,11 @@ export const AboutUsPage = () => {
   return (
     <div className="min-h-screen bg-[#FFF9F5] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
       
-      {/* 1. HERO SECTION (Title, Subtitle & Full Hero Image with zero gaps) */}
+      {/* 1. HERO SECTION (Title, Subtitle & Hero Image with soft bleeding transition into background) */}
       <section className="relative overflow-hidden w-full border-b border-[#ECE7EC]">
-        <div className="grid grid-cols-1 md:grid-cols-12 items-stretch min-h-[360px] sm:min-h-[420px] md:min-h-[460px] lg:min-h-[500px]">
+        <div className="grid grid-cols-1 md:grid-cols-12 items-stretch min-h-[320px] sm:min-h-[380px] md:min-h-[400px] lg:min-h-[440px] xl:min-h-[480px]">
           {/* Left Content */}
-          <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-center px-6 sm:px-10 lg:pl-16 xl:pl-24 py-10 sm:py-14">
+          <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-center px-6 sm:px-10 lg:pl-16 xl:pl-24 py-10 sm:py-14 z-20">
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
               About <span className="text-[#821D38] italic font-normal">RS Gifts</span>
             </h1>
@@ -85,12 +85,24 @@ export const AboutUsPage = () => {
             </p>
           </div>
 
-          {/* Right Hero Image - Flush with zero gaps around it */}
-          <div className="md:col-span-7 lg:col-span-7 relative h-72 sm:h-96 md:h-auto w-full overflow-hidden">
+          {/* Right Hero Image - Seamless bleeding into background without harsh crop cutoffs */}
+          <div className="md:col-span-7 lg:col-span-7 relative h-72 sm:h-96 md:h-auto w-full overflow-hidden flex items-center justify-end">
+            {/* Desktop Left-to-Right Bleed Gradient Overlay */}
+            <div 
+              className="hidden md:block pointer-events-none absolute inset-y-0 left-0 w-32 sm:w-44 lg:w-64 bg-gradient-to-r from-[#FFF9F5] via-[#FFF9F5]/70 to-transparent z-10" 
+              aria-hidden="true" 
+            />
+
+            {/* Mobile Top-to-Bottom Bleed Gradient Overlay */}
+            <div 
+              className="md:hidden pointer-events-none absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-[#FFF9F5] via-[#FFF9F5]/80 to-transparent z-10" 
+              aria-hidden="true" 
+            />
+
             <img
               src={rsgiftsHeroImg}
               alt="RS Gifts Signature Gift Box"
-              className="w-full h-full object-cover object-center"
+              className="hero-image-bleed w-full h-full object-cover object-[center_right] md:object-center select-none"
             />
           </div>
         </div>
