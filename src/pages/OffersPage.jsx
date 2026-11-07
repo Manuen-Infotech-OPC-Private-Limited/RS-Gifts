@@ -140,98 +140,14 @@ export const OffersPage = () => {
           </h1>
 
           <p className="mt-3 text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
-            Handcrafted discounts, celebratory price cuts, and exclusive coupon codes to make your gift unforgettable.
+            Handcrafted discounts, celebratory price cuts, and special offers to make your gift unforgettable.
           </p>
         </div>
       </section>
 
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-10">
 
-        {/* 2. ACTIVE STORE COUPONS STRIP (If Admin Added Coupons) */}
-        {activeCoupons.length > 0 && (
-          <section className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <BadgePercent className="w-5 h-5 text-[#821D38]" />
-                <h2 className="text-base sm:text-lg font-bold text-[#1E1217]">
-                  Storewide Promo Coupons
-                </h2>
-              </div>
-              <span className="text-xs text-neutral-500 font-medium">
-                Apply at checkout
-              </span>
-            </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {activeCoupons.map((coupon) => (
-                <div
-                  key={coupon.code}
-                  className="bg-white rounded-2xl border border-[#ECE7EC] p-4 shadow-2xs hover:shadow-md transition-shadow relative overflow-hidden flex flex-col justify-between"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm font-extrabold text-[#821D38] bg-[#FDF2F4] px-2.5 py-0.5 rounded-lg border border-[#821D38]/20 tracking-wide font-mono">
-                          {coupon.code}
-                        </span>
-                        <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
-                          {coupon.label}
-                        </span>
-                      </div>
-
-                      {coupon.description ? (
-                        <p className="text-xs text-neutral-600 mt-2 font-medium">
-                          {coupon.description}
-                        </p>
-                      ) : (
-                        <p className="text-xs text-neutral-500 mt-2">
-                          {coupon.minOrderValue > 0
-                            ? `Valid on orders above ₹${Number(coupon.minOrderValue).toLocaleString('en-IN')}`
-                            : 'Valid on all orders storewide'}
-                        </p>
-                      )}
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleCopyCode(coupon.code)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer shrink-0 ${
-                        copiedCode === coupon.code
-                          ? 'bg-emerald-600 text-white'
-                          : 'bg-[#821D38] hover:bg-[#6E162E] text-white shadow-2xs'
-                      }`}
-                      title="Copy Coupon Code"
-                    >
-                      {copiedCode === coupon.code ? (
-                        <>
-                          <Check size={13} />
-                          <span>Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy size={13} />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {coupon.expiryDate && (
-                    <div className="mt-3 pt-2.5 border-t border-neutral-100 flex items-center justify-between text-[11px] text-neutral-400">
-                      <span className="flex items-center gap-1">
-                        <Clock size={12} />
-                        Expires {new Date(coupon.expiryDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
-                      </span>
-                      {coupon.minOrderValue > 0 && (
-                        <span>Min ₹{coupon.minOrderValue}</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
 
         {/* 3. CONTROLS BAR: CATEGORIES & SORT */}
         <section className="bg-white rounded-2xl border border-[#ECE7EC] p-3 sm:p-4 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
@@ -432,7 +348,7 @@ export const OffersPage = () => {
                 New Special Offers Coming Soon!
               </h3>
               <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed">
-                Our team is curating exciting festive discounts and seasonal deals. Meanwhile, explore our premium catalog or use active coupon vouchers at checkout!
+                Our team is curating exciting festive discounts and seasonal deals. Meanwhile, explore our full gifting collection!
               </p>
               <div className="pt-2">
                 <button
@@ -453,3 +369,4 @@ export const OffersPage = () => {
 };
 
 export default OffersPage;
+
