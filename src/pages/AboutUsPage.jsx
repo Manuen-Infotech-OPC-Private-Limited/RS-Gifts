@@ -69,43 +69,35 @@ export const AboutUsPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FCF8F5] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
+    <div className="min-h-screen bg-[#FFF9F5] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
       
-      {/* 1. HERO SECTION (Title, Red underline, Subtitle & Full Hero Image) */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-[#FAF3EC] via-[#FFF9F5] to-[#FAF3EB] border-b border-[#EFE5DC]">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 md:py-12">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
-            {/* Left Content */}
-            <div className="md:col-span-5 lg:col-span-5">
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
-                About <span className="text-[#821D38] italic font-normal">RS Gifts</span>
-              </h1>
-              
-              {/* Red Accent Line */}
-              <div className="w-12 h-1 bg-[#821D38] mt-3.5 mb-4 rounded-full" />
+      {/* 1. HERO SECTION (Title, Subtitle & Full Hero Image with zero gaps) */}
+      <section className="relative overflow-hidden w-full border-b border-[#ECE7EC]">
+        <div className="grid grid-cols-1 md:grid-cols-12 items-stretch min-h-[360px] sm:min-h-[420px] md:min-h-[460px] lg:min-h-[500px]">
+          {/* Left Content */}
+          <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-center px-6 sm:px-10 lg:pl-16 xl:pl-24 py-10 sm:py-14">
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
+              About <span className="text-[#821D38] italic font-normal">RS Gifts</span>
+            </h1>
 
-              <p className="text-xs sm:text-sm lg:text-base text-neutral-600 leading-relaxed max-w-md">
-                More than just gifts — we create meaningful experiences for your special moments.
-              </p>
-            </div>
-
-            {/* Right Hero Image */}
-            <div className="md:col-span-7 lg:col-span-7 flex justify-center md:justify-end w-full">
-              <div className="relative w-full rounded-2xl md:rounded-3xl overflow-hidden shadow-lg border border-[#EFE5DC]/80 bg-white/40">
-                <img
-                  src={rsgiftsHeroImg}
-                  alt="RS Gifts Signature Gift Box"
-                  className="w-full h-auto object-cover rounded-2xl md:rounded-3xl"
-                />
-              </div>
-            </div>
+            <p className="text-xs sm:text-sm lg:text-base text-neutral-600 leading-relaxed max-w-md mt-4">
+              More than just gifts — we create meaningful experiences for your special moments.
+            </p>
           </div>
 
+          {/* Right Hero Image - Flush with zero gaps around it */}
+          <div className="md:col-span-7 lg:col-span-7 relative h-72 sm:h-96 md:h-auto w-full overflow-hidden">
+            <img
+              src={rsgiftsHeroImg}
+              alt="RS Gifts Signature Gift Box"
+              className="w-full h-full object-cover object-center"
+            />
+          </div>
         </div>
       </section>
 
       {/* 2. FOUR FEATURES STRIP */}
-      <section className="bg-white/80 border-b border-[#EFE5DC]">
+      <section className="border-b border-[#ECE7EC]">
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
             
@@ -205,7 +197,7 @@ export const AboutUsPage = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           
           {/* Card 1: Personalized Gifts */}
-          <div className="bg-[#FFF8F5] p-6 rounded-2xl border border-[#F2E5DE] text-center shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
             <div className="w-12 h-12 mx-auto flex items-center justify-center">
               <GiftBoxIcon />
             </div>
@@ -218,7 +210,7 @@ export const AboutUsPage = () => {
           </div>
 
           {/* Card 2: For Every Occasion */}
-          <div className="bg-[#FFF8F5] p-6 rounded-2xl border border-[#F2E5DE] text-center shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
             <div className="w-12 h-12 mx-auto flex items-center justify-center">
               <HeartIcon />
             </div>
@@ -231,7 +223,7 @@ export const AboutUsPage = () => {
           </div>
 
           {/* Card 3: Premium Quality */}
-          <div className="bg-[#FFF8F5] p-6 rounded-2xl border border-[#F2E5DE] text-center shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
             <div className="w-12 h-12 mx-auto flex items-center justify-center">
               <CrownIcon />
             </div>
@@ -244,7 +236,7 @@ export const AboutUsPage = () => {
           </div>
 
           {/* Card 4: Trusted Support */}
-          <div className="bg-[#FFF8F5] p-6 rounded-2xl border border-[#F2E5DE] text-center shadow-2xs hover:shadow-xs transition-shadow">
+          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
             <div className="w-12 h-12 mx-auto flex items-center justify-center">
               <HeadsetIcon />
             </div>
@@ -261,7 +253,7 @@ export const AboutUsPage = () => {
 
       {/* 5. OUR PROMISE SECTION (Matches bottom section in mockup, beautifully blending into footer) */}
       <section className="pb-12 sm:pb-16 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-gradient-to-r from-[#FAF2EC] via-[#FFF6F0] to-[#FCEEE7] rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#ECE0D8] overflow-hidden shadow-2xs">
+        <div className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#ECE7EC] overflow-hidden shadow-2xs">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
             
             {/* Left Content */}
@@ -269,9 +261,6 @@ export const AboutUsPage = () => {
               <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E1217]">
                 Our <span className="text-[#821D38] italic font-normal">Promise</span>
               </h2>
-
-              {/* Red Accent Line */}
-              <div className="w-12 h-1 bg-[#821D38] rounded-full" />
 
               <p className="text-xs sm:text-sm lg:text-base text-neutral-600 leading-relaxed max-w-lg pt-1">
                 To deliver high-quality, personalized gifts that bring happiness to your loved ones and make every occasion special.
