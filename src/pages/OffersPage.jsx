@@ -128,7 +128,7 @@ export const OffersPage = () => {
     <div className="min-h-screen bg-[#FFF9F5] text-neutral-800 pb-20">
       
       {/* 1. HERO BANNER */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] border-b border-[#ECE7EC] py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#821D38]/10 text-[#821D38] text-xs font-bold uppercase tracking-wider mb-3">
             <Flame className="w-3.5 h-3.5 text-[#821D38]" />
