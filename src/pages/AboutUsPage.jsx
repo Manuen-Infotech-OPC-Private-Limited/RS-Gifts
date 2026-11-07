@@ -71,39 +71,33 @@ export const AboutUsPage = () => {
   return (
     <div className="min-h-screen bg-[#FFF9F5] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
       
-      {/* 1. HERO SECTION (Title, Subtitle & Hero Image with soft bleeding transition into background) */}
-      <section className="relative overflow-hidden w-full border-b border-[#ECE7EC]">
-        <div className="grid grid-cols-1 md:grid-cols-12 items-stretch min-h-[320px] sm:min-h-[380px] md:min-h-[400px] lg:min-h-[440px] xl:min-h-[480px]">
-          {/* Left Content */}
-          <div className="md:col-span-5 lg:col-span-5 flex flex-col justify-center px-6 sm:px-10 lg:pl-16 xl:pl-24 py-10 sm:py-14 z-20">
+      {/* 1. HERO SECTION (Full-Width Hero Image Visible Across Left & Right) */}
+      <section className="relative overflow-hidden w-full border-b border-[#ECE7EC] min-h-[380px] sm:min-h-[420px] md:min-h-[460px] lg:min-h-[500px] flex items-center">
+        {/* Full Hero Image spanning across the hero banner */}
+        <div className="absolute inset-0 w-full h-full">
+          <img
+            src={rsgiftsHeroImg}
+            alt="RS Gifts Signature Gift Box"
+            className="w-full h-full object-cover object-[center_right] select-none"
+          />
+
+          {/* Gentle warm tint overlay on the left so the image is clearly visible on this side too, while text is perfectly legible */}
+          <div 
+            className="absolute inset-0 bg-gradient-to-r from-[#FFF9F5]/85 via-[#FFF9F5]/45 via-45% to-transparent max-md:bg-gradient-to-b max-md:from-[#FFF9F5]/90 max-md:via-[#FFF9F5]/50 max-md:to-transparent pointer-events-none" 
+            aria-hidden="true" 
+          />
+        </div>
+
+        {/* Text Content */}
+        <div className="relative z-10 max-w-[1200px] w-full mx-auto px-6 sm:px-10 lg:px-16 py-12 sm:py-16 md:py-20">
+          <div className="max-w-md sm:max-w-lg">
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
               About <span className="text-[#821D38] italic font-normal">RS Gifts</span>
             </h1>
 
-            <p className="text-xs sm:text-sm lg:text-base text-neutral-600 leading-relaxed max-w-md mt-4">
+            <p className="text-xs sm:text-sm lg:text-base text-neutral-800 font-medium leading-relaxed max-w-md mt-4">
               More than just gifts — we create meaningful experiences for your special moments.
             </p>
-          </div>
-
-          {/* Right Hero Image - Seamless bleeding into background without harsh crop cutoffs */}
-          <div className="md:col-span-7 lg:col-span-7 relative h-72 sm:h-96 md:h-auto w-full overflow-hidden flex items-center justify-end">
-            {/* Desktop Left-to-Right Bleed Gradient Overlay */}
-            <div 
-              className="hidden md:block pointer-events-none absolute inset-y-0 left-0 w-32 sm:w-44 lg:w-64 bg-gradient-to-r from-[#FFF9F5] via-[#FFF9F5]/70 to-transparent z-10" 
-              aria-hidden="true" 
-            />
-
-            {/* Mobile Top-to-Bottom Bleed Gradient Overlay */}
-            <div 
-              className="md:hidden pointer-events-none absolute inset-x-0 top-0 h-20 sm:h-28 bg-gradient-to-b from-[#FFF9F5] via-[#FFF9F5]/80 to-transparent z-10" 
-              aria-hidden="true" 
-            />
-
-            <img
-              src={rsgiftsHeroImg}
-              alt="RS Gifts Signature Gift Box"
-              className="hero-image-bleed w-full h-full object-cover object-[center_right] md:object-center select-none"
-            />
           </div>
         </div>
       </section>

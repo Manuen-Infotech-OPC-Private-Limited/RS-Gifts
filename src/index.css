@@ -120,16 +120,3 @@ button:active,
 :focus-visible {
   outline: none !important;
 }
-
-/* Hero Image Bleed Effect for seamless transition into warm ivory (#FFF9F5) background */
-.hero-image-bleed {
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.15) 8%, rgba(0, 0, 0, 0.85) 24%, #000 40%);
-  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.15) 8%, rgba(0, 0, 0, 0.85) 24%, #000 40%);
-}
-
-@media (min-width: 768px) {
-  .hero-image-bleed {
-    -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.08) 5%, rgba(0, 0, 0, 0.75) 20%, #000 36%);
-    mask-image: linear-gradient(to right, transparent 0%, rgba(0, 0, 0, 0.08) 5%, rgba(0, 0, 0, 0.75) 20%, #000 36%);
-  }
-}
