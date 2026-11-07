@@ -66,7 +66,7 @@ export const ProductDetailsPage = () => {
   // Dynamic Customer Review Form States
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [reviewRating, setReviewRating] = useState(0);
-  
+
   const [customerReviewComment, setCustomerReviewComment] = useState('');
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewSuccessMsg, setReviewSuccessMsg] = useState('');
@@ -87,10 +87,7 @@ export const ProductDetailsPage = () => {
       return;
     }
 
-    if (!trimmedComment) {
-      setReviewErrorMsg('Please enter your review message.');
-      return;
-    }
+
 
     try {
       setIsSubmittingReview(true);
@@ -585,7 +582,7 @@ export const ProductDetailsPage = () => {
               </div>
             </div>
 
-            
+
           </div>
         </div>
       </section>
@@ -728,8 +725,8 @@ export const ProductDetailsPage = () => {
                       (deliveryFee === 0
                         ? 'Free delivery applied on all orders across India.'
                         : freeShippingThreshold > 0
-                        ? `Applied automatically on all orders above ₹${freeShippingThreshold} across India.`
-                        : `Standard delivery fee of ₹${deliveryFee} applies across India.`)}
+                          ? `Applied automatically on all orders above ₹${freeShippingThreshold} across India.`
+                          : `Standard delivery fee of ₹${deliveryFee} applies across India.`)}
                   </li>
                   <li>
                     <strong>Return Policy:</strong>{' '}
@@ -864,11 +861,10 @@ export const ProductDetailsPage = () => {
                               aria-label={`Rate ${star} stars`}
                             >
                               <Star
-                                className={`w-5 h-5 transition-colors ${
-                                  star <= reviewRating
+                                className={`w-5 h-5 transition-colors ${star <= reviewRating
                                     ? 'fill-[#C9A45C] text-[#C9A45C]'
                                     : 'fill-white text-[#D1D5DB] stroke-[#D1D5DB]'
-                                }`}
+                                  }`}
                               />
                             </button>
                           ))}
@@ -884,14 +880,13 @@ export const ProductDetailsPage = () => {
                     {/* 3. Review Message */}
                     <div>
                       <label className="block text-xs font-bold text-[#1E1217] mb-1">
-                        Your Message <span className="text-[#821D38]">*</span>
+                        Your Message <span className="text-[10px] text-[#705E67] font-normal lowercase">(optional)</span>
                       </label>
                       <textarea
-                        required
                         rows={3}
                         value={customerReviewComment}
                         onChange={(e) => setCustomerReviewComment(e.target.value)}
-                        placeholder="Tell other shoppers what you liked about the quality, gift box, or presentation..."
+                        placeholder="Tell other shoppers what you liked about the quality, gift box, or presentation... (optional)"
                         className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-[#ECE3E7] bg-white text-[#1E1217] placeholder-[#A89FA4] focus:outline-none focus:border-[#821D38] focus:ring-1 focus:ring-[#821D38] resize-none"
                       />
                     </div>
@@ -947,9 +942,11 @@ export const ProductDetailsPage = () => {
                               <Star key={idx} className="w-3.5 h-3.5 fill-[#C9A45C] stroke-[#C9A45C]" />
                             ))}
                           </div>
-                          <p className="text-xs text-[#5A4952] leading-relaxed">
-                            {rev.comment || rev.reviewText}
-                          </p>
+                          {Boolean(rev.comment || rev.reviewText) && (
+                            <p className="text-xs text-[#5A4952] leading-relaxed">
+                              {rev.comment || rev.reviewText}
+                            </p>
+                          )}
                           {rev.adminReply && (
                             <div className="mt-3 p-3 rounded-xl bg-[#FAF6F4] border-l-3 border-[#821D38] text-xs">
                               <span className="font-bold text-[#821D38] block mb-0.5">RS Gifts Response:</span>
@@ -1055,11 +1052,10 @@ export const ProductDetailsPage = () => {
                           return (
                             <Star
                               key={starIndex}
-                              className={`w-3 h-3 ${
-                                isGold
+                              className={`w-3 h-3 ${isGold
                                   ? 'fill-[#C9A45C] text-[#C9A45C] stroke-[#C9A45C]'
                                   : 'fill-[#E8DFD8] text-[#D4C8BF] stroke-[#D4C8BF]'
-                              }`}
+                                }`}
                             />
                           );
                         })}
