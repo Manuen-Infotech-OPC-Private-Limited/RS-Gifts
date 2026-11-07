@@ -184,9 +184,19 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                         {product.name}
                       </h3>
                       <div className="flex items-center gap-1.5 flex-wrap mb-1">
-                        <span className="text-xs font-bold text-[#1E1217]">
+                        <span className="text-xs font-bold text-[#821D38]">
                           ₹{Number(product.price || 0).toLocaleString('en-IN')}
                         </span>
+                        {product.originalPrice > product.price && (
+                          <span className="text-[10px] text-neutral-400 line-through">
+                            ₹{Number(product.originalPrice || 0).toLocaleString('en-IN')}
+                          </span>
+                        )}
+                        {product.discountPercent > 0 && (
+                          <span className="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded">
+                            {product.discountPercent}% OFF
+                          </span>
+                        )}
                       </div>
 
                       {/* Star Rating */}
@@ -310,9 +320,19 @@ export const FeaturedProducts = ({ onAddToCart }) => {
 
                         {/* Price */}
                         <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-1.5">
-                          <span className="text-sm sm:text-[15px] font-bold text-[#1E1217]">
+                          <span className="text-sm sm:text-[15px] font-bold text-[#821D38]">
                             ₹{Number(product.price || 0).toLocaleString('en-IN')}
                           </span>
+                          {product.originalPrice > product.price && (
+                            <span className="text-xs text-neutral-400 line-through">
+                              ₹{Number(product.originalPrice || 0).toLocaleString('en-IN')}
+                            </span>
+                          )}
+                          {product.discountPercent > 0 && (
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                              {product.discountPercent}% OFF
+                            </span>
+                          )}
                         </div>
 
                         {/* Rating */}

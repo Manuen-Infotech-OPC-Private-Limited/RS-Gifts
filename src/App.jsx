@@ -18,6 +18,7 @@ import { SearchResultsPage } from './pages/SearchResultsPage';
 import { ProductDetailsPage } from './pages/ProductDetailsPage';
 import { Contactus } from './pages/Contactus';
 import { AboutUsPage } from './pages/AboutUsPage';
+import { OffersPage } from './pages/OffersPage';
 import { CartDrawer } from './components/cart/CartDrawer';
 import './App.css';
 
@@ -106,6 +107,11 @@ export function App() {
                 {/* User Account & Order Tracking */}
                 <Route path="/account" element={<AccountPage />} />
                 <Route path="/track-order" element={<AccountPage />} />
+
+                {/* Offers Page */}
+                <Route path="/offers" element={<OffersPage />} />
+                <Route path="/special-offers" element={<OffersPage />} />
+                <Route path="/deals" element={<OffersPage />} />
 
                 {/* About Us Page */}
                 <Route path="/about" element={<AboutUsPage />} />

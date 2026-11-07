@@ -358,9 +358,19 @@ export const CategoryPage = () => {
 
                       {/* Price */}
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-1.5">
-                        <span className="text-sm sm:text-[15px] font-bold text-[#1E1217]">
+                        <span className="text-sm sm:text-[15px] font-bold text-[#821D38]">
                           ₹{Number(product.price || 0).toLocaleString('en-IN')}
                         </span>
+                        {product.originalPrice > product.price && (
+                          <span className="text-xs text-neutral-400 line-through">
+                            ₹{Number(product.originalPrice || 0).toLocaleString('en-IN')}
+                          </span>
+                        )}
+                        {product.discountPercent > 0 && (
+                          <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">
+                            {product.discountPercent}% OFF
+                          </span>
+                        )}
                       </div>
 
                       {/* 5-Star Gold Rating Matching Moon Lamp */}

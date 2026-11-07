@@ -3,10 +3,20 @@ import api from './api';
 export const normalizeProduct = (p, activeCoupon = null) => {
   if (!p) return null;
 
-  const actualPrice = Number(p.salePrice || p.price || 0);
-  const originalPrice = actualPrice;
-  const salePrice = actualPrice;
-  const discount = '';
+  const regPrice = Number(p.originalPrice || p.price || 0);
+  const rawSale = p.salePrice !== undefined && p.salePrice !== null && p.salePrice !== '' ? Number(p.salePrice) : null;
+  const hasOffer = p.hasOffer !== undefined
+    ? Boolean(p.hasOffer)
+    : (rawSale !== null && rawSale > 0 && rawSale < regPrice);
+
+  const finalSellingPrice = hasOffer ? (rawSale || Number(p.price || 0)) : (Number(p.price || 0) || regPrice);
+  const finalOriginalPrice = hasOffer ? (regPrice > finalSellingPrice ? regPrice : Number(p.price || 0)) : finalSellingPrice;
+  const discountPercent = p.discountPercent || (hasOffer && finalOriginalPrice > finalSellingPrice
+    ? Math.round(((finalOriginalPrice - finalSellingPrice) / finalOriginalPrice) * 100)
+    : 0);
+  const savingsAmount = p.savingsAmount || (hasOffer ? (finalOriginalPrice - finalSellingPrice) : 0);
+  const discount = p.discount || (hasOffer ? `${discountPercent}% OFF` : '');
+  const offerTag = p.offerTag || (hasOffer ? `${discountPercent}% OFF` : '');
 
   let categories = ['All'];
   if (p.category) categories.push(p.category);
@@ -49,9 +59,14 @@ export const normalizeProduct = (p, activeCoupon = null) => {
     title: p.title || p.name || 'Untitled Gift',
     sku: p.sku || '',
     slug: p.slug || '',
-    price: salePrice,
-    originalPrice: p.salePrice ? p.price : (p.originalPrice || salePrice),
+    price: finalSellingPrice,
+    originalPrice: finalOriginalPrice,
+    salePrice: rawSale,
+    hasOffer,
+    discountPercent,
+    savingsAmount,
     discount,
+    offerTag,
     activeCoupon: activeCoupon || p.activeCoupon || null,
     rating: Number(p.ratings?.average !== undefined && p.ratings.average !== null ? p.ratings.average : (p.rating !== undefined && p.rating !== null ? p.rating : 5)),
     reviews: Number(p.ratings?.count !== undefined ? p.ratings.count : (p.reviews !== undefined ? p.reviews : 0)),
@@ -302,4 +317,22 @@ export default {
   fetchProductByIdOrSlug,
   normalizeProduct,
   submitProductReview,
+};
+
+export const fetchOfferProducts = async (params = {}) => {
+  try {
+    const data = await api.get('/customer/products', { params: { offersOnly: true, limit: 100, ...params } });
+    const rawList = Array.isArray(data.products) ? data.products : (Array.isArray(data) ? data : []);
+    const products = rawList.map((p) => normalizeProduct(p)).filter(Boolean);
+    return {
+      products,
+      activeCoupons: Array.isArray(data.activeCoupons) ? data.activeCoupons : [],
+      activeCoupon: data.activeCoupon || null,
+      discountDisplay: data.discountDisplay || '',
+      total: data.total || products.length,
+    };
+  } catch (err) {
+    console.warn('[RS-Gifts API] Could not fetch offer products:', err.message);
+    return { products: [], activeCoupons: [], activeCoupon: null, discountDisplay: '', total: 0 };
+  }
 };

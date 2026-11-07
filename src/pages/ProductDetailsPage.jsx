@@ -461,9 +461,24 @@ export const ProductDetailsPage = () => {
               {/* Price Section */}
               <div className="bg-[#FAF4F1] p-3 sm:p-3.5 rounded-xl border border-[#EBE1DC] mb-3.5">
                 <div className="flex items-baseline gap-2.5 flex-wrap">
-                  <span className="text-xl sm:text-2xl font-extrabold text-[#1E1217]">
+                  <span className="text-xl sm:text-2xl font-extrabold text-[#821D38]">
                     ₹{Number(product.price).toLocaleString('en-IN')}
                   </span>
+                  {product.originalPrice > product.price && (
+                    <span className="text-sm sm:text-base text-neutral-400 line-through">
+                      ₹{Number(product.originalPrice).toLocaleString('en-IN')}
+                    </span>
+                  )}
+                  {product.discountPercent > 0 && (
+                    <span className="text-xs font-bold text-emerald-800 bg-emerald-100/70 px-2 py-0.5 rounded-md">
+                      {product.discountPercent}% OFF
+                    </span>
+                  )}
+                  {product.savingsAmount > 0 && (
+                    <span className="text-xs font-semibold text-emerald-700">
+                      (You save ₹{Number(product.savingsAmount).toLocaleString('en-IN')}!)
+                    </span>
+                  )}
                 </div>
                 <p className="text-[10.5px] text-[#705E67] mt-0.5">
                   Inclusive of all taxes. {deliveryFee === 0 ? 'Free delivery on this order.' : freeShippingThreshold > 0 ? `Free shipping on orders over ₹${freeShippingThreshold}.` : `Standard delivery charge ₹${deliveryFee}.`}

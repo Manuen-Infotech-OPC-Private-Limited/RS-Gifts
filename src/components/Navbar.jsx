@@ -700,6 +700,24 @@ export const Navbar = ({ onSearch }) => {
             )}
           </li>
 
+          {/* Offers */}
+          <li
+            onClick={() => {
+              setActiveTab('Offers');
+              navigate('/offers');
+            }}
+            className={`relative py-2 cursor-pointer flex items-center gap-1.5 hover:text-[#821D38] transition-colors ${
+              location.pathname === '/offers' || location.pathname === '/special-offers'
+                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+                : ''
+            }`}
+          >
+            <span>Offers</span>
+            <span className="bg-[#821D38] text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full tracking-wider animate-pulse shadow-xs">
+              % OFF
+            </span>
+          </li>
+
           {/* About Us */}
           <li
             onClick={() => {
@@ -829,6 +847,27 @@ export const Navbar = ({ onSearch }) => {
                   </div>
                 )}
               </div>
+
+              {/* Offers */}
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  navigate('/offers');
+                }}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
+                  location.pathname === '/offers' || location.pathname === '/special-offers'
+                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <span>Offers &amp; Deals</span>
+                  <span className="bg-[#821D38] text-white text-[9px] font-extrabold px-1.5 py-0.5 rounded-full">
+                    % OFF
+                  </span>
+                </span>
+                <ChevronRight size={14} className={location.pathname === '/offers' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
+              </button>
 
               {/* About Us */}
               <button
