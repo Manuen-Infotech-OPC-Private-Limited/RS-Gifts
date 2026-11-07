@@ -108,6 +108,8 @@ export const AuthProvider = ({ children }) => {
         lastName,
         email: backendUser.email || emailOrPhone,
         phone: backendUser.phone || '',
+        dob: backendUser.dob || '',
+        gender: backendUser.gender || '',
         avatar: backendUser.avatar || '',
         address: backendUser.address || '',
         role: 'customer',
@@ -116,7 +118,23 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         localStorage.setItem('rs_gifts_token', token);
-        
+      }
+
+      if (backendUser.addresses && Array.isArray(backendUser.addresses) && backendUser.addresses.length > 0) {
+        const formattedAddrs = backendUser.addresses.map((a) => ({
+          id: a._id || a.id,
+          _id: a._id,
+          name: a.recipientName || rawName,
+          phone: a.phone || backendUser.phone || '',
+          street: a.addressLine1 || '',
+          landmark: a.addressLine2 || '',
+          city: a.city || '',
+          state: a.state || '',
+          pincode: a.postalCode || '',
+          tag: a.tag || 'Home',
+          isDefault: !!a.isDefault,
+        }));
+        setAddresses(formattedAddrs);
       }
 
       setUser(loggedUser);
@@ -153,6 +171,8 @@ export const AuthProvider = ({ children }) => {
         lastName: backendUser.lastName || nameParts.slice(1).join(' ') || '',
         email: backendUser.email || formData.email,
         phone: backendUser.phone || formData.phone || '',
+        dob: backendUser.dob || formData.dob || '',
+        gender: backendUser.gender || formData.gender || '',
         avatar: backendUser.avatar || formData.avatar || '',
         address: backendUser.address || formData.address || '',
         role: backendUser.role || 'customer',
@@ -202,7 +222,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Address actions
-  const addAddress = (newAddress) => {
+  const addAddress = async (newAddress) => {
     const addressWithId = {
       ...newAddress,
       id: `addr_${Date.now()}`,
@@ -216,12 +236,47 @@ export const AuthProvider = ({ children }) => {
       }
       return [addressWithId, ...list];
     });
+
+    const token = localStorage.getItem('rs_gifts_token');
+    if (token) {
+      try {
+        const res = await api.post('/customer/auth/addresses', {
+          recipientName: newAddress.name || user?.name || 'Customer',
+          phone: newAddress.phone || user?.phone || '',
+          addressLine1: newAddress.street || '',
+          addressLine2: newAddress.landmark || '',
+          city: newAddress.city || '',
+          state: newAddress.state || '',
+          postalCode: newAddress.pincode || '',
+          country: 'India',
+          isDefault: addressWithId.isDefault,
+        });
+        if (res?.addresses && Array.isArray(res.addresses)) {
+          const synced = res.addresses.map((a) => ({
+            id: a._id || a.id,
+            _id: a._id,
+            name: a.recipientName,
+            phone: a.phone,
+            street: a.addressLine1,
+            landmark: a.addressLine2 || '',
+            city: a.city,
+            state: a.state,
+            pincode: a.postalCode,
+            tag: a.tag || 'Home',
+            isDefault: !!a.isDefault,
+          }));
+          setAddresses(synced);
+        }
+      } catch (err) {
+        console.warn('Backend address sync notice:', err?.message || err);
+      }
+    }
   };
 
   const updateAddress = (id, updatedFields) => {
     setAddresses((prev) =>
       prev.map((addr) => {
-        if (addr.id === id) {
+        if (addr.id === id || addr._id === id) {
           return { ...addr, ...updatedFields };
         }
         if (updatedFields.isDefault) {
@@ -232,8 +287,16 @@ export const AuthProvider = ({ children }) => {
     );
   };
 
-  const deleteAddress = (id) => {
-    setAddresses((prev) => prev.filter((a) => a.id !== id));
+  const deleteAddress = async (id) => {
+    setAddresses((prev) => prev.filter((a) => a.id !== id && a._id !== id));
+    const token = localStorage.getItem('rs_gifts_token');
+    if (token && id && !String(id).startsWith('addr_')) {
+      try {
+        await api.delete(`/customer/auth/addresses/${id}`);
+      } catch (err) {
+        console.warn('Backend delete address notice:', err?.message || err);
+      }
+    }
   };
 
   const setDefaultAddress = (id) => {
@@ -255,18 +318,61 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener('rs_auth_expired', handleAuthExpired);
   }, []);
 
-  // Load live customer orders from backend
+  const userId = user?.id || user?._id;
+
+  // Load live customer orders from backend (only when logged in user ID changes)
   useEffect(() => {
-    if (!user) return;
+    if (!userId) return;
     const token = localStorage.getItem('rs_gifts_token');
     if (!token) {
       setUser(null);
       return;
     }
 
+    let isMounted = true;
     const loadMyOrders = async () => {
       try {
-        const data = await api.get('/customer/orders/my');
+        const [data, profileData] = await Promise.all([
+          api.get('/customer/orders/my').catch(() => null),
+          api.get('/customer/auth/profile').catch(() => null)
+        ]);
+
+        if (!isMounted) return;
+
+        if (profileData?.user?.addresses && Array.isArray(profileData.user.addresses) && profileData.user.addresses.length > 0) {
+          const formattedProfileAddrs = profileData.user.addresses.map((a) => ({
+            id: a._id || a.id,
+            _id: a._id,
+            name: a.recipientName,
+            phone: a.phone,
+            street: a.addressLine1,
+            landmark: a.addressLine2 || '',
+            city: a.city,
+            state: a.state,
+            pincode: a.postalCode,
+            tag: a.tag || 'Home',
+            isDefault: !!a.isDefault,
+          }));
+          setAddresses(formattedProfileAddrs);
+        }
+
+        if (profileData?.user) {
+          setUser((prev) => {
+            if (!prev) return profileData.user;
+            if (
+              prev.gender === profileData.user.gender &&
+              prev.dob === profileData.user.dob &&
+              prev.name === profileData.user.name &&
+              prev.phone === profileData.user.phone &&
+              prev.address === profileData.user.address
+            ) {
+              return prev;
+            }
+            const merged = { ...prev, ...profileData.user };
+            localStorage.setItem('rs_gifts_user', JSON.stringify(merged));
+            return merged;
+          });
+        }
         const liveOrders = data?.orders || [];
         if (Array.isArray(liveOrders) && liveOrders.length > 0) {
           setOrders(liveOrders.map(o => ({
@@ -315,7 +421,11 @@ export const AuthProvider = ({ children }) => {
       }
     };
     loadMyOrders();
-  }, [user]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userId]);
 
   // Order actions
   const addCustomerOrder = (rawOrder) => {

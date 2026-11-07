@@ -160,7 +160,7 @@ export const AddressBook = () => {
               </div>
 
               {/* Bottom Actions */}
-              <div className="pt-4 mt-4 border-t border-[#F2EAEF] flex items-center justify-between text-xs">
+              <div className="pt-3 mt-2 flex items-center justify-between text-xs">
                 <div>
                   {!addr.isDefault && (
                     <button

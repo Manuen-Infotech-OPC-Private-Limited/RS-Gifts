@@ -298,23 +298,6 @@ export const BirthdayGiftsPage = () => {
                             ₹{Number(product.price).toLocaleString('en-IN')}
                           </span>
                         </div>
-
-                        {/* Rating */}
-                        <div className="flex items-center gap-0.5 mb-2.5" title={`Rated ${product.rating || 5} out of 5 stars`}>
-                          {[1, 2, 3, 4, 5].map((starIndex) => {
-                            const isGold = starIndex <= Math.round(Number(product.rating || 5));
-                            return (
-                              <Star
-                                key={starIndex}
-                                className={`w-3 h-3 ${
-                                  isGold
-                                    ? 'fill-[#C9A45C] text-[#C9A45C] stroke-[#C9A45C]'
-                                    : 'fill-[#E8DFD8] text-[#D4C8BF] stroke-[#D4C8BF]'
-                                }`}
-                              />
-                            );
-                          })}
-                        </div>
                       </div>
 
                       {/* Action Buttons: Add to Cart & Buy */}

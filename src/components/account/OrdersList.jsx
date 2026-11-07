@@ -177,9 +177,6 @@ export const OrdersList = () => {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <span className="text-xs font-semibold text-[#1E1217]">
-                      Total: ₹{order.pricing.total.toLocaleString('en-IN')}
-                    </span>
                     {getStatusBadge(order.status)}
                   </div>
                 </div>
@@ -293,7 +290,7 @@ export const OrdersList = () => {
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#F2EAEF]">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
                     <div className="flex items-center gap-2">
                       {/* Live Track Button */}
                       {!isCancelled && (

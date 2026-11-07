@@ -151,19 +151,14 @@ export const AboutUsPage = () => {
       <section className="py-12 sm:py-16 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
           
-          {/* Left Custom Gifts Showcase Image with organic curved accent */}
+          {/* Left Custom Gifts Showcase Image with organic curved backdrop */}
           <div className="md:col-span-6 flex justify-center md:justify-start">
-            <div className="relative max-w-[360px] sm:max-w-[400px] w-full">
-              {/* Background Burgundy Decorative Curve */}
-              <div className="absolute -top-3 -left-3 w-40 h-40 bg-[#821D38]/15 rounded-tl-[3.5rem] rounded-br-[2rem] pointer-events-none" />
-              
-              <div className="relative rounded-[2.5rem] rounded-tl-[3.5rem] overflow-hidden shadow-md border-2 border-white bg-white">
-                <img
-                  src="/images/about/about-story-products.png"
-                  alt="Customized Photo Lamp, Bottle, and Wooden Keepsake"
-                  className="w-full h-auto object-cover"
-                />
-              </div>
+            <div className="relative max-w-[440px] sm:max-w-[480px] w-full">
+              <img
+                src="/images/about/about-story-products.png"
+                alt="Customized Photo Lamp, Bottle, and Wooden Keepsake"
+                className="w-full h-auto object-contain select-none transition-transform duration-500 hover:scale-[1.02]"
+              />
             </div>
           </div>
 

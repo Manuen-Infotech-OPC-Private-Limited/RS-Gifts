@@ -104,7 +104,7 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
         })}
 
         {/* Logout Button */}
-        <div className="pt-2 mt-2 border-t border-[#F2EAEF]">
+        <div className="pt-1 mt-1">
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer outline-none focus:outline-none focus:ring-0 border-0"

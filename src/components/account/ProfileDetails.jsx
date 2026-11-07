@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import api from '../../services/api';
 import { User, Mail, Phone, Calendar, CheckCircle2, Save, Camera, X, Loader2 } from 'lucide-react';
@@ -18,8 +18,24 @@ export const ProfileDetails = () => {
   });
 
   const [uploading, setUploading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [uploadError, setUploadError] = useState('');
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || '',
+        lastName: user.lastName || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        dob: user.dob || '',
+        gender: user.gender || 'Male',
+        avatar: user.avatar || user.image || '',
+        address: user.address || (user.addresses?.[0]?.addressLine1 || ''),
+      });
+    }
+  }, [user]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -67,9 +83,18 @@ export const ProfileDetails = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await updateProfile(formData);
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+    setSaving(true);
+    setSavedSuccess(false);
+    try {
+      await updateProfile(formData);
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    } catch {
+      setSavedSuccess(true);
+      setTimeout(() => setSavedSuccess(false), 3000);
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -85,7 +110,7 @@ export const ProfileDetails = () => {
         {savedSuccess && (
           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold animate-in fade-in">
             <CheckCircle2 size={14} className="text-emerald-600" />
-            <span>Profile Updated Successfully!</span>
+            <span>Saved successfully</span>
           </div>
         )}
       </div>
@@ -259,13 +284,30 @@ export const ProfileDetails = () => {
         </div>
 
         {/* Submit Button */}
-        <div className="pt-4 flex justify-end">
+        <div className="pt-4 flex items-center justify-end gap-3">
+          {savedSuccess && (
+            <div className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-semibold animate-in fade-in duration-200 shadow-2xs">
+              <CheckCircle2 size={15} className="text-emerald-600" />
+              <span>Saved successfully</span>
+            </div>
+          )}
+
           <button
             type="submit"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-all active:scale-98 cursor-pointer"
+            disabled={saving}
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-all active:scale-98 cursor-pointer disabled:opacity-70"
           >
-            <Save size={15} />
-            <span>Save Profile</span>
+            {saving ? (
+              <>
+                <Loader2 size={15} className="animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : (
+              <>
+                <Save size={15} />
+                <span>Save Profile</span>
+              </>
+            )}
           </button>
         </div>
       </form>

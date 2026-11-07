@@ -371,8 +371,8 @@ export const ProductDetailsPage = () => {
               {/* Exclusive / Bestseller Badge (Floating Top Left) */}
               <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
                 {product.featured && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F59E0B] text-white shadow-xs">
-                    <Star size={10} className="fill-white" /> Bestseller
+                  <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2.5 py-0.5 rounded-full bg-[#F59E0B] text-white shadow-xs">
+                    Bestseller
                   </span>
                 )}
               </div>
@@ -845,7 +845,7 @@ export const ProductDetailsPage = () => {
                     {/* 2. Star Rating (1 to 5) */}
                     <div>
                       <label className="block text-xs font-bold text-[#1E1217] mb-1.5">
-                        Your Rating <span className="text-[#821D38]">*</span>
+                        Your Rating
                       </label>
                       <div className="flex items-center gap-2">
                         <div className="flex items-center gap-1">

@@ -274,15 +274,9 @@ export const OffersPage = () => {
                       <div className="p-3 sm:p-4 flex flex-col justify-between flex-1 space-y-2">
                         <div>
                           <div className="flex items-center justify-between text-[11px] text-[#705E67] mb-1">
-                            <span className="truncate max-w-[120px] font-medium">
+                            <span className="truncate max-w-[200px] font-medium">
                               {product.category || 'Gifts'}
                             </span>
-                            <div className="flex items-center gap-0.5 shrink-0">
-                              <Star className="w-3 h-3 text-amber-500 fill-amber-500" />
-                              <span className="font-bold text-neutral-800">
-                                {Number(product.rating || 5).toFixed(1)}
-                              </span>
-                            </div>
                           </div>
 
                           <h3 className="text-xs sm:text-sm font-semibold text-[#1E1217] line-clamp-2 leading-snug group-hover:text-[#821D38] transition-colors">
