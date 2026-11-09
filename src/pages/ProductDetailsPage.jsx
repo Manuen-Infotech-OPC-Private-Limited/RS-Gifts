@@ -1074,9 +1074,6 @@ export const ProductDetailsPage = () => {
                             );
                           })}
                         </div>
-                        <span className="text-[10px] text-neutral-400 font-medium">
-                          {relProd.reviews > 0 ? `(${relProd.reviews})` : '(0)'}
-                        </span>
                       </div>
                     </div>
 

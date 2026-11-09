@@ -204,9 +204,6 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                             );
                           })}
                         </div>
-                        <span className="text-[10px] text-neutral-400 font-medium">
-                          {product.reviews > 0 ? `(${product.reviews})` : '(0)'}
-                        </span>
                       </div>
                       <div className="flex items-center gap-1.5 flex-wrap mb-1">
                         <span className="text-xs font-bold text-[#821D38]">
@@ -346,9 +343,6 @@ export const FeaturedProducts = ({ onAddToCart }) => {
                               );
                             })}
                           </div>
-                          <span className="text-[10px] sm:text-[11px] text-neutral-400 font-medium">
-                            {product.reviews > 0 ? `(${product.reviews})` : '(0)'}
-                          </span>
                         </div>
 
                         {/* Price */}

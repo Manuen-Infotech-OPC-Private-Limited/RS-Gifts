@@ -287,9 +287,6 @@ export const OffersPage = () => {
                                 );
                               })}
                             </div>
-                            <span className="text-[10px] sm:text-[11px] text-neutral-400 font-medium">
-                              {product.reviews > 0 ? `(${product.reviews})` : '(0)'}
-                            </span>
                           </div>
                         </div>
 
