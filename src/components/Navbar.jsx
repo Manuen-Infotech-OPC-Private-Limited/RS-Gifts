@@ -652,19 +652,13 @@ export const Navbar = ({ onSearch }) => {
             <button
               type="button"
               onClick={() => setGiftsDropdownOpen((prev) => !prev)}
-              className={`cursor-pointer flex items-center gap-1.5 hover:text-[#821D38] transition-colors py-0.5 select-none ${
+              className={`cursor-pointer flex items-center hover:text-[#821D38] transition-colors py-0.5 select-none ${
                 isGiftsActive
                   ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
                   : ''
               }`}
             >
               <span>Gifts</span>
-              <ChevronDown
-                size={14}
-                className={`transition-transform duration-200 ${
-                  giftsDropdownOpen ? 'rotate-180 text-[#821D38]' : 'text-neutral-500'
-                }`}
-              />
             </button>
 
             {/* Dropdown Menu */}
@@ -812,12 +806,6 @@ export const Navbar = ({ onSearch }) => {
                   }`}
                 >
                   <span className="flex items-center gap-1.5">Gifts</span>
-                  <ChevronDown
-                    size={14}
-                    className={`transition-transform duration-200 ${
-                      mobileGiftsOpen ? 'rotate-180 text-[#821D38]' : 'text-[#A89CA2]'
-                    }`}
-                  />
                 </button>
 
                 {mobileGiftsOpen && (
