@@ -1,17 +1,16 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Tag, 
-  Percent, 
-  Sparkles, 
-  Copy, 
-  Check, 
-  Heart, 
-  Star, 
-  ShoppingCart, 
-  ArrowRight, 
-  Flame, 
-  Gift, 
+import {
+  Tag,
+  Percent,
+  Sparkles,
+  Copy,
+  Check,
+  Heart,
+  Star,
+  ShoppingCart,
+  ArrowRight,
+  Gift,
   Clock,
   SlidersHorizontal,
   BadgePercent
@@ -66,7 +65,7 @@ export const OffersPage = () => {
     navigator.clipboard.writeText(code).then(() => {
       setCopiedCode(code);
       setTimeout(() => setCopiedCode(null), 2500);
-    }).catch(() => {});
+    }).catch(() => { });
   };
 
   const handleAddToCart = (e, product) => {
@@ -101,7 +100,7 @@ export const OffersPage = () => {
 
     // Category filter
     if (selectedCategory !== 'All') {
-      list = list.filter((p) => 
+      list = list.filter((p) =>
         p.category?.toLowerCase() === selectedCategory.toLowerCase() ||
         p.targetPage?.toLowerCase() === selectedCategory.toLowerCase() ||
         (Array.isArray(p.targetPages) && p.targetPages.some((tp) => tp?.toLowerCase() === selectedCategory.toLowerCase()))
@@ -126,15 +125,10 @@ export const OffersPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FFF9F5] text-neutral-800 pb-20">
-      
+
       {/* 1. HERO BANNER */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto text-center relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#821D38]/10 text-[#821D38] text-xs font-bold uppercase tracking-wider mb-3">
-            <Flame className="w-3.5 h-3.5 text-[#821D38]" />
-            <span>Limited-Time Offers &amp; Promotions</span>
-          </div>
-
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
             Special <span className="text-[#821D38] italic font-normal">Offers &amp; Deals</span>
           </h1>
@@ -159,11 +153,10 @@ export const OffersPage = () => {
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${
-                    isSelected
-                      ? 'bg-[#821D38] text-white shadow-2xs'
-                      : 'bg-[#FAF6F4] text-neutral-700 hover:bg-[#F3ECEF] hover:text-[#821D38]'
-                  }`}
+                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${isSelected
+                    ? 'bg-[#821D38] text-white shadow-2xs'
+                    : 'bg-[#FAF6F4] text-neutral-700 hover:bg-[#F3ECEF] hover:text-[#821D38]'
+                    }`}
                 >
                   {cat}
                 </button>
@@ -263,9 +256,8 @@ export const OffersPage = () => {
                           aria-label="Wishlist"
                         >
                           <Heart
-                            className={`w-3.5 h-3.5 transition-colors ${
-                              isWishlisted ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
-                            }`}
+                            className={`w-3.5 h-3.5 transition-colors ${isWishlisted ? 'text-[#E11D48] fill-[#E11D48]' : 'text-[#821D38] stroke-[2]'
+                              }`}
                           />
                         </button>
                       </div>
@@ -299,7 +291,7 @@ export const OffersPage = () => {
 
                           {product.savingsAmount > 0 && (
                             <p className="text-[10px] sm:text-[11px] text-emerald-700 font-semibold mt-0.5">
-                              You Save ₹{Number(product.savingsAmount).toLocaleString('en-IN')}!
+                              Save ₹{Number(product.savingsAmount).toLocaleString('en-IN')}
                             </p>
                           )}
 
@@ -307,11 +299,10 @@ export const OffersPage = () => {
                           <button
                             type="button"
                             onClick={(e) => handleAddToCart(e, product)}
-                            className={`w-full mt-2.5 py-1.5 sm:py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
-                              isAdded
-                                ? 'bg-emerald-600 text-white'
-                                : 'bg-[#FFF9F5] hover:bg-[#821D38] text-[#821D38] hover:text-white border border-[#821D38]/30 shadow-2xs active:scale-95'
-                            }`}
+                            className={`w-full mt-2.5 py-1.5 sm:py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${isAdded
+                              ? 'bg-emerald-600 text-white'
+                              : 'bg-[#FFF9F5] hover:bg-[#821D38] text-[#821D38] hover:text-white border border-[#821D38]/30 shadow-2xs active:scale-95'
+                              }`}
                           >
                             {isAdded ? (
                               <>
