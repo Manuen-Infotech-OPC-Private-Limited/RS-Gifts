@@ -263,19 +263,13 @@ export const OffersPage = () => {
                       {/* Content Section */}
                       <div className="p-3 sm:p-4 flex flex-col justify-between flex-1 space-y-2">
                         <div>
-                          <div className="flex items-center justify-between text-[11px] text-[#705E67] mb-1">
-                            <span className="truncate max-w-[200px] font-medium">
-                              {product.category || 'Gifts'}
-                            </span>
-                          </div>
-
                           <h3 className="text-xs sm:text-sm font-semibold text-[#1E1217] line-clamp-2 leading-snug group-hover:text-[#821D38] transition-colors">
                             {product.name || product.title}
                           </h3>
                         </div>
 
                         {/* Price Details with Strikethrough & Savings */}
-                        <div className="pt-2 border-t border-neutral-100">
+                        <div className="pt-1">
                           <div className="flex items-baseline gap-1.5 flex-wrap">
                             <span className="text-sm sm:text-base font-extrabold text-[#821D38]">
                               ₹{Number(product.price || 0).toLocaleString('en-IN')}
