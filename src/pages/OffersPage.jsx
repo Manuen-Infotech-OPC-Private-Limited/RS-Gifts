@@ -127,33 +127,31 @@ export const OffersPage = () => {
     <div className="min-h-screen bg-[#FFF9F5] text-neutral-800 pb-20">
 
       {/* 1. HERO BANNER */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] pt-5 pb-3 sm:pt-7 sm:pb-4 px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] pt-4 pb-1 sm:pt-6 sm:pb-2 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto text-center relative z-10">
-          <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
+          <h1 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E1217] tracking-tight">
             Special <span className="text-[#821D38] italic font-normal">Offers &amp; Deals</span>
           </h1>
 
-          <p className="mt-2 text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
+          <p className="mt-1 text-xs sm:text-sm text-neutral-600 max-w-xl mx-auto leading-relaxed">
             Handcrafted discounts, celebratory price cuts, and special offers to make your gift unforgettable.
           </p>
         </div>
       </section>
 
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-3 space-y-6 sm:space-y-8">
-
-
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-0 space-y-5 sm:space-y-6">
 
         {/* 3. CONTROLS BAR: CATEGORIES & SORT */}
-        <section className="bg-white rounded-2xl border border-[#ECE7EC] p-3 sm:p-4 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-4">
+        <section className="bg-white rounded-xl border border-[#ECE7EC] py-2 px-3 sm:py-2.5 sm:px-4 shadow-2xs flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3">
           {/* Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto no-scrollbar py-1">
+          <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto no-scrollbar py-0.5">
             {availableCategories.map((cat) => {
               const isSelected = selectedCategory === cat;
               return (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${isSelected
+                  className={`px-3 py-1 rounded-lg text-[11px] sm:text-xs font-semibold whitespace-nowrap transition-colors cursor-pointer select-none ${isSelected
                     ? 'bg-[#821D38] text-white shadow-2xs'
                     : 'bg-[#FAF6F4] text-neutral-700 hover:bg-[#F3ECEF] hover:text-[#821D38]'
                     }`}
@@ -165,15 +163,15 @@ export const OffersPage = () => {
           </div>
 
           {/* Sort Dropdown */}
-          <div className="flex items-center gap-2 w-full md:w-auto justify-end">
-            <span className="text-xs text-neutral-500 font-medium flex items-center gap-1 shrink-0">
-              <SlidersHorizontal size={13} />
+          <div className="flex items-center gap-1.5 w-full md:w-auto justify-end">
+            <span className="text-[11px] sm:text-xs text-neutral-500 font-medium flex items-center gap-1 shrink-0">
+              <SlidersHorizontal size={12} />
               Sort:
             </span>
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="text-xs font-semibold text-neutral-800 bg-[#FAF6F4] border border-[#ECE7EC] rounded-xl px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-[#821D38] cursor-pointer"
+              className="text-[11px] sm:text-xs font-semibold text-neutral-800 bg-[#FAF6F4] border border-[#ECE7EC] rounded-lg px-2.5 py-1 focus:outline-none focus:ring-1 focus:ring-[#821D38] cursor-pointer"
             >
               <option value="discount_desc">Highest Discount (%)</option>
               <option value="savings_desc">Highest Savings (₹)</option>
