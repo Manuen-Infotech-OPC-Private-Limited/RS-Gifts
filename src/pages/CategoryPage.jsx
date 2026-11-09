@@ -351,10 +351,35 @@ export const CategoryPage = () => {
                       {/* Title */}
                       <h3
                         onClick={() => navigate(`/product/${product.slug || product.id}`)}
-                        className="text-xs sm:text-[13px] font-semibold text-[#271B21] line-clamp-1 mb-1.5 group-hover:text-[#821D38] transition-colors cursor-pointer"
+                        className="text-xs sm:text-[13px] font-semibold text-[#271B21] line-clamp-1 mb-1 group-hover:text-[#821D38] transition-colors cursor-pointer"
                       >
                         {product.title || product.name}
                       </h3>
+
+                      {/* 5-Star Rating Row */}
+                      <div
+                        className="flex items-center gap-1.5 my-1"
+                        title={product.reviews > 0 ? `${product.rating} out of 5 stars (${product.reviews} reviews)` : 'No reviews yet'}
+                      >
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((starIndex) => {
+                            const isFilled = product.reviews > 0 && starIndex <= Math.round(Number(product.rating || 0));
+                            return (
+                              <Star
+                                key={starIndex}
+                                className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${
+                                  isFilled
+                                    ? 'text-amber-400 fill-amber-400'
+                                    : 'text-neutral-200 fill-none'
+                                }`}
+                              />
+                            );
+                          })}
+                        </div>
+                        <span className="text-[10px] sm:text-[11px] text-neutral-400 font-medium">
+                          {product.reviews > 0 ? `(${product.reviews})` : '(0)'}
+                        </span>
+                      </div>
 
                       {/* Price */}
                       <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap mb-1.5">

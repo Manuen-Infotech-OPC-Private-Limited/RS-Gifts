@@ -266,6 +266,31 @@ export const OffersPage = () => {
                           <h3 className="text-xs sm:text-sm font-semibold text-[#1E1217] line-clamp-2 leading-snug group-hover:text-[#821D38] transition-colors">
                             {product.name || product.title}
                           </h3>
+
+                          {/* 5-Star Rating Row */}
+                          <div
+                            className="flex items-center gap-1.5 my-1"
+                            title={product.reviews > 0 ? `${product.rating} out of 5 stars (${product.reviews} reviews)` : 'No reviews yet'}
+                          >
+                            <div className="flex items-center gap-0.5">
+                              {[1, 2, 3, 4, 5].map((starIndex) => {
+                                const isFilled = product.reviews > 0 && starIndex <= Math.round(Number(product.rating || 0));
+                                return (
+                                  <Star
+                                    key={starIndex}
+                                    className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${
+                                      isFilled
+                                        ? 'text-amber-400 fill-amber-400'
+                                        : 'text-neutral-200 fill-none'
+                                    }`}
+                                  />
+                                );
+                              })}
+                            </div>
+                            <span className="text-[10px] sm:text-[11px] text-neutral-400 font-medium">
+                              {product.reviews > 0 ? `(${product.reviews})` : '(0)'}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Price Details with Strikethrough & Savings */}

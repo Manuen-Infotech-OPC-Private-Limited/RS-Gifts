@@ -128,7 +128,7 @@ export const ProductDetailsPage = () => {
   // Dynamically calculated rating
   const averageRating = reviews.length > 0
     ? (reviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0) / reviews.length).toFixed(1)
-    : (product?.rating || '5.0');
+    : (product?.rating && Number(product.rating) > 0 ? Number(product.rating).toFixed(1) : '0.0');
 
 
 
@@ -743,14 +743,16 @@ export const ProductDetailsPage = () => {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
                   <div>
                     <div className="flex items-center gap-2">
-                      <span className="text-3xl font-extrabold text-[#1E1217]">{averageRating}</span>
-                      <div className="flex items-center text-[#C9A45C]">
-                        {[...Array(5)].map((_, i) => (
+                      <span className="text-3xl font-extrabold text-[#1E1217]">
+                        {reviews.length > 0 ? averageRating : '0.0'}
+                      </span>
+                      <div className="flex items-center gap-0.5">
+                        {[1, 2, 3, 4, 5].map((starIndex) => (
                           <Star
-                            key={i}
-                            className={`w-4 h-4 ${i < Math.round(Number(averageRating))
-                              ? 'fill-[#C9A45C] stroke-[#C9A45C]'
-                              : 'text-gray-300 stroke-gray-300'
+                            key={starIndex}
+                            className={`w-4 h-4 ${reviews.length > 0 && starIndex <= Math.round(Number(averageRating))
+                              ? 'text-amber-400 fill-amber-400'
+                              : 'text-neutral-200 fill-none'
                               }`}
                           />
                         ))}
@@ -937,9 +939,16 @@ export const ProductDetailsPage = () => {
                               <span className="text-[11px] text-[#8C7D85]">{reviewDate}</span>
                             )}
                           </div>
-                          <div className="flex items-center text-[#C9A45C] mb-2">
-                            {[...Array(stars)].map((_, idx) => (
-                              <Star key={idx} className="w-3.5 h-3.5 fill-[#C9A45C] stroke-[#C9A45C]" />
+                          <div className="flex items-center gap-0.5 mb-2">
+                            {[1, 2, 3, 4, 5].map((starNum) => (
+                              <Star
+                                key={starNum}
+                                className={`w-3.5 h-3.5 ${
+                                  starNum <= stars
+                                    ? 'text-amber-400 fill-amber-400'
+                                    : 'text-neutral-200 fill-none'
+                                }`}
+                              />
                             ))}
                           </div>
                           {Boolean(rev.comment || rev.reviewText) && (
@@ -1046,19 +1055,28 @@ export const ProductDetailsPage = () => {
                           ₹{Number(relProd.price).toLocaleString('en-IN')}
                         </span>
                       </div>
-                      <div className="flex items-center gap-0.5 mb-2.5" title={`Rated ${relProd.rating || 5} out of 5 stars`}>
-                        {[1, 2, 3, 4, 5].map((starIndex) => {
-                          const isGold = starIndex <= Math.round(Number(relProd.rating || 5));
-                          return (
-                            <Star
-                              key={starIndex}
-                              className={`w-3 h-3 ${isGold
-                                  ? 'fill-[#C9A45C] text-[#C9A45C] stroke-[#C9A45C]'
-                                  : 'fill-[#E8DFD8] text-[#D4C8BF] stroke-[#D4C8BF]'
+                      <div
+                        className="flex items-center gap-1 mb-2"
+                        title={relProd.reviews > 0 ? `${relProd.rating} out of 5 stars (${relProd.reviews} reviews)` : 'No reviews yet'}
+                      >
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((starIndex) => {
+                            const isFilled = relProd.reviews > 0 && starIndex <= Math.round(Number(relProd.rating || 0));
+                            return (
+                              <Star
+                                key={starIndex}
+                                className={`w-3 h-3 ${
+                                  isFilled
+                                    ? 'text-amber-400 fill-amber-400'
+                                    : 'text-neutral-200 fill-none'
                                 }`}
-                            />
-                          );
-                        })}
+                              />
+                            );
+                          })}
+                        </div>
+                        <span className="text-[10px] text-neutral-400 font-medium">
+                          {relProd.reviews > 0 ? `(${relProd.reviews})` : '(0)'}
+                        </span>
                       </div>
                     </div>
 
