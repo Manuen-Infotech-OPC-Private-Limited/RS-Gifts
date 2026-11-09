@@ -127,19 +127,19 @@ export const OffersPage = () => {
     <div className="min-h-screen bg-[#FFF9F5] text-neutral-800 pb-20">
 
       {/* 1. HERO BANNER */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] py-10 sm:py-14 px-4 sm:px-6 lg:px-8">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] pt-5 pb-3 sm:pt-7 sm:pb-4 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1200px] mx-auto text-center relative z-10">
           <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
             Special <span className="text-[#821D38] italic font-normal">Offers &amp; Deals</span>
           </h1>
 
-          <p className="mt-3 text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
+          <p className="mt-2 text-sm sm:text-base text-neutral-600 max-w-xl mx-auto leading-relaxed">
             Handcrafted discounts, celebratory price cuts, and special offers to make your gift unforgettable.
           </p>
         </div>
       </section>
 
-      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 space-y-10">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 pt-2 sm:pt-3 space-y-6 sm:space-y-8">
 
 
 
