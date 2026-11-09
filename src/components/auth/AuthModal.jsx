@@ -264,11 +264,7 @@ export const AuthModal = () => {
                       className="hidden"
                     />
                     <div className="w-7 h-7 rounded-full bg-neutral-100 group-hover:bg-[#FDF2F4] flex items-center justify-center text-neutral-500 group-hover:text-[#821D38] transition-colors shrink-0">
-                      {uploadingAvatar ? (
-                        <Loader2 size={15} className="animate-spin text-[#821D38]" />
-                      ) : (
-                        <Camera size={15} />
-                      )}
+                      <Camera size={15} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <span className="text-xs font-medium text-neutral-700 group-hover:text-[#821D38] transition-colors">

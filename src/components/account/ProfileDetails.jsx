@@ -149,17 +149,8 @@ export const ProfileDetails = () => {
                 disabled={uploading}
                 className="hidden"
               />
-              {uploading ? (
-                <>
-                  <Loader2 size={13} className="animate-spin text-[#821D38]" />
-                  <span>Uploading...</span>
-                </>
-              ) : (
-                <>
-                  <Camera size={13} />
-                  <span>{formData.avatar ? 'Change Photo' : 'Upload Photo (Optional)'}</span>
-                </>
-              )}
+              <Camera size={13} />
+              <span>{uploading ? 'Uploading...' : (formData.avatar ? 'Change Photo' : 'Upload Photo (Optional)')}</span>
             </label>
             <p className="text-[11px] text-neutral-400 mt-1">Optional. JPG, PNG or WebP up to 5MB.</p>
             {uploadError && <p className="text-[11px] text-rose-600 mt-0.5">{uploadError}</p>}
