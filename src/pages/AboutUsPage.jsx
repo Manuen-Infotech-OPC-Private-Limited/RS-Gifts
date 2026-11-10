@@ -90,7 +90,7 @@ export const AboutUsPage = () => {
 
         {/* Text Content */}
         <div className="relative z-10 max-w-[1200px] w-full mx-auto px-6 sm:px-10 lg:px-16 py-12 sm:py-16 md:py-20">
-          <div className="max-w-md sm:max-w-lg">
+          <div className="max-w-md sm:max-w-lg bg-white/40 sm:bg-white/20 backdrop-blur-[2px] p-5 sm:p-7 rounded-2xl border border-white/50 shadow-xs">
             <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
               About <span className="text-[#821D38] italic font-normal">RS Gifts</span>
             </h1>
@@ -177,7 +177,7 @@ export const AboutUsPage = () => {
 
             <div className="pt-3">
               <button
-                onClick={() => navigate('/')}
+                onClick={() => navigate('/gifts')}
                 className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full bg-[#821D38] hover:bg-[#6E162E] text-white text-xs sm:text-sm font-semibold transition-all shadow-sm cursor-pointer"
               >
                 <span>Shop Our Collection</span>
@@ -189,7 +189,73 @@ export const AboutUsPage = () => {
         </div>
       </section>
 
-      {/* 4. WHY CHOOSE RS GIFTS? SECTION */}
+      {/* 4. FEATURED CURATED GIFTS BANNER (More Than Gifts, It's Emotions) */}
+      <section className="py-6 sm:py-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div
+          onClick={() => navigate('/gifts')}
+          className="group relative w-full overflow-hidden rounded-3xl border border-[#ECE7EC] shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer min-h-[250px] sm:min-h-[300px] md:min-h-[340px] flex items-center bg-[#FDF7F4]"
+        >
+          {/* Background Panorama Image */}
+          <div
+            className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
+            style={{
+              backgroundImage: `url("${import.meta.env.BASE_URL}images/hero-banner-1.png")`,
+              backgroundColor: '#FDF7F4',
+            }}
+          />
+
+          {/* Soft translucent gradient to let background image shine while keeping text crystal clear */}
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              background: 'linear-gradient(to right, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.18) 40%, rgba(255, 255, 255, 0) 70%)',
+            }}
+          />
+
+          {/* Inner Content Card matching homepage aesthetic */}
+          <div className="relative z-10 w-full p-4 sm:p-7 md:p-9 lg:p-10 flex flex-col justify-center">
+            <div className="max-w-[270px] xs:max-w-[320px] sm:max-w-[480px] md:max-w-[520px] bg-white/40 sm:bg-white/20 backdrop-blur-[2px] p-4 sm:p-6 rounded-2xl border border-white/40 shadow-xs">
+              
+              {/* Tagline / Subtitle */}
+              <p className="flex text-[10px] sm:text-[11px] font-bold tracking-[0.16em] text-[#821D38] uppercase mb-1 sm:mb-1.5 items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
+                EXCLUSIVE CURATED GIFTS
+              </p>
+
+              {/* Main Heading */}
+              <h2
+                className="text-lg sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.16] tracking-tight mb-1 sm:mb-2 drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+              >
+                More Than Gifts,<br className="hidden sm:inline" /> It's Emotions
+              </h2>
+
+              {/* Description */}
+              <p className="text-[11px] sm:text-[13px] md:text-sm text-[#3D2C34] font-medium leading-snug sm:leading-relaxed mb-3 sm:mb-4 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
+                Thoughtful gifts for every occasion. Because every moment deserves something special.
+              </p>
+
+              {/* Call to Action Button */}
+              <div>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate('/gifts');
+                  }}
+                  className="group/btn inline-flex items-center justify-center gap-1.5 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full bg-[#821D38] hover:bg-[#6E162E] text-white text-[11px] sm:text-[13px] font-medium shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                >
+                  <span>Shop Now</span>
+                  <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                  </svg>
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 5. WHY CHOOSE RS GIFTS? SECTION */}
       <section className="py-12 sm:py-16 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E1217] text-center mb-8 sm:mb-10">
           Why Choose <span className="text-[#821D38] italic font-normal">RS Gifts?</span>
@@ -252,7 +318,7 @@ export const AboutUsPage = () => {
         </div>
       </section>
 
-      {/* 5. OUR PROMISE SECTION (Matches bottom section in mockup, beautifully blending into footer) */}
+      {/* 6. OUR PROMISE SECTION (Matches bottom section in mockup, beautifully blending into footer) */}
       <section className="pb-12 sm:pb-16 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#ECE7EC] overflow-hidden shadow-2xs">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
