@@ -35,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       if (saved) {
         const parsed = JSON.parse(saved);
         return Array.isArray(parsed)
-          ? parsed.filter(a => !['addr_1', 'addr_2', 'addr_3'].includes(a.id))
+          ? parsed.filter(a => a && a.id && !['addr_1', 'addr_2', 'addr_3'].includes(a.id) && !String(a.id).startsWith('addr_synth_') && !String(a.id).startsWith('addr_init_') && !String(a.id).startsWith('addr_login_') && !String(a.id).startsWith('addr_reg_') && !String(a.id).startsWith('addr_profile_'))
           : [];
       }
       return [];
@@ -111,22 +111,8 @@ export const AuthProvider = ({ children }) => {
             isDefault: !!a.isDefault,
           }));
           setAddresses(formattedAddrs);
-        } else if (u.address && u.address.trim()) {
-          setAddresses((prev) => {
-            if (prev.length > 0) return prev;
-            return [{
-              id: `addr_init_${Date.now()}`,
-              name: rawName,
-              phone: u.phone || '',
-              street: u.address.trim(),
-              landmark: '',
-              city: 'Hyderabad',
-              state: 'Telangana',
-              pincode: '500001',
-              tag: 'Home',
-              isDefault: true,
-            }];
-          });
+        } else {
+          setAddresses([]);
         }
       } catch (err) {
         console.warn('Could not sync user profile on mount:', err?.message || err);
@@ -136,25 +122,6 @@ export const AuthProvider = ({ children }) => {
     fetchUserAndAddresses();
     return () => { isMounted = false; };
   }, []);
-
-  // Auto-synthesize default address if user has user.address but addresses list is empty
-  useEffect(() => {
-    if (user && user.address && user.address.trim() && addresses.length === 0) {
-      const synthAddr = {
-        id: `addr_synth_${Date.now()}`,
-        name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'My Address',
-        phone: user.phone || '',
-        street: user.address.trim(),
-        landmark: '',
-        city: user.city || 'Hyderabad',
-        state: user.state || 'Telangana',
-        pincode: user.pincode || '500001',
-        tag: 'Home',
-        isDefault: true,
-      };
-      setAddresses([synthAddr]);
-    }
-  }, [user, addresses.length]);
 
   // Sync to localStorage
   useEffect(() => {
@@ -222,20 +189,8 @@ export const AuthProvider = ({ children }) => {
           isDefault: !!a.isDefault,
         }));
         setAddresses(formattedAddrs);
-      } else if (backendUser.address && backendUser.address.trim()) {
-        const initialAddr = {
-          id: `addr_login_${Date.now()}`,
-          name: rawName,
-          phone: backendUser.phone || '',
-          street: backendUser.address.trim(),
-          landmark: '',
-          city: 'Hyderabad',
-          state: 'Telangana',
-          pincode: '500001',
-          tag: 'Home',
-          isDefault: true,
-        };
-        setAddresses([initialAddr]);
+      } else {
+        setAddresses([]);
       }
 
       setUser(loggedUser);
@@ -299,20 +254,8 @@ export const AuthProvider = ({ children }) => {
           isDefault: !!a.isDefault,
         }));
         setAddresses(formattedAddrs);
-      } else if (formData.address && formData.address.trim()) {
-        const initialAddr = {
-          id: `addr_reg_${Date.now()}`,
-          name: fullName,
-          phone: formData.phone || '',
-          street: formData.address.trim(),
-          landmark: '',
-          city: 'Hyderabad',
-          state: 'Telangana',
-          pincode: '500001',
-          tag: 'Home',
-          isDefault: true,
-        };
-        setAddresses([initialAddr]);
+      } else {
+        setAddresses([]);
       }
 
       setUser(newUser);
@@ -326,7 +269,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('rs_gifts_token');
-        localStorage.removeItem('rs_gifts_user');
+    localStorage.removeItem('rs_gifts_user');
     setUser(null);
   };
 
@@ -340,24 +283,6 @@ export const AuthProvider = ({ children }) => {
           return merged;
         });
 
-        if (updatedFields.address && updatedFields.address.trim()) {
-          setAddresses((prev) => {
-            if (prev.length > 0) return prev;
-            return [{
-              id: `addr_profile_${Date.now()}`,
-              name: updatedFields.name || data.user.name || 'My Address',
-              phone: updatedFields.phone || data.user.phone || '',
-              street: updatedFields.address.trim(),
-              landmark: '',
-              city: updatedFields.city || 'Hyderabad',
-              state: updatedFields.state || 'Telangana',
-              pincode: updatedFields.pincode || '500001',
-              tag: 'Home',
-              isDefault: true,
-            }];
-          });
-        }
-
         return { success: true };
       }
     } catch (err) {
@@ -368,24 +293,6 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('rs_gifts_user', JSON.stringify(merged));
       return merged;
     });
-
-    if (updatedFields.address && updatedFields.address.trim()) {
-      setAddresses((prev) => {
-        if (prev.length > 0) return prev;
-        return [{
-          id: `addr_profile_${Date.now()}`,
-          name: updatedFields.name || user?.name || 'My Address',
-          phone: updatedFields.phone || user?.phone || '',
-          street: updatedFields.address.trim(),
-          landmark: '',
-          city: updatedFields.city || 'Hyderabad',
-          state: updatedFields.state || 'Telangana',
-          pincode: updatedFields.pincode || '500001',
-          tag: 'Home',
-          isDefault: true,
-        }];
-      });
-    }
 
     return { success: true };
   };
