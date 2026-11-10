@@ -161,18 +161,18 @@ export const HeroSection = ({ onShopNow }) => {
           >
             {/* Background Image */}
             <div
-              className="absolute inset-0 w-full h-full bg-cover bg-right sm:bg-center lg:bg-right transition-opacity duration-500"
+              className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-500"
               style={{
                 backgroundImage: `url("${resolveImageUrl(slide.image)}")`,
                 backgroundColor: '#FDF7F4'
               }}
             />
 
-            {/* Soft Ambient Gradient Overlay */}
+            {/* Soft Ambient Gradient Overlay - translucent to let image shine through */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.93) 48%, rgba(255, 255, 255, 0.60) 70%, rgba(255, 255, 255, 0.15) 88%, rgba(255, 255, 255, 0) 100%)'
+                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.18) 40%, rgba(255, 255, 255, 0) 70%)'
               }}
             />
 
@@ -181,14 +181,14 @@ export const HeroSection = ({ onShopNow }) => {
               <div className="max-w-[250px] xs:max-w-[280px] sm:max-w-[500px]">
                 {/* Tagline / Subtitle */}
                 <p
-                  className="hidden sm:flex text-[10px] sm:text-[11px] font-semibold tracking-[0.16em] text-[#821D38] uppercase mb-1 items-center gap-1.5"
+                  className="hidden sm:flex text-[10px] sm:text-[11px] font-bold tracking-[0.16em] text-[#821D38] uppercase mb-1 items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]"
                 >
                   {slide.tagline}
                 </p>
 
                 {/* Main Heading */}
                 <h1
-                  className="text-[17px] sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.16] tracking-tight mb-1 sm:mb-2"
+                  className="text-[17px] sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.16] tracking-tight mb-1 sm:mb-2 drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]"
                   style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
                 >
                   <span>{slide.titleLine1}</span>
@@ -202,7 +202,7 @@ export const HeroSection = ({ onShopNow }) => {
 
                 {/* Description */}
                 <p
-                  className="text-[11px] sm:text-[13px] text-[#52454B] leading-snug mb-2 sm:mb-3.5 line-clamp-2 sm:line-clamp-none font-normal"
+                  className="text-[11px] sm:text-[13px] text-[#3D2C34] font-medium leading-snug mb-2 sm:mb-3.5 line-clamp-2 sm:line-clamp-none drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]"
                 >
                   {slide.description}
                 </p>
