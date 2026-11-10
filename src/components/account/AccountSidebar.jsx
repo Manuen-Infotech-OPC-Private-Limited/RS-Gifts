@@ -9,13 +9,15 @@ import {
 } from 'lucide-react';
 
 export const AccountSidebar = ({ activeTab, onSelectTab }) => {
-  const { user, logout, orders } = useAuth();
+  const { user, logout, orders, addresses } = useAuth();
 
   if (!user) return null;
 
   const activeOrdersCount = orders.filter(
     (o) => o.status === 'In Transit' || o.status === 'Placed' || o.status === 'Packed'
   ).length;
+
+  const savedAddressesCount = (addresses || []).length;
 
   const menuItems = [
     {
@@ -34,6 +36,8 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
       id: 'addresses',
       label: 'Saved Delivery Addresses',
       icon: MapPin,
+      badge: savedAddressesCount > 0 ? `${savedAddressesCount} Saved` : null,
+      badgeColor: 'bg-[#FAF0F3] text-[#821D38] border border-[#F2D7E0]',
     },
   ];
 

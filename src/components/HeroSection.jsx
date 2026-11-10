@@ -159,7 +159,7 @@ export const HeroSection = ({ onShopNow }) => {
             key={slide.id || idx}
             className="w-full shrink-0 relative min-h-[210px] sm:min-h-[270px] lg:min-h-[320px] flex items-center"
           >
-            {/* Background Image */}
+            {/* Background Image - full panorama, perfectly centered */}
             <div
               className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-500"
               style={{
@@ -168,17 +168,17 @@ export const HeroSection = ({ onShopNow }) => {
               }}
             />
 
-            {/* Soft Ambient Gradient Overlay - translucent to let image shine through */}
+            {/* Subtle soft vignette for depth without washing out the image */}
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
-                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.18) 40%, rgba(255, 255, 255, 0) 70%)'
+                background: 'linear-gradient(to right, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.04) 30%, transparent 60%)'
               }}
             />
 
             {/* Inner Content Area */}
             <div className="relative z-10 w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3 sm:py-5 lg:py-6 flex flex-col justify-center">
-              <div className="max-w-[250px] xs:max-w-[280px] sm:max-w-[500px]">
+              <div className="max-w-[260px] xs:max-w-[300px] sm:max-w-[480px] bg-white/40 sm:bg-white/20 backdrop-blur-[2px] p-3 sm:p-5 rounded-2xl border border-white/40 shadow-xs">
                 {/* Tagline / Subtitle */}
                 <p
                   className="hidden sm:flex text-[10px] sm:text-[11px] font-bold tracking-[0.16em] text-[#821D38] uppercase mb-1 items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]"

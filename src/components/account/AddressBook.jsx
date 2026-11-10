@@ -92,10 +92,10 @@ export const AddressBook = () => {
         <button
           type="button"
           onClick={openAddModal}
-          title="Add New Delivery Address"
-          className="text-[#821D38] cursor-pointer self-start sm:self-center p-0 bg-transparent border-0 outline-none focus:outline-none"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#6E162E] text-white text-xs font-semibold shadow-xs transition-colors cursor-pointer self-start sm:self-center"
         >
-          <MapPin size={48} strokeWidth={2.2} />
+          <Plus size={16} />
+          <span>Add New Address</span>
         </button>
       </div>
 

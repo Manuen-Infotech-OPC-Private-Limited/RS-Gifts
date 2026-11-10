@@ -69,6 +69,93 @@ export const AuthProvider = ({ children }) => {
     } catch {}
   }, []);
 
+  // Auto-fetch profile and sync addresses on mount if logged in
+  useEffect(() => {
+    const token = localStorage.getItem('rs_gifts_token');
+    if (!token) return;
+
+    let isMounted = true;
+    const fetchUserAndAddresses = async () => {
+      try {
+        const data = await api.get('/customer/auth/profile');
+        if (!isMounted || !data || !data.user) return;
+        const u = data.user;
+        const rawName = (u.name || 'User').replace(/Super Admin|Admin/gi, '').trim() || 'User';
+        const nameParts = rawName.split(' ');
+        const loggedUser = {
+          id: u._id || u.id,
+          name: rawName,
+          firstName: u.firstName || nameParts[0] || 'User',
+          lastName: u.lastName || nameParts.slice(1).join(' ') || '',
+          email: u.email || '',
+          phone: u.phone || '',
+          address: u.address || '',
+          gender: u.gender || '',
+          birthday: u.birthday || '',
+          role: 'customer',
+        };
+        setUser(loggedUser);
+
+        if (u.addresses && Array.isArray(u.addresses) && u.addresses.length > 0) {
+          const formattedAddrs = u.addresses.map((a) => ({
+            id: a._id || a.id,
+            _id: a._id,
+            name: a.recipientName || rawName,
+            phone: a.phone || u.phone || '',
+            street: a.addressLine1 || '',
+            landmark: a.addressLine2 || '',
+            city: a.city || '',
+            state: a.state || '',
+            pincode: a.postalCode || '',
+            tag: a.tag || 'Home',
+            isDefault: !!a.isDefault,
+          }));
+          setAddresses(formattedAddrs);
+        } else if (u.address && u.address.trim()) {
+          setAddresses((prev) => {
+            if (prev.length > 0) return prev;
+            return [{
+              id: `addr_init_${Date.now()}`,
+              name: rawName,
+              phone: u.phone || '',
+              street: u.address.trim(),
+              landmark: '',
+              city: 'Hyderabad',
+              state: 'Telangana',
+              pincode: '500001',
+              tag: 'Home',
+              isDefault: true,
+            }];
+          });
+        }
+      } catch (err) {
+        console.warn('Could not sync user profile on mount:', err?.message || err);
+      }
+    };
+
+    fetchUserAndAddresses();
+    return () => { isMounted = false; };
+  }, []);
+
+  // Auto-synthesize default address if user has user.address but addresses list is empty
+  useEffect(() => {
+    if (user && user.address && user.address.trim() && addresses.length === 0) {
+      const synthAddr = {
+        id: `addr_synth_${Date.now()}`,
+        name: user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'My Address',
+        phone: user.phone || '',
+        street: user.address.trim(),
+        landmark: '',
+        city: user.city || 'Hyderabad',
+        state: user.state || 'Telangana',
+        pincode: user.pincode || '500001',
+        tag: 'Home',
+        isDefault: true,
+      };
+      setAddresses([synthAddr]);
+    }
+  }, [user, addresses.length]);
+
   // Sync to localStorage
   useEffect(() => {
     if (user) {
@@ -135,6 +222,20 @@ export const AuthProvider = ({ children }) => {
           isDefault: !!a.isDefault,
         }));
         setAddresses(formattedAddrs);
+      } else if (backendUser.address && backendUser.address.trim()) {
+        const initialAddr = {
+          id: `addr_login_${Date.now()}`,
+          name: rawName,
+          phone: backendUser.phone || '',
+          street: backendUser.address.trim(),
+          landmark: '',
+          city: 'Hyderabad',
+          state: 'Telangana',
+          pincode: '500001',
+          tag: 'Home',
+          isDefault: true,
+        };
+        setAddresses([initialAddr]);
       }
 
       setUser(loggedUser);
@@ -181,7 +282,37 @@ export const AuthProvider = ({ children }) => {
 
       if (token) {
         localStorage.setItem('rs_gifts_token', token);
-        
+      }
+
+      if (backendUser.addresses && Array.isArray(backendUser.addresses) && backendUser.addresses.length > 0) {
+        const formattedAddrs = backendUser.addresses.map((a) => ({
+          id: a._id || a.id,
+          _id: a._id,
+          name: a.recipientName || fullName,
+          phone: a.phone || formData.phone || '',
+          street: a.addressLine1 || '',
+          landmark: a.addressLine2 || '',
+          city: a.city || '',
+          state: a.state || '',
+          pincode: a.postalCode || '',
+          tag: a.tag || 'Home',
+          isDefault: !!a.isDefault,
+        }));
+        setAddresses(formattedAddrs);
+      } else if (formData.address && formData.address.trim()) {
+        const initialAddr = {
+          id: `addr_reg_${Date.now()}`,
+          name: fullName,
+          phone: formData.phone || '',
+          street: formData.address.trim(),
+          landmark: '',
+          city: 'Hyderabad',
+          state: 'Telangana',
+          pincode: '500001',
+          tag: 'Home',
+          isDefault: true,
+        };
+        setAddresses([initialAddr]);
       }
 
       setUser(newUser);
@@ -208,6 +339,25 @@ export const AuthProvider = ({ children }) => {
           localStorage.setItem('rs_gifts_user', JSON.stringify(merged));
           return merged;
         });
+
+        if (updatedFields.address && updatedFields.address.trim()) {
+          setAddresses((prev) => {
+            if (prev.length > 0) return prev;
+            return [{
+              id: `addr_profile_${Date.now()}`,
+              name: updatedFields.name || data.user.name || 'My Address',
+              phone: updatedFields.phone || data.user.phone || '',
+              street: updatedFields.address.trim(),
+              landmark: '',
+              city: updatedFields.city || 'Hyderabad',
+              state: updatedFields.state || 'Telangana',
+              pincode: updatedFields.pincode || '500001',
+              tag: 'Home',
+              isDefault: true,
+            }];
+          });
+        }
+
         return { success: true };
       }
     } catch (err) {
@@ -218,6 +368,25 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem('rs_gifts_user', JSON.stringify(merged));
       return merged;
     });
+
+    if (updatedFields.address && updatedFields.address.trim()) {
+      setAddresses((prev) => {
+        if (prev.length > 0) return prev;
+        return [{
+          id: `addr_profile_${Date.now()}`,
+          name: updatedFields.name || user?.name || 'My Address',
+          phone: updatedFields.phone || user?.phone || '',
+          street: updatedFields.address.trim(),
+          landmark: '',
+          city: updatedFields.city || 'Hyderabad',
+          state: updatedFields.state || 'Telangana',
+          pincode: updatedFields.pincode || '500001',
+          tag: 'Home',
+          isDefault: true,
+        }];
+      });
+    }
+
     return { success: true };
   };
 
@@ -249,6 +418,7 @@ export const AuthProvider = ({ children }) => {
           state: newAddress.state || '',
           postalCode: newAddress.pincode || '',
           country: 'India',
+          tag: newAddress.tag || 'Home',
           isDefault: addressWithId.isDefault,
         });
         if (res?.addresses && Array.isArray(res.addresses)) {
