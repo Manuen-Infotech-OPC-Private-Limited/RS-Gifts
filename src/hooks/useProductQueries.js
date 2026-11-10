@@ -33,3 +33,4 @@ export const useFeaturedProducts = () => {
     staleTime: 1000 * 60 * 5,
   });
 };
+

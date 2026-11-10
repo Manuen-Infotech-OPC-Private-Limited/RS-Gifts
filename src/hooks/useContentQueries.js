@@ -54,3 +54,4 @@ export const useOccasions = () => {
     staleTime: 1000 * 60 * 10,
   });
 };
+
