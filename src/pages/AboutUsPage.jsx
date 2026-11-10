@@ -155,7 +155,7 @@ export const AboutUsPage = () => {
           <div className="md:col-span-6 flex justify-center md:justify-start">
             <div className="relative max-w-[440px] sm:max-w-[480px] w-full">
               <img
-                src="/images/about/about-story-products.png"
+                src={`${import.meta.env.BASE_URL}images/about/about-story-products.png`}
                 alt="Customized Photo Lamp, Bottle, and Wooden Keepsake"
                 className="w-full h-auto object-contain select-none transition-transform duration-500 hover:scale-[1.02]"
               />
@@ -272,7 +272,7 @@ export const AboutUsPage = () => {
             <div className="md:col-span-5 flex justify-center md:justify-end">
               <div className="max-w-[300px] w-full rounded-2xl overflow-hidden">
                 <img
-                  src="/images/about/about-promise-gift.png"
+                  src={`${import.meta.env.BASE_URL}images/about/about-promise-gift.png`}
                   alt="Our Promise Handcrafted Gift"
                   className="w-full h-auto object-cover"
                 />

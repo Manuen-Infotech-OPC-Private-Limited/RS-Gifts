@@ -7,6 +7,19 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 
+const resolveImageUrl = (img) => {
+  if (!img) {
+    const base = import.meta.env.BASE_URL || '/';
+    const prefix = base.endsWith('/') ? base : `${base}/`;
+    return `${prefix}images/hero-banner-1.png`;
+  }
+  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) return img;
+  const base = import.meta.env.BASE_URL || '/';
+  const prefix = base.endsWith('/') ? base : `${base}/`;
+  const clean = img.startsWith('/') ? img.slice(1) : img;
+  return `${prefix}${clean}`;
+};
+
 const defaultSlide = {
   id: 'default_banner_1',
   tagline: 'GIFTS THAT SPEAK FROM THE HEART',
@@ -15,7 +28,7 @@ const defaultSlide = {
   description: 'Thoughtful gifts for every occasion. Because every celebration deserves something memorable.',
   buttonText: 'Shop Now',
   buttonLink: '/gifts',
-  image: '/images/hero-banner-1.png',
+  image: resolveImageUrl('/images/hero-banner-1.png'),
 };
 
 export const HeroSection = ({ onShopNow }) => {
@@ -150,7 +163,7 @@ export const HeroSection = ({ onShopNow }) => {
             <div
               className="absolute inset-0 w-full h-full bg-cover bg-right sm:bg-center lg:bg-right transition-opacity duration-500"
               style={{
-                backgroundImage: `url("${slide.image || '/images/hero-banner-1.png'}")`,
+                backgroundImage: `url("${resolveImageUrl(slide.image)}")`,
                 backgroundColor: '#FDF7F4'
               }}
             />

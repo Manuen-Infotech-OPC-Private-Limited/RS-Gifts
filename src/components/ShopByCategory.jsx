@@ -17,30 +17,44 @@ const getCategorySlug = (cat) => {
   return cat.slug || 'gifts';
 };
 
+const getBasePrefix = () => {
+  const base = import.meta.env.BASE_URL || '/';
+  return base.endsWith('/') ? base : `${base}/`;
+};
+
+const resolveImageUrl = (img, fallbackSlug) => {
+  if (!img) return getDefaultFallbackImage(fallbackSlug);
+  if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) return img;
+  const prefix = getBasePrefix();
+  const clean = img.startsWith('/') ? img.slice(1) : img;
+  return `${prefix}${clean}`;
+};
+
 const getDefaultFallbackImage = (slugOrName) => {
   const s = String(slugOrName || '').toLowerCase();
-  if (s.includes('accessori')) return '/images/categories/accessories.png';
-  if (s.includes('anniversary')) return '/images/categories/anniversary-gifts.png';
-  if (s.includes('birthday')) return '/images/categories/birthday-gifts.png';
-  if (s.includes('corporate')) return '/images/categories/corporate-gifts.png';
-  if (s.includes('festival') || s.includes('festive')) return '/images/categories/festival-gifts.png';
-  if (s.includes('flower') || s.includes('hamper')) return '/images/categories/flowers-hampers.png';
-  if (s.includes('toy') || s.includes('kid')) return '/images/categories/toys-kids.png';
-  if (s.includes('personalized')) return '/images/categories/personalized-gifts.png';
-  return '/images/categories/gifts.png';
+  const prefix = getBasePrefix();
+  if (s.includes('accessori')) return `${prefix}images/categories/accessories.png`;
+  if (s.includes('anniversary')) return `${prefix}images/categories/anniversary-gifts.png`;
+  if (s.includes('birthday')) return `${prefix}images/categories/birthday-gifts.png`;
+  if (s.includes('corporate')) return `${prefix}images/categories/corporate-gifts.png`;
+  if (s.includes('festival') || s.includes('festive')) return `${prefix}images/categories/festival-gifts.png`;
+  if (s.includes('flower') || s.includes('hamper')) return `${prefix}images/categories/flowers-hampers.png`;
+  if (s.includes('toy') || s.includes('kid')) return `${prefix}images/categories/toys-kids.png`;
+  if (s.includes('personalized')) return `${prefix}images/categories/personalized-gifts.png`;
+  return `${prefix}images/categories/gifts.png`;
 };
 
 // Exactly 9 categories matching admin dropdown & reference image
 const ALL_CATEGORIES = [
-  { id: 'cat-accessories', name: 'Accessories', slug: 'accessories', path: '/category/accessories', image: '/images/categories/accessories.png' },
-  { id: 'cat-anniversary', name: 'Anniversary Gifts', slug: 'anniversary-gifts', path: '/category/anniversary-gifts', image: '/images/categories/anniversary-gifts.png' },
-  { id: 'cat-birthday', name: 'Birthday Gifts', slug: 'birthday-gifts', path: '/category/birthday-gifts', image: '/images/categories/birthday-gifts.png' },
-  { id: 'cat-corporate', name: 'Corporate Gifts', slug: 'corporate-gifts', path: '/category/corporate-gifts', image: '/images/categories/corporate-gifts.png' },
-  { id: 'cat-festival', name: 'Festival Gifts', slug: 'festival-gifts', path: '/category/festival-gifts', image: '/images/categories/festival-gifts.png' },
-  { id: 'cat-flowers', name: 'Flowers and Hampers', slug: 'flowers-and-hampers', path: '/category/flowers-and-hampers', image: '/images/categories/flowers-hampers.png' },
-  { id: 'cat-gifts', name: 'Gifts', slug: 'gifts', path: '/category/gifts', image: '/images/categories/gifts.png' },
-  { id: 'cat-personalized', name: 'Personalized Gifts', slug: 'personalized-gifts', path: '/category/personalized-gifts', image: '/images/categories/personalized-gifts.png' },
-  { id: 'cat-toys', name: 'Toys and Kids', slug: 'toys-and-kids', path: '/category/toys-and-kids', image: '/images/categories/toys-kids.png' }
+  { id: 'cat-accessories', name: 'Accessories', slug: 'accessories', path: '/category/accessories', image: getDefaultFallbackImage('accessories') },
+  { id: 'cat-anniversary', name: 'Anniversary Gifts', slug: 'anniversary-gifts', path: '/category/anniversary-gifts', image: getDefaultFallbackImage('anniversary-gifts') },
+  { id: 'cat-birthday', name: 'Birthday Gifts', slug: 'birthday-gifts', path: '/category/birthday-gifts', image: getDefaultFallbackImage('birthday-gifts') },
+  { id: 'cat-corporate', name: 'Corporate Gifts', slug: 'corporate-gifts', path: '/category/corporate-gifts', image: getDefaultFallbackImage('corporate-gifts') },
+  { id: 'cat-festival', name: 'Festival Gifts', slug: 'festival-gifts', path: '/category/festival-gifts', image: getDefaultFallbackImage('festival-gifts') },
+  { id: 'cat-flowers', name: 'Flowers and Hampers', slug: 'flowers-and-hampers', path: '/category/flowers-and-hampers', image: getDefaultFallbackImage('flowers-and-hampers') },
+  { id: 'cat-gifts', name: 'Gifts', slug: 'gifts', path: '/category/gifts', image: getDefaultFallbackImage('gifts') },
+  { id: 'cat-personalized', name: 'Personalized Gifts', slug: 'personalized-gifts', path: '/category/personalized-gifts', image: getDefaultFallbackImage('personalized-gifts') },
+  { id: 'cat-toys', name: 'Toys and Kids', slug: 'toys-and-kids', path: '/category/toys-and-kids', image: getDefaultFallbackImage('toys-and-kids') }
 ];
 
 export const ShopByCategory = ({ onSelectCategory }) => {
@@ -109,11 +123,12 @@ export const ShopByCategory = ({ onSelectCategory }) => {
               >
                 <div className="w-[62px] h-[62px] rounded-2xl bg-white border border-[#ECE7EC] shadow-2xs flex items-center justify-center p-2 group-hover:border-[#821D38]/40 group-hover:shadow-xs transition-all shrink-0">
                   <img
-                    src={category.image}
+                    src={resolveImageUrl(category.image, category.slug)}
                     alt={category.name}
                     className="w-full h-full object-contain mix-blend-multiply transition-transform duration-200 group-hover:scale-105"
                     loading="lazy"
                     onError={(e) => {
+                      e.target.onerror = null;
                       e.target.src = getDefaultFallbackImage(category.slug);
                     }}
                   />
@@ -137,11 +152,12 @@ export const ShopByCategory = ({ onSelectCategory }) => {
               >
                 <div className="w-full h-20 sm:h-24 md:h-20 lg:h-24 max-w-[96px] mx-auto flex items-center justify-center p-1 sm:p-1.5 transition-transform duration-300 group-hover:-translate-y-1.5 group-hover:scale-110 shrink-0">
                   <img
-                    src={category.image}
+                    src={resolveImageUrl(category.image, category.slug)}
                     alt={category.name}
                     className="max-w-full max-h-full w-auto h-auto object-contain transition-transform duration-300 mix-blend-multiply"
                     loading="lazy"
                     onError={(e) => {
+                      e.target.onerror = null;
                       e.target.src = getDefaultFallbackImage(category.slug);
                     }}
                   />

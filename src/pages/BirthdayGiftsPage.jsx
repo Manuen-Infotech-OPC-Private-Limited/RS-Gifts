@@ -47,7 +47,7 @@ export const BirthdayGiftsPage = () => {
     hasHeart: true,
     description: 'Thoughtful gifts, sweet surprises, and memorable hampers.\nBecause every birthday deserves something magical.',
     buttonText: 'Shop Birthday Gifts',
-    image: birthdayHeroImg || '/images/birthday-hero.png'
+    image: birthdayHeroImg || `${import.meta.env.BASE_URL}images/birthday-hero.png`
   };
 
   const [products, setProducts] = useState([]);
