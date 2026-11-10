@@ -268,6 +268,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    // Invalidate server-side session in MongoDB
+    api.post('/customer/auth/logout').catch(() => null);
     localStorage.removeItem('rs_gifts_token');
     localStorage.removeItem('rs_gifts_user');
     setUser(null);
