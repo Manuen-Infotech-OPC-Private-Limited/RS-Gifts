@@ -218,7 +218,7 @@ export const Navbar = ({ onSearch }) => {
               src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
               onError={() => setLogoError(true)}
-              className="h-9 sm:h-10 w-auto max-w-[140px] object-contain -my-1"
+              className="h-11 sm:h-13 w-auto max-w-[160px] object-contain -my-2"
             />
           ) : (
             <>
@@ -401,7 +401,7 @@ export const Navbar = ({ onSearch }) => {
               src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
               onError={() => setLogoError(true)}
-              className="h-[62px] md:h-[65px] w-auto max-w-[200px] object-contain -my-3 transition-transform duration-200 hover:scale-105"
+              className="h-[78px] md:h-[84px] lg:h-[88px] w-auto max-w-[240px] object-contain -my-5 transition-transform duration-200 hover:scale-105"
             />
           ) : (
             <>
