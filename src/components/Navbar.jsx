@@ -9,6 +9,10 @@ import { resolveLogoUrl } from '../utils/urlHelper';
 import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight, Loader2, MapPin } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
+  // logo size settings
+  const desktopLogoClass = "h-11 max-w-[180px] object-contain";
+  const mobileLogoClass = "h-8 max-w-[130px] object-contain";
+
   const navigate = useNavigate();
   const location = useLocation();
   const { user, openAuthModal, logout } = useAuth();
@@ -95,10 +99,10 @@ export const Navbar = ({ onSearch }) => {
           setStoreLogo(s.storeLogo || '');
           try {
             localStorage.setItem('rs_gifts_store_logo', s.storeLogo || '');
-          } catch (e) {}
+          } catch (e) { }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
 
     const handleStorageChange = () => {
       try {
@@ -106,7 +110,7 @@ export const Navbar = ({ onSearch }) => {
         if (saved !== null) {
           setStoreLogo(saved);
         }
-      } catch (e) {}
+      } catch (e) { }
     };
 
     const handleSettingsUpdate = (e) => {
@@ -170,7 +174,7 @@ export const Navbar = ({ onSearch }) => {
           }
         }
       })
-      .catch(() => {});
+      .catch(() => { });
     return () => { isMounted = false; };
   }, []);
 
@@ -194,9 +198,8 @@ export const Navbar = ({ onSearch }) => {
   return (
     <header
       style={{ position: 'sticky', top: 0, zIndex: 40 }}
-      className={`w-full bg-white border-b border-[#ECE7EC] sticky top-0 z-40 font-sans transition-shadow duration-200 ${
-        isScrolled ? 'shadow-md bg-white/98 backdrop-blur-xs' : 'shadow-none'
-      }`}
+      className={`w-full bg-white border-b border-[#ECE7EC] sticky top-0 z-40 font-sans transition-shadow duration-200 ${isScrolled ? 'shadow-md bg-white/98 backdrop-blur-xs' : 'shadow-none'
+        }`}
     >
       {/* Mobile Top Row: Hamburger | Centered Logo | Wishlist & Cart */}
       <div className="flex md:hidden items-center justify-between px-4 py-2.5 bg-white">
@@ -218,7 +221,7 @@ export const Navbar = ({ onSearch }) => {
               src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
               onError={() => setLogoError(true)}
-              className="h-8 max-w-[130px] object-contain"
+              className={mobileLogoClass}
             />
           ) : (
             <>
@@ -401,7 +404,7 @@ export const Navbar = ({ onSearch }) => {
               src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
               onError={() => setLogoError(true)}
-              className="h-11 max-w-[180px] object-contain"
+              className={desktopLogoClass}
             />
           ) : (
             <>
@@ -665,11 +668,10 @@ export const Navbar = ({ onSearch }) => {
               setActiveTab('Home');
               navigate('/');
             }}
-            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
-              location.pathname === '/'
-                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
-                : ''
-            }`}
+            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${location.pathname === '/'
+              ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+              : ''
+              }`}
           >
             <span>Home</span>
           </li>
@@ -683,11 +685,10 @@ export const Navbar = ({ onSearch }) => {
             <button
               type="button"
               onClick={() => setGiftsDropdownOpen((prev) => !prev)}
-              className={`cursor-pointer flex items-center hover:text-[#821D38] transition-colors py-0.5 select-none ${
-                isGiftsActive
-                  ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
-                  : ''
-              }`}
+              className={`cursor-pointer flex items-center hover:text-[#821D38] transition-colors py-0.5 select-none ${isGiftsActive
+                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+                : ''
+                }`}
             >
               <span>Gifts</span>
             </button>
@@ -709,11 +710,10 @@ export const Navbar = ({ onSearch }) => {
                             setActiveTab('Gifts');
                             navigate(cat.path);
                           }}
-                          className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center cursor-pointer transition-colors group ${
-                            isCatActive
-                              ? 'bg-[#FDF2F4] text-[#821D38]'
-                              : 'text-neutral-800 hover:text-[#821D38] hover:bg-[#FFF9F5]'
-                          }`}
+                          className={`px-3.5 py-2.5 rounded-xl text-xs font-semibold flex items-center cursor-pointer transition-colors group ${isCatActive
+                            ? 'bg-[#FDF2F4] text-[#821D38]'
+                            : 'text-neutral-800 hover:text-[#821D38] hover:bg-[#FFF9F5]'
+                            }`}
                         >
                           <span>{cat.label}</span>
                         </div>
@@ -731,11 +731,10 @@ export const Navbar = ({ onSearch }) => {
               setActiveTab('Offers');
               navigate('/offers');
             }}
-            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
-              location.pathname === '/offers' || location.pathname === '/special-offers'
-                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
-                : ''
-            }`}
+            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${location.pathname === '/offers' || location.pathname === '/special-offers'
+              ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+              : ''
+              }`}
           >
             <span>Offers</span>
           </li>
@@ -746,11 +745,10 @@ export const Navbar = ({ onSearch }) => {
               setActiveTab('About Us');
               navigate('/about');
             }}
-            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
-              location.pathname === '/about' || location.pathname === '/about-us'
-                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
-                : ''
-            }`}
+            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${location.pathname === '/about' || location.pathname === '/about-us'
+              ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+              : ''
+              }`}
           >
             <span>About Us</span>
           </li>
@@ -761,11 +759,10 @@ export const Navbar = ({ onSearch }) => {
               setActiveTab('Contact Us');
               navigate('/contact');
             }}
-            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${
-              location.pathname === '/contact' || location.pathname === '/contact-us'
-                ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
-                : ''
-            }`}
+            className={`relative py-2 cursor-pointer flex items-center gap-1 hover:text-[#821D38] transition-colors ${location.pathname === '/contact' || location.pathname === '/contact-us'
+              ? 'font-semibold text-neutral-900 after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2.5px] after:bg-[#821D38] after:rounded-t'
+              : ''
+              }`}
           >
             <span>Contact Us</span>
           </li>
@@ -816,11 +813,10 @@ export const Navbar = ({ onSearch }) => {
                   setMobileMenuOpen(false);
                   navigate('/');
                 }}
-                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
-                  location.pathname === '/'
-                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
-                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
-                }`}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${location.pathname === '/'
+                  ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                  : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                  }`}
               >
                 <span>Home</span>
                 <ChevronRight size={14} className={location.pathname === '/' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
@@ -830,11 +826,10 @@ export const Navbar = ({ onSearch }) => {
               <div>
                 <button
                   onClick={() => setMobileGiftsOpen((prev) => !prev)}
-                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
-                    isGiftsActive
-                      ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
-                      : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
-                  }`}
+                  className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${isGiftsActive
+                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                    }`}
                 >
                   <span className="flex items-center gap-1.5">Gifts</span>
                 </button>
@@ -850,11 +845,10 @@ export const Navbar = ({ onSearch }) => {
                             setMobileMenuOpen(false);
                             navigate(cat.path);
                           }}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center transition-colors cursor-pointer ${
-                            isCatActive
-                              ? 'text-[#821D38] font-bold bg-[#FDF2F4]'
-                              : 'text-neutral-700 hover:text-[#821D38]'
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium flex items-center transition-colors cursor-pointer ${isCatActive
+                            ? 'text-[#821D38] font-bold bg-[#FDF2F4]'
+                            : 'text-neutral-700 hover:text-[#821D38]'
+                            }`}
                         >
                           <span>{cat.label}</span>
                         </button>
@@ -870,11 +864,10 @@ export const Navbar = ({ onSearch }) => {
                   setMobileMenuOpen(false);
                   navigate('/offers');
                 }}
-                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
-                  location.pathname === '/offers' || location.pathname === '/special-offers'
-                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
-                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
-                }`}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${location.pathname === '/offers' || location.pathname === '/special-offers'
+                  ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                  : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                  }`}
               >
                 <span>Offers</span>
                 <ChevronRight size={14} className={location.pathname === '/offers' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
@@ -886,11 +879,10 @@ export const Navbar = ({ onSearch }) => {
                   setMobileMenuOpen(false);
                   navigate('/about');
                 }}
-                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
-                  location.pathname === '/about' || location.pathname === '/about-us'
-                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
-                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
-                }`}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${location.pathname === '/about' || location.pathname === '/about-us'
+                  ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                  : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                  }`}
               >
                 <span>About Us</span>
                 <ChevronRight size={14} className={location.pathname === '/about' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
@@ -902,11 +894,10 @@ export const Navbar = ({ onSearch }) => {
                   setMobileMenuOpen(false);
                   navigate('/contact');
                 }}
-                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${
-                  location.pathname === '/contact' || location.pathname === '/contact-us'
-                    ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
-                    : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
-                }`}
+                className={`w-full text-left px-3 py-2.5 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors cursor-pointer ${location.pathname === '/contact' || location.pathname === '/contact-us'
+                  ? 'bg-[#FDF2F4] text-[#821D38] font-bold'
+                  : 'text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38]'
+                  }`}
               >
                 <span>Contact Us</span>
                 <ChevronRight size={14} className={location.pathname === '/contact' ? 'text-[#821D38]' : 'text-[#A89CA2]'} />
