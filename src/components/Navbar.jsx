@@ -6,7 +6,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { fetchLiveCategories, fetchLiveProducts } from '../services/productService';
 import api from '../services/api';
 import { resolveLogoUrl, updateTabFavicon } from '../utils/urlHelper';
-import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight, Loader2, MapPin } from 'lucide-react';
+import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight, Loader2 } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
   // logo size settings with pure white background & seamless blend
@@ -577,40 +577,27 @@ export const Navbar = ({ onSearch }) => {
                 </button>
 
                 {userMenuOpen && (
-                  <div className="absolute top-full right-0 bg-white min-w-[240px] rounded-2xl shadow-xl border border-neutral-100 py-2 z-50 animate-in fade-in duration-150">
-                    <div className="px-4 py-2.5 border-b border-neutral-100">
-                      <p className="text-xs font-semibold text-neutral-900 truncate">{user.name || user.firstName}</p>
+                  <div className="absolute top-full right-0 bg-white min-w-[200px] rounded-2xl shadow-xl border border-neutral-100 py-2 z-50 animate-in fade-in duration-150">
+                    <div 
+                      onClick={() => { setUserMenuOpen(false); navigate('/account'); }}
+                      className="px-4 py-2.5 border-b border-neutral-100 cursor-pointer hover:bg-[#FAF0F3] transition-colors"
+                      title="Go to Account Dashboard"
+                    >
+                      <p className="text-xs font-bold text-neutral-900 truncate">{user.name || user.firstName}</p>
                       <p className="text-[11px] text-neutral-500 truncate">{user.email}</p>
-                    </div>
-
-                    <div className="py-1 border-b border-neutral-100">
-                      <button
-                        onClick={() => { setUserMenuOpen(false); navigate('/account?tab=orders'); }}
-                        className="w-full text-left px-4 py-2 text-xs text-neutral-700 hover:bg-[#FAF0F3] hover:text-[#821D38] font-medium flex items-center gap-2.5 cursor-pointer transition-colors"
-                      >
-                        <Package size={14} className="text-[#821D38]" />
-                        <span>My Orders</span>
-                      </button>
-                      <button
-                        onClick={() => { setUserMenuOpen(false); navigate('/account?tab=addresses'); }}
-                        className="w-full text-left px-4 py-2 text-xs text-neutral-700 hover:bg-[#FAF0F3] hover:text-[#821D38] font-medium flex items-center gap-2.5 cursor-pointer transition-colors"
-                      >
-                        <MapPin size={14} className="text-[#821D38]" />
-                        <span>Saved Delivery Addresses</span>
-                      </button>
-                      <button
-                        onClick={() => { setUserMenuOpen(false); navigate('/account?tab=profile'); }}
-                        className="w-full text-left px-4 py-2 text-xs text-neutral-700 hover:bg-[#FAF0F3] hover:text-[#821D38] font-medium flex items-center gap-2.5 cursor-pointer transition-colors"
-                      >
-                        <User size={14} className="text-[#821D38]" />
-                        <span>Personal Information</span>
-                      </button>
                     </div>
 
                     <div className="pt-1">
                       <button
+                        onClick={() => { setUserMenuOpen(false); navigate('/account'); }}
+                        className="w-full text-left px-4 py-2 text-xs text-neutral-700 hover:bg-[#FAF0F3] hover:text-[#821D38] font-medium flex items-center gap-2.5 cursor-pointer transition-colors"
+                      >
+                        <User size={14} className="text-[#821D38]" />
+                        <span>My Account</span>
+                      </button>
+                      <button
                         onClick={() => { setUserMenuOpen(false); logout(); }}
-                        className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-semibold flex items-center gap-2 cursor-pointer transition-colors"
+                        className="w-full text-left px-4 py-2 text-xs text-rose-600 hover:bg-rose-50 font-semibold flex items-center gap-2.5 cursor-pointer transition-colors"
                       >
                         <LogOut size={14} />
                         <span>Sign Out</span>
@@ -923,20 +910,6 @@ export const Navbar = ({ onSearch }) => {
                 >
                   <User size={14} className="text-[#821D38]" />
                   <span>My Account</span>
-                </button>
-                <button
-                  onClick={() => { setMobileMenuOpen(false); navigate('/account?tab=orders'); }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38] flex items-center gap-2"
-                >
-                  <Package size={14} className="text-[#821D38]" />
-                  <span>Track Orders</span>
-                </button>
-                <button
-                  onClick={() => { setMobileMenuOpen(false); navigate('/account?tab=addresses'); }}
-                  className="w-full text-left px-3 py-2 rounded-xl text-xs font-medium text-[#1E1217] hover:bg-[#FDF2F4] hover:text-[#821D38] flex items-center gap-2"
-                >
-                  <MapPin size={14} className="text-[#821D38]" />
-                  <span>Saved Delivery Addresses</span>
                 </button>
               </div>
             </div>
