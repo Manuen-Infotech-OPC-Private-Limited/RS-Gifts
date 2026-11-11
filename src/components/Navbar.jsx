@@ -10,8 +10,8 @@ import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, 
 
 export const Navbar = ({ onSearch }) => {
   // logo size settings with pure white background & seamless blend
-  const desktopLogoClass = "h-[90px] md:h-[96px] lg:h-[100px] w-auto max-w-[240px] object-contain rounded-xl translate-y-3.5 md:translate-y-4 lg:translate-y-4.5 bg-white mix-blend-multiply [filter:contrast(1.15)_brightness(1.03)]";
-  const mobileLogoClass = "h-12 sm:h-13 w-auto max-w-[160px] object-contain rounded-lg translate-y-1 bg-white mix-blend-multiply [filter:contrast(1.15)_brightness(1.03)]";
+  const desktopLogoClass = "h-[98px] md:h-[106px] lg:h-[112px] w-auto max-w-[260px] object-contain rounded-xl translate-y-4.5 md:translate-y-5 lg:translate-y-5.5 bg-white mix-blend-multiply [filter:contrast(1.15)_brightness(1.03)]";
+  const mobileLogoClass = "h-14 sm:h-[60px] w-auto max-w-[180px] object-contain rounded-lg translate-y-1.5 bg-white mix-blend-multiply [filter:contrast(1.15)_brightness(1.03)]";
 
   const navigate = useNavigate();
   const location = useLocation();
