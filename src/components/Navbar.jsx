@@ -10,8 +10,8 @@ import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, 
 
 export const Navbar = ({ onSearch }) => {
   // logo size settings
-  const desktopLogoClass = "h-11 max-w-[180px] object-contain";
-  const mobileLogoClass = "h-8 max-w-[130px] object-contain";
+  const desktopLogoClass = "h-[76px] md:h-[80px] w-auto max-w-[220px] object-contain -my-4 md:-my-4.5 transition-transform duration-200 hover:scale-105";
+  const mobileLogoClass = "h-11 sm:h-12 w-auto max-w-[140px] object-contain -my-1.5 sm:-my-2";
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -214,7 +214,7 @@ export const Navbar = ({ onSearch }) => {
         {/* Centered Brand Logo */}
         <div
           onClick={() => navigate('/')}
-          className="flex items-center gap-1.5 cursor-pointer select-none"
+          className="flex items-center gap-1.5 cursor-pointer select-none h-9"
         >
           {storeLogo && !logoError ? (
             <img
@@ -397,7 +397,7 @@ export const Navbar = ({ onSearch }) => {
         {/* Brand Logo matching reference */}
         <div
           onClick={() => { setActiveTab('Home'); navigate('/'); }}
-          className="flex items-center gap-3 cursor-pointer select-none shrink-0"
+          className="flex items-center gap-3 cursor-pointer select-none shrink-0 h-11"
         >
           {storeLogo && !logoError ? (
             <img
