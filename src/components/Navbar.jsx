@@ -10,8 +10,8 @@ import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, 
 
 export const Navbar = ({ onSearch }) => {
   // logo size settings
-  const desktopLogoClass = "h-[78px] md:h-[82px] lg:h-[86px] w-auto max-w-[220px] object-contain rounded-lg translate-y-2 md:translate-y-2.5 transition-transform duration-200 hover:scale-105";
-  const mobileLogoClass = "h-11 sm:h-12 w-auto max-w-[150px] object-contain rounded-md translate-y-0.5";
+  const desktopLogoClass = "h-[90px] md:h-[96px] lg:h-[100px] w-auto max-w-[240px] object-contain rounded-xl translate-y-3.5 md:translate-y-4 lg:translate-y-4.5 transition-transform duration-200 hover:scale-105";
+  const mobileLogoClass = "h-12 sm:h-13 w-auto max-w-[160px] object-contain rounded-lg translate-y-1";
 
   const navigate = useNavigate();
   const location = useLocation();
