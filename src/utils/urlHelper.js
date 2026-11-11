@@ -40,3 +40,4 @@ export const resolveLogoUrl = (url) => {
 };
 
 export default resolveLogoUrl;
+
