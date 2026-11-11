@@ -9,9 +9,9 @@ import { resolveLogoUrl, updateTabFavicon } from '../utils/urlHelper';
 import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight, Loader2, MapPin } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
-  // logo size settings
-  const desktopLogoClass = "h-[90px] md:h-[96px] lg:h-[100px] w-auto max-w-[240px] object-contain rounded-xl translate-y-3.5 md:translate-y-4 lg:translate-y-4.5";
-  const mobileLogoClass = "h-12 sm:h-13 w-auto max-w-[160px] object-contain rounded-lg translate-y-1";
+  // logo size settings with pure white background & seamless blend
+  const desktopLogoClass = "h-[90px] md:h-[96px] lg:h-[100px] w-auto max-w-[240px] object-contain rounded-xl translate-y-3.5 md:translate-y-4 lg:translate-y-4.5 bg-white mix-blend-multiply [filter:contrast(1.15)_brightness(1.03)]";
+  const mobileLogoClass = "h-12 sm:h-13 w-auto max-w-[160px] object-contain rounded-lg translate-y-1 bg-white mix-blend-multiply [filter:contrast(1.15)_brightness(1.03)]";
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -217,7 +217,7 @@ export const Navbar = ({ onSearch }) => {
         {/* Centered Brand Logo */}
         <div
           onClick={() => navigate('/')}
-          className="flex items-center gap-1.5 cursor-pointer select-none h-9"
+          className="flex items-center gap-1.5 cursor-pointer select-none h-9 bg-white"
         >
           {storeLogo && !logoError ? (
             <img
@@ -400,7 +400,7 @@ export const Navbar = ({ onSearch }) => {
         {/* Brand Logo matching reference */}
         <div
           onClick={() => { setActiveTab('Home'); navigate('/'); }}
-          className="flex items-center gap-3 cursor-pointer select-none shrink-0 h-11"
+          className="flex items-center gap-3 cursor-pointer select-none shrink-0 h-11 bg-white"
         >
           {storeLogo && !logoError ? (
             <img
