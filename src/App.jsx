@@ -20,6 +20,8 @@ import { Contactus } from './pages/Contactus';
 import { AboutUsPage } from './pages/AboutUsPage';
 import { OffersPage } from './pages/OffersPage';
 import { CartDrawer } from './components/cart/CartDrawer';
+import api from './services/api';
+import { updateTabFavicon } from './utils/urlHelper';
 import './App.css';
 
 // Automatically scroll to top on any route navigation
@@ -39,6 +41,47 @@ function ScrollToTop() {
 
 export function App() {
   const navigate = useNavigate();
+
+  // Dynamic Browser Tab Favicon Sync
+  useEffect(() => {
+    try {
+      const savedLogo = localStorage.getItem('rs_gifts_store_logo');
+      if (savedLogo) updateTabFavicon(savedLogo);
+    } catch (e) {}
+
+    let isMounted = true;
+    api.get(`/customer/content/settings?_t=${Date.now()}`)
+      .then((res) => {
+        if (!isMounted) return;
+        const s = res?.settings || res?.data?.settings;
+        if (s?.storeLogo) {
+          updateTabFavicon(s.storeLogo);
+          try {
+            localStorage.setItem('rs_gifts_store_logo', s.storeLogo);
+          } catch (e) {}
+        }
+      })
+      .catch(() => {});
+
+    const handleSettingsUpdate = (e) => {
+      if (e?.detail?.storeLogo) {
+        updateTabFavicon(e.detail.storeLogo);
+      }
+    };
+    const handleStorage = (e) => {
+      if (e.key === 'rs_gifts_store_logo' && e.newValue) {
+        updateTabFavicon(e.newValue);
+      }
+    };
+
+    window.addEventListener('store-settings-updated', handleSettingsUpdate);
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      isMounted = false;
+      window.removeEventListener('store-settings-updated', handleSettingsUpdate);
+      window.removeEventListener('storage', handleStorage);
+    };
+  }, []);
 
   const handleSearch = (query) => {
     if (query && String(query).trim()) {

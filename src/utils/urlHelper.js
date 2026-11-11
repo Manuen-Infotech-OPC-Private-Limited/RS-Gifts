@@ -39,5 +39,56 @@ export const resolveLogoUrl = (url) => {
   return clean;
 };
 
-export default resolveLogoUrl;
+/**
+ * Dynamically updates the browser tab favicon to the store logo.
+ * Replaces existing favicon links to force instant browser refresh.
+ */
+export const updateTabFavicon = (rawUrl) => {
+  if (typeof document === 'undefined') return;
+  const url = resolveLogoUrl(rawUrl);
+  if (!url) return;
 
+  try {
+    const head = document.head || document.getElementsByTagName('head')[0];
+    if (!head) return;
+
+    // Detect MIME type
+    let type = 'image/png';
+    if (url.endsWith('.svg') || url.includes('.svg?')) {
+      type = 'image/svg+xml';
+    } else if (url.endsWith('.jpg') || url.endsWith('.jpeg')) {
+      type = 'image/jpeg';
+    } else if (url.endsWith('.ico')) {
+      type = 'image/x-icon';
+    }
+
+    // Force browser re-render by appending timestamp query
+    const cacheBuster = url.includes('?') ? `${url}&_fav=${Date.now()}` : `${url}?_fav=${Date.now()}`;
+
+    // Remove old favicon links so browser immediately displays the new one
+    const oldLinks = document.querySelectorAll("link[rel*='icon']");
+    oldLinks.forEach((el) => {
+      if (el && el.parentNode) {
+        el.parentNode.removeChild(el);
+      }
+    });
+
+    // Create new primary favicon link
+    const newLink = document.createElement('link');
+    newLink.rel = 'icon';
+    newLink.type = type;
+    newLink.href = cacheBuster;
+    head.appendChild(newLink);
+
+    // Create shortcut icon for older browsers
+    const shortcutLink = document.createElement('link');
+    shortcutLink.rel = 'shortcut icon';
+    shortcutLink.type = type;
+    shortcutLink.href = cacheBuster;
+    head.appendChild(shortcutLink);
+  } catch (err) {
+    console.warn('Could not update tab favicon:', err);
+  }
+};
+
+export default resolveLogoUrl;

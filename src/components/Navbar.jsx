@@ -5,7 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { fetchLiveCategories, fetchLiveProducts } from '../services/productService';
 import api from '../services/api';
-import { resolveLogoUrl } from '../utils/urlHelper';
+import { resolveLogoUrl, updateTabFavicon } from '../utils/urlHelper';
 import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight, Loader2, MapPin } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
@@ -87,6 +87,9 @@ export const Navbar = ({ onSearch }) => {
 
   useEffect(() => {
     setLogoError(false);
+    if (storeLogo) {
+      updateTabFavicon(storeLogo);
+    }
   }, [storeLogo]);
 
   useEffect(() => {
