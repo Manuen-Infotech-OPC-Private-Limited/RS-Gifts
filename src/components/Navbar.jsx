@@ -211,14 +211,14 @@ export const Navbar = ({ onSearch }) => {
         {/* Centered Brand Logo */}
         <div
           onClick={() => navigate('/')}
-          className="flex items-center gap-1.5 cursor-pointer select-none"
+          className="flex items-center gap-1.5 cursor-pointer select-none py-0.5"
         >
           {storeLogo && !logoError ? (
             <img
               src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
               onError={() => setLogoError(true)}
-              className="h-8 max-w-[130px] object-contain"
+              className="h-10 sm:h-12 w-auto max-w-[160px] object-contain"
             />
           ) : (
             <>
@@ -390,18 +390,18 @@ export const Navbar = ({ onSearch }) => {
       </div>
 
       {/* Desktop Main Row */}
-      <div className="hidden md:flex max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 items-center justify-between gap-6">
+      <div className="hidden md:flex max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-2 md:py-2.5 items-center justify-between gap-6">
         {/* Brand Logo matching reference */}
         <div
           onClick={() => { setActiveTab('Home'); navigate('/'); }}
-          className="flex items-center gap-3 cursor-pointer select-none shrink-0"
+          className="flex items-center gap-3 cursor-pointer select-none shrink-0 py-0.5"
         >
           {storeLogo && !logoError ? (
             <img
               src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
               onError={() => setLogoError(true)}
-              className="h-11 max-w-[180px] object-contain"
+              className="h-16 md:h-[76px] lg:h-[80px] w-auto max-w-[220px] object-contain transition-transform duration-200 hover:scale-[1.02]"
             />
           ) : (
             <>
