@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Phone, Mail, MapPin, Clock, Heart } from 'lucide-react';
 import api from '../services/api';
+import { resolveLogoUrl } from '../utils/urlHelper';
 
 export const Footer = ({
-  bgColor = '#E8A0AD',
-  primaryColor = '#29252A',
-  secondaryColor = '#6F6870'
+  bgColor = '#735240',
+  primaryColor = '#ffffffff',
+  secondaryColor = '#ffffffff'
 }) => {
   const navigate = useNavigate();
 
@@ -54,9 +55,15 @@ export const Footer = ({
     };
   });
 
+  const [logoError, setLogoError] = useState(false);
+
+  useEffect(() => {
+    setLogoError(false);
+  }, [storeLogo]);
+
   useEffect(() => {
     // Fetch live public contact settings dynamically from MongoDB
-    api.get('/customer/content/settings')
+    api.get(`/customer/content/settings?_t=${Date.now()}`)
       .then(res => {
         const s = res?.settings || res?.data?.settings;
         if (s) {
@@ -187,11 +194,11 @@ export const Footer = ({
               onClick={() => handleNav('/')}
               className="inline-flex items-center gap-2.5 cursor-pointer group w-fit"
             >
-              {storeLogo ? (
+              {storeLogo && !logoError ? (
                 <img
-                  src={storeLogo}
+                  src={resolveLogoUrl(storeLogo)}
                   alt="RS Gifts"
-                  onError={() => setStoreLogo('')}
+                  onError={() => setLogoError(true)}
                   className="h-10 max-w-[160px] object-contain transition-transform duration-200 group-hover:scale-105"
                 />
               ) : (
@@ -269,11 +276,10 @@ export const Footer = ({
                 rel={socialLinks.facebook ? "noopener noreferrer" : undefined}
                 aria-label="Facebook"
                 title={socialLinks.facebook ? "Visit our Facebook page" : "Facebook (Not configured)"}
-                className={`w-6.5 h-6.5 rounded-full bg-white flex items-center justify-center text-[#18181B] shadow-xs transition-transform ${
-                  socialLinks.facebook
-                    ? 'hover:scale-110 active:scale-95 cursor-pointer'
-                    : 'cursor-default opacity-50'
-                }`}
+                className={`w-6.5 h-6.5 rounded-full bg-white flex items-center justify-center text-[#18181B] shadow-xs transition-transform ${socialLinks.facebook
+                  ? 'hover:scale-110 active:scale-95 cursor-pointer'
+                  : 'cursor-default opacity-50'
+                  }`}
               >
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M13.5 21.5v-8.2h2.8l.4-3.2h-3.2V8.1c0-.9.3-1.6 1.6-1.6h1.7V3.7c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.2H7.5v3.2h2.6v8.2h3.4z" />
@@ -292,11 +298,10 @@ export const Footer = ({
                 rel={socialLinks.instagram ? "noopener noreferrer" : undefined}
                 aria-label="Instagram"
                 title={socialLinks.instagram ? "Visit our Instagram profile" : "Instagram (Not configured)"}
-                className={`w-6.5 h-6.5 rounded-full bg-[#29252A] flex items-center justify-center text-white shadow-xs transition-transform border border-white/20 ${
-                  socialLinks.instagram
-                    ? 'hover:scale-110 active:scale-95 cursor-pointer'
-                    : 'cursor-default opacity-50'
-                }`}
+                className={`w-6.5 h-6.5 rounded-full bg-[#29252A] flex items-center justify-center text-white shadow-xs transition-transform border border-white/20 ${socialLinks.instagram
+                  ? 'hover:scale-110 active:scale-95 cursor-pointer'
+                  : 'cursor-default opacity-50'
+                  }`}
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
@@ -317,11 +322,10 @@ export const Footer = ({
                 rel={socialLinks.youtube ? "noopener noreferrer" : undefined}
                 aria-label="YouTube"
                 title={socialLinks.youtube ? "Visit our YouTube channel" : "YouTube (Not configured)"}
-                className={`w-6.5 h-6.5 rounded-full bg-[#E50914] flex items-center justify-center text-white shadow-xs transition-transform ${
-                  socialLinks.youtube
-                    ? 'hover:scale-110 active:scale-95 cursor-pointer'
-                    : 'cursor-default opacity-50'
-                }`}
+                className={`w-6.5 h-6.5 rounded-full bg-[#E50914] flex items-center justify-center text-white shadow-xs transition-transform ${socialLinks.youtube
+                  ? 'hover:scale-110 active:scale-95 cursor-pointer'
+                  : 'cursor-default opacity-50'
+                  }`}
               >
                 <svg className="w-3 h-3 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z" />

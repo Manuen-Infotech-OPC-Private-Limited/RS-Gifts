@@ -5,6 +5,7 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { fetchLiveCategories, fetchLiveProducts } from '../services/productService';
 import api from '../services/api';
+import { resolveLogoUrl } from '../utils/urlHelper';
 import { Search, User, Heart, ShoppingCart, ChevronDown, LogOut, Package, Menu, X, ChevronRight, Loader2, MapPin } from 'lucide-react';
 
 export const Navbar = ({ onSearch }) => {
@@ -78,10 +79,15 @@ export const Navbar = ({ onSearch }) => {
       return '';
     }
   });
+  const [logoError, setLogoError] = useState(false);
+
+  useEffect(() => {
+    setLogoError(false);
+  }, [storeLogo]);
 
   useEffect(() => {
     let isMounted = true;
-    api.get('/customer/content/settings')
+    api.get(`/customer/content/settings?_t=${Date.now()}`)
       .then(res => {
         if (!isMounted) return;
         const s = res?.settings || res?.data?.settings;
@@ -207,11 +213,11 @@ export const Navbar = ({ onSearch }) => {
           onClick={() => navigate('/')}
           className="flex items-center gap-1.5 cursor-pointer select-none"
         >
-          {storeLogo ? (
+          {storeLogo && !logoError ? (
             <img
-              src={storeLogo}
+              src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
-              onError={() => setStoreLogo('')}
+              onError={() => setLogoError(true)}
               className="h-8 max-w-[130px] object-contain"
             />
           ) : (
@@ -390,11 +396,11 @@ export const Navbar = ({ onSearch }) => {
           onClick={() => { setActiveTab('Home'); navigate('/'); }}
           className="flex items-center gap-3 cursor-pointer select-none shrink-0"
         >
-          {storeLogo ? (
+          {storeLogo && !logoError ? (
             <img
-              src={storeLogo}
+              src={resolveLogoUrl(storeLogo)}
               alt="RS Gifts"
-              onError={() => setStoreLogo('')}
+              onError={() => setLogoError(true)}
               className="h-11 max-w-[180px] object-contain"
             />
           ) : (
