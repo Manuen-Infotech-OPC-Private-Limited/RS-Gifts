@@ -1,7 +1,32 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 
-const AuthContext = createContext();
+const defaultAuthContextValue = {
+  user: null,
+  isAuthenticated: false,
+  addresses: [],
+  orders: [],
+  occasions: [],
+  addOccasion: () => {},
+  deleteOccasion: () => {},
+  login: async () => ({ success: false }),
+  register: async () => ({ success: false }),
+  logout: () => {},
+  updateProfile: async () => ({ success: false }),
+  addAddress: async () => {},
+  updateAddress: async () => {},
+  deleteAddress: async () => {},
+  setDefaultAddress: () => {},
+  addCustomerOrder: async () => {},
+  cancelOrder: async () => {},
+  authModalOpen: false,
+  authModalTab: 'login',
+  openAuthModal: () => {},
+  closeAuthModal: () => {},
+  setAuthModalTab: () => {},
+};
+
+const AuthContext = createContext(defaultAuthContextValue);
 
 export const AuthProvider = ({ children }) => {
   // Load state from localStorage
@@ -670,10 +695,7 @@ export const AuthProvider = ({ children }) => {
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
+  return context || defaultAuthContextValue;
 };
 
 export default AuthContext;

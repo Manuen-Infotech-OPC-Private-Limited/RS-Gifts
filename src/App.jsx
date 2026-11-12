@@ -98,12 +98,10 @@ export function App() {
   };
 
   return (
-    <AuthProvider>
-      <WishlistProvider>
-        <CartProvider>
-          <ScrollToTop />
-          <div className="app-root flex flex-col min-h-screen bg-[#FFF9F5]">
-            <Navbar onSearch={handleSearch} onNavigate={handleNavigate} />
+    <>
+      <ScrollToTop />
+      <div className="app-root flex flex-col min-h-screen bg-[#FFF9F5]">
+        <Navbar onSearch={handleSearch} onNavigate={handleNavigate} />
 
             <main className="flex-1 bg-[#FFF9F5]">
               <Routes>
@@ -183,10 +181,8 @@ export function App() {
             <Footer />
             <AuthModal />
             <CartDrawer />
-          </div>
-        </CartProvider>
-      </WishlistProvider>
-    </AuthProvider>
+      </div>
+    </>
   );
 }
 
