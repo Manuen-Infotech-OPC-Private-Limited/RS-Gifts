@@ -17,7 +17,6 @@ export const AddressBook = () => {
     state: '',
     pincode: '',
     tag: 'Home',
-    isDefault: false,
   });
 
   const openAddModal = () => {
@@ -31,7 +30,6 @@ export const AddressBook = () => {
       state: '',
       pincode: '',
       tag: 'Home',
-      isDefault: addresses.length === 0,
     });
     setModalOpen(true);
   };
@@ -47,7 +45,6 @@ export const AddressBook = () => {
       state: addr.state || '',
       pincode: addr.pincode || addr.postalCode || '',
       tag: addr.tag || addr.addressType || 'Home',
-      isDefault: Boolean(addr.isDefault),
     });
     setModalOpen(true);
   };
@@ -136,10 +133,7 @@ export const AddressBook = () => {
             return (
               <div
                 key={addrKey}
-                className={`bg-white rounded-2xl p-5 border transition-all flex flex-col justify-between shadow-xs ${addr.isDefault
-                  ? 'border-[#821D38] ring-1 ring-[#821D38]/10'
-                  : 'border-[#ECE7EC] hover:border-[#D5CAD0]'
-                  }`}
+                className="bg-white rounded-2xl p-5 border border-[#ECE7EC] hover:border-[#D5CAD0] transition-all flex flex-col justify-between shadow-xs"
               >
                 <div>
                   {/* Top Card Row */}
@@ -148,12 +142,6 @@ export const AddressBook = () => {
                       <span className="font-bold text-sm text-[#1E1217]">{addr.name || user?.name || addr.tag || 'Saved Address'}</span>
                       {getTagBadge(addr.tag)}
                     </div>
-
-                    {addr.isDefault && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
-                        Default
-                      </span>
-                    )}
                   </div>
 
                   {/* Full Address Details */}
@@ -172,35 +160,22 @@ export const AddressBook = () => {
                 </div>
 
                 {/* Bottom Actions */}
-                <div className="pt-3 mt-2 flex items-center justify-between text-xs">
-                  <div>
-                    {!addr.isDefault && (
-                      <button
-                        onClick={() => setDefaultAddress(addrKey)}
-                        className="text-[#821D38] hover:underline font-semibold cursor-pointer"
-                      >
-                        Set as Default
-                      </button>
-                    )}
-                  </div>
+                <div className="pt-3 mt-2 flex items-center justify-end gap-3 text-xs border-t border-[#F8F5F7]">
+                  <button
+                    onClick={() => openEditModal(addr)}
+                    className="inline-flex items-center gap-1 text-[#6F6870] hover:text-[#1E1217] font-semibold cursor-pointer"
+                  >
+                    <Edit3 size={13} />
+                    <span>Edit</span>
+                  </button>
 
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => openEditModal(addr)}
-                      className="inline-flex items-center gap-1 text-[#6F6870] hover:text-[#1E1217] font-semibold cursor-pointer"
-                    >
-                      <Edit3 size={13} />
-                      <span>Edit</span>
-                    </button>
-
-                    <button
-                      onClick={() => setDeletingAddrId(addrKey)}
-                      className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
-                    >
-                      <Trash2 size={13} />
-                      <span>Delete</span>
-                    </button>
-                  </div>
+                  <button
+                    onClick={() => setDeletingAddrId(addrKey)}
+                    className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
+                  >
+                    <Trash2 size={13} />
+                    <span>Delete</span>
+                  </button>
                 </div>
               </div>
             );
@@ -341,19 +316,6 @@ export const AddressBook = () => {
                     );
                   })}
                 </div>
-              </div>
-
-              {/* Set Default Checkbox */}
-              <div>
-                <label className="flex items-center gap-2 cursor-pointer pt-1">
-                  <input
-                    type="checkbox"
-                    checked={Boolean(formData.isDefault)}
-                    onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-                    className="accent-[#821D38] w-4 h-4 rounded cursor-pointer"
-                  />
-                  <span className="font-semibold text-neutral-700">Set as default delivery address</span>
-                </label>
               </div>
 
               {/* Submit Buttons */}

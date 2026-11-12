@@ -310,16 +310,10 @@ export const AuthProvider = ({ children }) => {
       phone: newAddress.phone || user?.phone || '',
       tag: newAddress.tag || newAddress.addressType || 'Home',
       addressType: newAddress.tag || newAddress.addressType || 'Home',
-      isDefault: addresses.length === 0 ? true : !!newAddress.isDefault,
+      isDefault: false,
     };
 
-    setAddresses((prev) => {
-      let list = prev;
-      if (addressWithId.isDefault) {
-        list = list.map((a) => ({ ...a, isDefault: false }));
-      }
-      return [addressWithId, ...list];
-    });
+    setAddresses((prev) => [addressWithId, ...prev]);
 
     const token = localStorage.getItem('rs_gifts_token');
     if (token) {
@@ -335,7 +329,7 @@ export const AuthProvider = ({ children }) => {
           country: 'India',
           tag: newAddress.tag || newAddress.addressType || 'Home',
           addressType: newAddress.tag || newAddress.addressType || 'Home',
-          isDefault: addressWithId.isDefault,
+          isDefault: false,
         });
         if (res?.addresses && Array.isArray(res.addresses)) {
           const synced = res.addresses.map((a) => ({
@@ -350,7 +344,7 @@ export const AuthProvider = ({ children }) => {
             pincode: a.postalCode || '',
             tag: a.tag || a.addressType || 'Home',
             addressType: a.tag || a.addressType || 'Home',
-            isDefault: !!a.isDefault,
+            isDefault: false,
           }));
           setAddresses(synced);
         }
@@ -370,11 +364,8 @@ export const AuthProvider = ({ children }) => {
             ...updatedFields,
             tag: updatedFields.tag || updatedFields.addressType || addr.tag || 'Home',
             addressType: updatedFields.tag || updatedFields.addressType || addr.tag || 'Home',
-            isDefault: updatedFields.isDefault !== undefined ? Boolean(updatedFields.isDefault) : addr.isDefault,
+            isDefault: false,
           };
-        }
-        if (updatedFields.isDefault) {
-          return { ...addr, isDefault: false };
         }
         return addr;
       })
@@ -394,7 +385,7 @@ export const AuthProvider = ({ children }) => {
           postalCode: updatedFields.pincode || updatedFields.postalCode,
           tag: updatedFields.tag || updatedFields.addressType || 'Home',
           addressType: updatedFields.tag || updatedFields.addressType || 'Home',
-          isDefault: updatedFields.isDefault,
+          isDefault: false,
         });
         if (res?.addresses && Array.isArray(res.addresses)) {
           const synced = res.addresses.map((a) => ({
@@ -409,7 +400,7 @@ export const AuthProvider = ({ children }) => {
             pincode: a.postalCode || '',
             tag: a.tag || a.addressType || 'Home',
             addressType: a.tag || a.addressType || 'Home',
-            isDefault: !!a.isDefault,
+            isDefault: false,
           }));
           setAddresses(synced);
         }
