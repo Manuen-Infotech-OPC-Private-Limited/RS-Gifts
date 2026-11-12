@@ -761,49 +761,49 @@ export const ProductDetailsPage = () => {
 
             {activeTab === 'reviews' && (
               <div className="space-y-6 max-w-4xl">
-                {/* Header Rating Box & Write Review Button */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-3xl font-extrabold text-[#1E1217]">
-                        {reviews.length > 0 ? averageRating : '0.0'}
-                      </span>
-                      <div className="flex items-center gap-0.5">
-                        {[1, 2, 3, 4, 5].map((starIndex) => (
-                          <Star
-                            key={starIndex}
-                            className={`w-4 h-4 ${reviews.length > 0 && starIndex <= Math.round(Number(averageRating))
-                              ? 'text-amber-400 fill-amber-400'
-                              : 'text-neutral-200 fill-none'
-                              }`}
-                          />
-                        ))}
+                {/* Header Rating Box & Write Review Button - ONLY shown when real reviews exist */}
+                {reviews.length > 0 && (
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-[#FFF9F5] border border-[#ECE3E7]">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-3xl font-extrabold text-[#1E1217]">
+                          {averageRating}
+                        </span>
+                        <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map((starIndex) => (
+                            <Star
+                              key={starIndex}
+                              className={`w-4 h-4 ${starIndex <= Math.round(Number(averageRating))
+                                ? 'text-amber-400 fill-amber-400'
+                                : 'text-neutral-200 fill-none'
+                                }`}
+                            />
+                          ))}
+                        </div>
                       </div>
+                      <p className="text-xs text-[#705E67] mt-1">
+                        Based on {reviews.length} customer review{reviews.length > 1 ? 's' : ''}
+                      </p>
                     </div>
-                    <p className="text-xs text-[#705E67] mt-1">
-                      {reviews.length > 0
-                        ? `Based on ${reviews.length} customer review${reviews.length > 1 ? 's' : ''}`
-                        : 'No reviews yet for this product. Be the first to share your thoughts!'}
-                    </p>
-                  </div>
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!user) {
-                        openAuthModal('login');
-                        return;
-                      }
-                      setIsReviewFormOpen((prev) => !prev);
-                      setReviewErrorMsg('');
-                      setReviewSuccessMsg('');
-                    }}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#68132B] text-white text-xs font-bold transition-all shadow-xs cursor-pointer self-start sm:self-auto"
-                  >
-                    <Star className="w-4 h-4 fill-white" />
-                    <span>{isReviewFormOpen ? 'Close Form' : 'Write a Review'}</span>
-                  </button>
-                </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!user) {
+                          openAuthModal('login');
+                          return;
+                        }
+                        setIsReviewFormOpen((prev) => !prev);
+                        setReviewErrorMsg('');
+                        setReviewSuccessMsg('');
+                      }}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#821D38] hover:bg-[#68132B] text-white text-xs font-bold transition-all shadow-xs cursor-pointer self-start sm:self-auto"
+                    >
+                      <Star className="w-4 h-4 fill-white" />
+                      <span>{isReviewFormOpen ? 'Close Form' : 'Write a Review'}</span>
+                    </button>
+                  </div>
+                )}
 
                 {/* Review Success Alert */}
                 {reviewSuccessMsg && (
@@ -1000,6 +1000,10 @@ export const ProductDetailsPage = () => {
                     <button
                       type="button"
                       onClick={() => {
+                        if (!user) {
+                          openAuthModal('login');
+                          return;
+                        }
                         setIsReviewFormOpen(true);
                         setReviewErrorMsg('');
                       }}
