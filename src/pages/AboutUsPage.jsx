@@ -1,61 +1,86 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import rsgiftsHeroImg from '../assets/rsgifts.png';
 
-// Crisp, standalone inline SVGs matching the design mockup icons
-const DiamondIcon = () => (
-  <svg className="w-6 h-6 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M6 3h12l4 6-10 12L2 9l4-6z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M2 9h20M7.5 9l4.5 12 4.5-12" />
+// Pixel-perfect SVG Icons matching the reference design mockup
+const DiamondGemIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 3h12l4 6-10 12L2 9l4-6z" />
+    <path d="M2 9h20" />
+    <path d="M10 3l-2 6 4 12 4-12-2-6" />
   </svg>
 );
 
-const PencilIcon = () => (
-  <svg className="w-6 h-6 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+const QualityRosetteIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="9" r="6" />
+    <path d="M9 9l2 2 4-4" />
+    <path d="M8.5 14.5L7 21l5-2 5 2-1.5-6.5" />
   </svg>
 );
 
-const QualityBadgeIcon = () => (
-  <svg className="w-6 h-6 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+const DeliveryVanIcon = () => (
+  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M1 3h15v13H1z" />
+    <path d="M16 8h4l3 3v5h-7V8z" />
+    <circle cx="5.5" cy="18.5" r="2.5" />
+    <circle cx="18.5" cy="18.5" r="2.5" />
   </svg>
 );
 
-const DeliveryTruckIcon = () => (
-  <svg className="w-6 h-6 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
-    <path strokeLinecap="round" strokeLinejoin="round" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+const GiftBoxCardIcon = () => (
+  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M20 12v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9" />
+    <rect x="3" y="7" width="18" height="5" rx="1" />
+    <path d="M12 7v15" />
+    <path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z" />
+    <path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z" />
   </svg>
 );
 
-const GiftBoxIcon = () => (
-  <svg className="w-7 h-7 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v13m0-13V3.5a2.5 2.5 0 115 0V8h-5zm0 0V3.5a2.5 2.5 0 10-5 0V8h5zm-8 4h16M4 8h16v13H4V8z" />
+const CorporateBriefcaseIcon = () => (
+  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
   </svg>
 );
 
-const HeartIcon = () => (
-  <svg className="w-7 h-7 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+const PartyCelebrationIcon = () => (
+  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M19 11l-8-8-5 5 8 8 5-5z" />
+    <path d="M3 21l3-1 1-3" />
+    <path d="M14 3l1-2" />
+    <path d="M20 8l2-1" />
+    <path d="M18 16l3 2" />
+    <path d="M9 19l-2 3" />
+    <circle cx="17.5" cy="5.5" r="0.5" fill="#821D38" />
+    <circle cx="21" cy="12" r="0.5" fill="#821D38" />
   </svg>
 );
 
-const CrownIcon = () => (
-  <svg className="w-7 h-7 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3 18h18M3 18l2-11 5 5 4-8 4 8 5-5 2 11H3z" />
+const RibbonBowIcon = () => (
+  <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="2.5" />
+    <path d="M9.5 12C6.5 8 2.5 7.5 2.5 11c0 3 6 2 7 2" />
+    <path d="M14.5 12C17.5 8 21.5 7.5 21.5 11c0 3-6 2-7 2" />
+    <path d="M10.5 14L6 22" />
+    <path d="M13.5 14L18 22" />
   </svg>
 );
 
-const HeadsetIcon = () => (
-  <svg className="w-7 h-7 text-[#821D38]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="1.8">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M3 14h2a2 2 0 012 2v2a2 2 0 01-2 2H3a1 1 0 01-1-1v-4a1 1 0 011-1zm16 0h2a1 1 0 011 1v4a1 1 0 01-1 1h-2a2 2 0 01-2-2v-2a2 2 0 012-2zM4 14a8 8 0 1116 0" />
+const TargetVisionIcon = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#821D38" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <circle cx="12" cy="12" r="6" />
+    <circle cx="12" cy="12" r="2" />
+    <path d="M12 2v3m0 14v3m10-10h-3M5 12H2" />
   </svg>
 );
 
-const ArrowRightIcon = () => (
-  <svg className="w-4 h-4 ml-1 inline-block" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+const HandshakePromiseIcon = () => (
+  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#B87D3B" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11 15h2" />
+    <path d="M6.8 11a3 3 0 0 0-2.8 2l-1.5 4.5A2 2 0 0 0 4.4 20h2.1a2 2 0 0 0 1.8-1.1L9 17h6l.7 1.9a2 2 0 0 0 1.8 1.1h2.1a2 2 0 0 0 1.9-2.5L20 13a3 3 0 0 0-2.8-2h-3.4a2 2 0 0 1-1.4-.6L12 9.5a2 2 0 0 0-2.8 0L8.2 10.4a2 2 0 0 1-1.4.6z" />
+    <path d="M7 11V7a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v4" />
   </svg>
 );
 
@@ -69,283 +94,201 @@ export const AboutUsPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#FFF9F5] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
+    <div className="min-h-screen bg-[#FFFDFB] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
       
-      {/* 1. HERO SECTION (Full-Width Hero Image Visible Across Left & Right) */}
-      <section className="relative overflow-hidden w-full border-b border-[#ECE7EC] min-h-[380px] sm:min-h-[420px] md:min-h-[460px] lg:min-h-[500px] flex items-center">
-        {/* Full Hero Image spanning across the hero banner */}
-        <div className="absolute inset-0 w-full h-full">
-          <img
-            src={rsgiftsHeroImg}
-            alt="RS Gifts Signature Gift Box"
-            className="w-full h-full object-cover object-[center_right] select-none"
-          />
-
-          {/* Gentle warm tint overlay on the left so the image is clearly visible on this side too, while text is perfectly legible */}
-          <div 
-            className="absolute inset-0 bg-gradient-to-r from-[#FFF9F5]/85 via-[#FFF9F5]/45 via-45% to-transparent max-md:bg-gradient-to-b max-md:from-[#FFF9F5]/90 max-md:via-[#FFF9F5]/50 max-md:to-transparent pointer-events-none" 
-            aria-hidden="true" 
-          />
-        </div>
-
-        {/* Text Content */}
-        <div className="relative z-10 max-w-[1200px] w-full mx-auto px-6 sm:px-10 lg:px-16 py-12 sm:py-16 md:py-20">
-          <div className="max-w-md sm:max-w-lg bg-white/40 sm:bg-white/20 backdrop-blur-[2px] p-5 sm:p-7 rounded-2xl border border-white/50 shadow-xs">
-            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-[#1E1217] tracking-tight">
-              About <span className="text-[#821D38] italic font-normal">RS Gifts</span>
-            </h1>
-
-            <p className="text-xs sm:text-sm lg:text-base text-neutral-800 font-medium leading-relaxed max-w-md mt-4">
-              More than just gifts — we create meaningful experiences for your special moments.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. FOUR FEATURES STRIP */}
-      <section className="border-b border-[#ECE7EC]">
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-center">
+      {/* 1. HERO SECTION (Matches Reference Mockup) */}
+      <section className="relative overflow-hidden w-full border-b border-[#EFE7E2] bg-[#FAF5F0]/70 py-10 sm:py-14 lg:py-16">
+        <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
             
-            <div className="flex flex-col items-center justify-center p-2">
-              <div className="mb-2">
-                <DiamondIcon />
-              </div>
-              <h4 className="text-xs sm:text-sm font-semibold text-[#1E1217] leading-snug">
-                Unique &amp; Thoughtful<br className="hidden sm:inline" /> Collections
-              </h4>
-            </div>
+            {/* Left Column: Heading, Subtitle, Description, and 3 Feature Cards */}
+            <div className="lg:col-span-6 space-y-4 sm:space-y-5">
+              <h1 className="font-serif text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#1E1217] tracking-tight leading-[1.18]">
+                About <span className="text-[#821D38]">RS Gifts</span>
+              </h1>
 
-            <div className="flex flex-col items-center justify-center p-2">
-              <div className="mb-2">
-                <PencilIcon />
-              </div>
-              <h4 className="text-xs sm:text-sm font-semibold text-[#1E1217] leading-snug">
-                Personalization<br className="hidden sm:inline" /> Options
-              </h4>
-            </div>
-
-            <div className="flex flex-col items-center justify-center p-2">
-              <div className="mb-2">
-                <QualityBadgeIcon />
-              </div>
-              <h4 className="text-xs sm:text-sm font-semibold text-[#1E1217] leading-snug">
-                Premium<br className="hidden sm:inline" /> Quality
-              </h4>
-            </div>
-
-            <div className="flex flex-col items-center justify-center p-2">
-              <div className="mb-2">
-                <DeliveryTruckIcon />
-              </div>
-              <h4 className="text-xs sm:text-sm font-semibold text-[#1E1217] leading-snug">
-                Safe &amp; Timely<br className="hidden sm:inline" /> Delivery
-              </h4>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* 3. OUR STORY SECTION */}
-      <section className="py-12 sm:py-16 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
-          
-          {/* Left Custom Gifts Showcase Image with organic curved backdrop */}
-          <div className="md:col-span-6 flex justify-center md:justify-start">
-            <div className="relative max-w-[440px] sm:max-w-[480px] w-full">
-              <img
-                src={`${import.meta.env.BASE_URL}images/about/about-story-products.png`}
-                alt="Customized Photo Lamp, Bottle, and Wooden Keepsake"
-                className="w-full h-auto object-contain select-none transition-transform duration-500 hover:scale-[1.02]"
-              />
-            </div>
-          </div>
-
-          {/* Right Text Content */}
-          <div className="md:col-span-6 space-y-3">
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#1E1217]">
-              Our <span className="text-[#821D38] italic font-normal">Story</span>
-            </h2>
-
-            {/* Red Accent Line */}
-            <div className="w-12 h-1 bg-[#821D38] rounded-full" />
-
-            <p className="text-xs sm:text-sm text-neutral-600 leading-relaxed pt-2">
-              RS Gifts was founded with a simple idea — to make gifting more personal, memorable, and meaningful. From customized keepsakes to unique gift collections, we bring your emotions to life through thoughtfully crafted gifts.
-            </p>
-
-            <div className="pt-3">
-              <button
-                onClick={() => navigate('/gifts')}
-                className="inline-flex items-center gap-1.5 px-6 py-2.5 rounded-full bg-[#821D38] hover:bg-[#6E162E] text-white text-xs sm:text-sm font-semibold transition-all shadow-sm cursor-pointer"
-              >
-                <span>Shop Our Collection</span>
-                <ArrowRightIcon />
-              </button>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 4. FEATURED CURATED GIFTS BANNER (More Than Gifts, It's Emotions) */}
-      <section className="py-6 sm:py-10 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div
-          onClick={() => navigate('/gifts')}
-          className="group relative w-full overflow-hidden rounded-3xl border border-[#ECE7EC] shadow-sm hover:shadow-lg transition-all duration-300 cursor-pointer min-h-[250px] sm:min-h-[300px] md:min-h-[340px] flex items-center bg-[#FDF7F4]"
-        >
-          {/* Background Panorama Image */}
-          <div
-            className="absolute inset-0 w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-105"
-            style={{
-              backgroundImage: `url("${import.meta.env.BASE_URL}images/hero-banner-1.png")`,
-              backgroundColor: '#FDF7F4',
-            }}
-          />
-
-          {/* Soft translucent gradient to let background image shine while keeping text crystal clear */}
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              background: 'linear-gradient(to right, rgba(255, 255, 255, 0.45) 0%, rgba(255, 255, 255, 0.18) 40%, rgba(255, 255, 255, 0) 70%)',
-            }}
-          />
-
-          {/* Inner Content Card matching homepage aesthetic */}
-          <div className="relative z-10 w-full p-4 sm:p-7 md:p-9 lg:p-10 flex flex-col justify-center">
-            <div className="max-w-[270px] xs:max-w-[320px] sm:max-w-[480px] md:max-w-[520px] bg-white/40 sm:bg-white/20 backdrop-blur-[2px] p-4 sm:p-6 rounded-2xl border border-white/40 shadow-xs">
-              
-              {/* Tagline / Subtitle */}
-              <p className="flex text-[10px] sm:text-[11px] font-bold tracking-[0.16em] text-[#821D38] uppercase mb-1 sm:mb-1.5 items-center gap-1.5 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
-                EXCLUSIVE CURATED GIFTS
-              </p>
-
-              {/* Main Heading */}
-              <h2
-                className="text-lg sm:text-2xl md:text-[30px] lg:text-[34px] font-serif font-bold text-[#561023] leading-[1.16] tracking-tight mb-1 sm:mb-2 drop-shadow-[0_1px_3px_rgba(255,255,255,0.95)]"
-                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
-              >
-                More Than Gifts,<br className="hidden sm:inline" /> It's Emotions
+              <h2 className="font-serif text-lg sm:text-xl lg:text-[22px] font-bold text-[#1E1217] leading-snug">
+                Thoughtful Gifts for Every Moment of Life
               </h2>
 
-              {/* Description */}
-              <p className="text-[11px] sm:text-[13px] md:text-sm text-[#3D2C34] font-medium leading-snug sm:leading-relaxed mb-3 sm:mb-4 drop-shadow-[0_1px_2px_rgba(255,255,255,0.9)]">
-                Thoughtful gifts for every occasion. Because every moment deserves something special.
+              <p className="text-xs sm:text-sm lg:text-[14.5px] text-[#4A3E44] leading-relaxed max-w-lg">
+                RS Gifts is your one-stop destination for premium and personalized gifting. We bring together unique products, quality craftsmanship, and a personal touch to make every occasion special.
               </p>
 
-              {/* Call to Action Button */}
-              <div>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    navigate('/gifts');
-                  }}
-                  className="group/btn inline-flex items-center justify-center gap-1.5 px-4 py-1.5 sm:px-5 sm:py-2 rounded-full bg-[#821D38] hover:bg-[#6E162E] text-white text-[11px] sm:text-[13px] font-medium shadow-sm hover:shadow-md transition-all duration-300 transform hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
-                >
-                  <span>Shop Now</span>
-                  <svg className="w-3.5 h-3.5 transition-transform duration-300 group-hover/btn:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </button>
+              {/* 3 Feature Badges in a Row matching reference */}
+              <div className="grid grid-cols-3 gap-2.5 sm:gap-3.5 pt-3 max-w-md">
+                
+                {/* Badge 1: Curated Collection */}
+                <div className="bg-[#FAF2EE] border border-[#EFE5E0] rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center shadow-2xs hover:shadow-xs transition-shadow">
+                  <div className="mb-2">
+                    <DiamondGemIcon />
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-bold text-[#1E1217] leading-tight">
+                    Curated<br />Collection
+                  </span>
+                </div>
+
+                {/* Badge 2: Quality Assured */}
+                <div className="bg-[#FAF2EE] border border-[#EFE5E0] rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center shadow-2xs hover:shadow-xs transition-shadow">
+                  <div className="mb-2">
+                    <QualityRosetteIcon />
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-bold text-[#1E1217] leading-tight">
+                    Quality<br />Assured
+                  </span>
+                </div>
+
+                {/* Badge 3: Reliable Delivery */}
+                <div className="bg-[#FAF2EE] border border-[#EFE5E0] rounded-2xl p-3 sm:p-4 flex flex-col items-center justify-center text-center shadow-2xs hover:shadow-xs transition-shadow">
+                  <div className="mb-2">
+                    <DeliveryVanIcon />
+                  </div>
+                  <span className="text-[11px] sm:text-xs font-bold text-[#1E1217] leading-tight">
+                    Reliable<br />Delivery
+                  </span>
+                </div>
+
               </div>
-
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. WHY CHOOSE RS GIFTS? SECTION */}
-      <section className="py-12 sm:py-16 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E1217] text-center mb-8 sm:mb-10">
-          Why Choose <span className="text-[#821D38] italic font-normal">RS Gifts?</span>
-        </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          
-          {/* Card 1: Personalized Gifts */}
-          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
-            <div className="w-12 h-12 mx-auto flex items-center justify-center">
-              <GiftBoxIcon />
-            </div>
-            <h3 className="font-serif text-sm sm:text-base font-bold text-[#1E1217] mt-3 mb-1.5">
-              Personalized Gifts
-            </h3>
-            <p className="text-xs text-neutral-500 leading-relaxed">
-              Make it truly yours with custom names, photos and messages.
-            </p>
-          </div>
-
-          {/* Card 2: For Every Occasion */}
-          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
-            <div className="w-12 h-12 mx-auto flex items-center justify-center">
-              <HeartIcon />
-            </div>
-            <h3 className="font-serif text-sm sm:text-base font-bold text-[#1E1217] mt-3 mb-1.5">
-              For Every Occasion
-            </h3>
-            <p className="text-xs text-neutral-500 leading-relaxed">
-              Birthdays, Anniversaries, Festivals, Weddings and more.
-            </p>
-          </div>
-
-          {/* Card 3: Premium Quality */}
-          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
-            <div className="w-12 h-12 mx-auto flex items-center justify-center">
-              <CrownIcon />
-            </div>
-            <h3 className="font-serif text-sm sm:text-base font-bold text-[#1E1217] mt-3 mb-1.5">
-              Premium Quality
-            </h3>
-            <p className="text-xs text-neutral-500 leading-relaxed">
-              Crafted with care using high-quality materials and finishing.
-            </p>
-          </div>
-
-          {/* Card 4: Trusted Support */}
-          <div className="bg-white p-6 rounded-2xl border border-[#ECE7EC] text-center shadow-2xs hover:shadow-xs transition-shadow">
-            <div className="w-12 h-12 mx-auto flex items-center justify-center">
-              <HeadsetIcon />
-            </div>
-            <h3 className="font-serif text-sm sm:text-base font-bold text-[#1E1217] mt-3 mb-1.5">
-              Trusted Support
-            </h3>
-            <p className="text-xs text-neutral-500 leading-relaxed">
-              We're always here to help you with a smile.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 6. OUR PROMISE SECTION (Matches bottom section in mockup, beautifully blending into footer) */}
-      <section className="pb-12 sm:pb-16 max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 lg:p-12 border border-[#ECE7EC] overflow-hidden shadow-2xs">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-            
-            {/* Left Content */}
-            <div className="md:col-span-7 space-y-3">
-              <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-[#1E1217]">
-                Our <span className="text-[#821D38] italic font-normal">Promise</span>
-              </h2>
-
-              <p className="text-xs sm:text-sm lg:text-base text-neutral-600 leading-relaxed max-w-lg pt-1">
-                To deliver high-quality, personalized gifts that bring happiness to your loved ones and make every occasion special.
-              </p>
             </div>
 
-            {/* Right Image: Gift box with wooden heart tag & flowers */}
-            <div className="md:col-span-5 flex justify-center md:justify-end">
-              <div className="max-w-[300px] w-full rounded-2xl overflow-hidden">
+            {/* Right Column: Hero Gift Showcase Image matching reference */}
+            <div className="lg:col-span-6 flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-[500px] rounded-3xl overflow-hidden shadow-xs border border-[#EFE5E0]">
                 <img
-                  src={`${import.meta.env.BASE_URL}images/about/about-promise-gift.png`}
-                  alt="Our Promise Handcrafted Gift"
-                  className="w-full h-auto object-cover"
+                  src={`${import.meta.env.BASE_URL}images/about/about-hero-gifts.jpg`}
+                  alt="RS Gifts Signature Collection - Teddy, Rose Dome, Mug and Keepsakes"
+                  className="w-full h-auto object-cover select-none transition-transform duration-500 hover:scale-[1.02]"
                 />
               </div>
             </div>
 
           </div>
+        </div>
+      </section>
+
+      {/* 2. WHAT WE OFFER SECTION */}
+      <section className="py-12 sm:py-16 max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Centered Decorative Section Title */}
+        <div className="flex items-center justify-center gap-4 mb-10 sm:mb-12">
+          <div className="h-[1px] w-12 sm:w-24 bg-[#D8CED3]" />
+          <h2 className="font-serif text-2xl sm:text-3xl lg:text-[32px] font-bold text-[#1E1217] text-center tracking-tight">
+            What We Offer
+          </h2>
+          <div className="h-[1px] w-12 sm:w-24 bg-[#D8CED3]" />
+        </div>
+
+        {/* 4 Category Cards in a Responsive Grid matching reference */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+          
+          {/* Card 1: Personal Gifts */}
+          <div
+            onClick={() => navigate('/category/gifts')}
+            className="group bg-[#FAF2EE] hover:bg-[#F5ECE6] border border-[#EFE5E0] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-3.5 transition-all duration-300 cursor-pointer shadow-2xs hover:shadow-xs hover:-translate-y-0.5"
+          >
+            <div className="transition-transform duration-300 group-hover:scale-110">
+              <GiftBoxCardIcon />
+            </div>
+            <h3 className="font-bold text-base sm:text-lg text-[#1E1217] group-hover:text-[#821D38] transition-colors leading-snug">
+              Personal Gifts
+            </h3>
+          </div>
+
+          {/* Card 2: Corporate Gifts */}
+          <div
+            onClick={() => navigate('/category/corporate-gifts')}
+            className="group bg-[#FAF2EE] hover:bg-[#F5ECE6] border border-[#EFE5E0] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-3.5 transition-all duration-300 cursor-pointer shadow-2xs hover:shadow-xs hover:-translate-y-0.5"
+          >
+            <div className="transition-transform duration-300 group-hover:scale-110">
+              <CorporateBriefcaseIcon />
+            </div>
+            <h3 className="font-bold text-base sm:text-lg text-[#1E1217] group-hover:text-[#821D38] transition-colors leading-snug">
+              Corporate Gifts
+            </h3>
+          </div>
+
+          {/* Card 3: Occasion Gifts */}
+          <div
+            onClick={() => navigate('/festival-gifts')}
+            className="group bg-[#FAF2EE] hover:bg-[#F5ECE6] border border-[#EFE5E0] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-3.5 transition-all duration-300 cursor-pointer shadow-2xs hover:shadow-xs hover:-translate-y-0.5"
+          >
+            <div className="transition-transform duration-300 group-hover:scale-110">
+              <PartyCelebrationIcon />
+            </div>
+            <h3 className="font-bold text-base sm:text-lg text-[#1E1217] group-hover:text-[#821D38] transition-colors leading-snug">
+              Occasion Gifts
+            </h3>
+          </div>
+
+          {/* Card 4: Custom & Personalized Gifts */}
+          <div
+            onClick={() => navigate('/personalized-gifts')}
+            className="group bg-[#FAF2EE] hover:bg-[#F5ECE6] border border-[#EFE5E0] rounded-2xl sm:rounded-3xl p-6 sm:p-8 flex flex-col items-center justify-center text-center gap-3.5 transition-all duration-300 cursor-pointer shadow-2xs hover:shadow-xs hover:-translate-y-0.5"
+          >
+            <div className="transition-transform duration-300 group-hover:scale-110">
+              <RibbonBowIcon />
+            </div>
+            <h3 className="font-bold text-base sm:text-lg text-[#1E1217] group-hover:text-[#821D38] transition-colors leading-snug">
+              Custom &amp; Personalized Gifts
+            </h3>
+          </div>
+
+        </div>
+      </section>
+
+      {/* 3. OUR VISION & OUR PROMISE SECTION (Matches Bottom Section in Mockup) */}
+      <section className="py-8 sm:py-14 pb-14 sm:pb-20 max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Left Column: Hands Tying Burgundy Ribbon on Gift Box */}
+          <div className="md:col-span-6 flex justify-center md:justify-start">
+            <div className="relative w-full max-w-[480px] rounded-3xl overflow-hidden shadow-xs border border-[#EFE5E0]">
+              <img
+                src={`${import.meta.env.BASE_URL}images/about/about-crafting-hands.jpg`}
+                alt="Carefully Handcrafted and Wrapped Gift Box with Burgundy Ribbon"
+                className="w-full h-auto object-cover select-none transition-transform duration-500 hover:scale-[1.02]"
+              />
+            </div>
+          </div>
+
+          {/* Right Column: Our Vision & Our Promise */}
+          <div className="md:col-span-6 flex flex-col justify-center space-y-6 sm:space-y-8 pl-0 md:pl-4 lg:pl-8">
+            
+            {/* Block 1: Our Vision */}
+            <div className="flex items-start gap-4 sm:gap-5">
+              <div className="shrink-0 mt-0.5">
+                <TargetVisionIcon />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1E1217]">
+                  Our Vision
+                </h3>
+                <p className="text-xs sm:text-sm lg:text-[14.5px] text-[#4A3E44] leading-relaxed">
+                  To make gifting simple, meaningful, and memorable for everyone.
+                </p>
+              </div>
+            </div>
+
+            {/* Subtle Divider Line */}
+            <div className="h-[1px] w-full bg-[#EFE5E0]" />
+
+            {/* Block 2: Our Promise */}
+            <div className="flex items-start gap-4 sm:gap-5">
+              <div className="shrink-0 mt-0.5">
+                <HandshakePromiseIcon />
+              </div>
+              <div className="space-y-1">
+                <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#1E1217]">
+                  Our Promise
+                </h3>
+                <p className="text-xs sm:text-sm lg:text-[14.5px] text-[#4A3E44] leading-relaxed">
+                  Quality products, secure shopping, and a delightful gifting experience.
+                </p>
+              </div>
+            </div>
+
+          </div>
+
         </div>
       </section>
 

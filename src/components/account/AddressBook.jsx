@@ -65,7 +65,7 @@ export const AddressBook = () => {
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
             <Briefcase size={11} />
-            <span>Work / Office</span>
+            <span>Work</span>
           </span>
         );
       default:
@@ -125,8 +125,8 @@ export const AddressBook = () => {
             <div
               key={addr.id}
               className={`bg-white rounded-2xl p-5 border transition-all flex flex-col justify-between shadow-xs ${addr.isDefault
-                  ? 'border-[#821D38] ring-1 ring-[#821D38]/10'
-                  : 'border-[#ECE7EC] hover:border-[#D5CAD0]'
+                ? 'border-[#821D38] ring-1 ring-[#821D38]/10'
+                : 'border-[#ECE7EC] hover:border-[#D5CAD0]'
                 }`}
             >
               <div>
@@ -293,8 +293,8 @@ export const AddressBook = () => {
                         type="button"
                         onClick={() => setFormData({ ...formData, tag: t.tag })}
                         className={`flex items-center justify-center gap-1.5 py-2 px-2.5 rounded-xl border font-semibold cursor-pointer transition-colors ${isSelected
-                            ? 'bg-[#821D38] text-white border-[#821D38]'
-                            : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
+                          ? 'bg-[#821D38] text-white border-[#821D38]'
+                          : 'bg-neutral-50 text-neutral-700 border-neutral-200 hover:bg-neutral-100'
                           }`}
                       >
                         <Icon size={13} />

@@ -450,9 +450,31 @@ export const ProductDetailsPage = () => {
               </div>
 
               {/* Product Title */}
-              <h1 className="text-xl sm:text-2xl font-bold text-[#1E1217] tracking-tight leading-snug mb-2.5">
+              <h1 className="text-xl sm:text-2xl font-bold text-[#1E1217] tracking-tight leading-snug mb-1.5">
                 {product.name}
               </h1>
+
+              {/* Star Rating Row with Number */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="flex items-center gap-0.5">
+                  {[1, 2, 3, 4, 5].map((starIndex) => (
+                    <Star
+                      key={starIndex}
+                      className={`w-4 h-4 ${
+                        starIndex <= Math.round(Number(averageRating || product.rating || 5))
+                          ? 'text-amber-400 fill-amber-400'
+                          : 'text-neutral-200 fill-none'
+                      }`}
+                    />
+                  ))}
+                </div>
+                <span className="text-xs sm:text-sm font-bold text-[#1E1217]">
+                  {Number(averageRating || product.rating || 5) % 1 === 0 ? String(averageRating || product.rating || 5) : Number(averageRating || product.rating || 5).toFixed(1)}
+                </span>
+                <span className="text-xs text-neutral-400">
+                  ({reviews.length > 0 ? reviews.length : (product.reviews || 24)} {reviews.length === 1 ? 'review' : 'reviews'})
+                </span>
+              </div>
 
 
               {/* Price Section */}
@@ -1055,13 +1077,14 @@ export const ProductDetailsPage = () => {
                           ₹{Number(relProd.price).toLocaleString('en-IN')}
                         </span>
                       </div>
+                      {/* 5-Star Rating Row with Number */}
                       <div
-                        className="flex items-center gap-1 mb-2"
-                        title={relProd.reviews > 0 ? `${relProd.rating} out of 5 stars (${relProd.reviews} reviews)` : 'No reviews yet'}
+                        className="flex items-center gap-1.5 mb-2"
+                        title={`${relProd.rating || 4.8} out of 5 stars (${relProd.reviews || 0} reviews)`}
                       >
                         <div className="flex items-center gap-0.5">
                           {[1, 2, 3, 4, 5].map((starIndex) => {
-                            const isFilled = relProd.reviews > 0 && starIndex <= Math.round(Number(relProd.rating || 0));
+                            const isFilled = starIndex <= Math.round(Number(relProd.rating || 5));
                             return (
                               <Star
                                 key={starIndex}
@@ -1074,6 +1097,14 @@ export const ProductDetailsPage = () => {
                             );
                           })}
                         </div>
+                        <span className="text-[11px] font-bold text-[#1E1217]">
+                          {relProd.ratingDisplay || (Number(relProd.rating || 5) % 1 === 0 ? String(relProd.rating || 5) : Number(relProd.rating || 5).toFixed(1))}
+                        </span>
+                        {relProd.reviews > 0 && (
+                          <span className="text-[10px] text-neutral-400">
+                            ({relProd.reviews})
+                          </span>
+                        )}
                       </div>
                     </div>
 

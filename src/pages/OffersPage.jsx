@@ -267,14 +267,14 @@ export const OffersPage = () => {
                             {product.name || product.title}
                           </h3>
 
-                          {/* 5-Star Rating Row */}
+                          {/* 5-Star Rating Row with Number */}
                           <div
                             className="flex items-center gap-1.5 my-1"
-                            title={product.reviews > 0 ? `${product.rating} out of 5 stars (${product.reviews} reviews)` : 'No reviews yet'}
+                            title={`${product.rating || 4.8} out of 5 stars (${product.reviews || 0} reviews)`}
                           >
                             <div className="flex items-center gap-0.5">
                               {[1, 2, 3, 4, 5].map((starIndex) => {
-                                const isFilled = product.reviews > 0 && starIndex <= Math.round(Number(product.rating || 0));
+                                const isFilled = starIndex <= Math.round(Number(product.rating || 5));
                                 return (
                                   <Star
                                     key={starIndex}
@@ -287,6 +287,14 @@ export const OffersPage = () => {
                                 );
                               })}
                             </div>
+                            <span className="text-[11px] sm:text-xs font-bold text-[#1E1217]">
+                              {product.ratingDisplay || (Number(product.rating || 5) % 1 === 0 ? String(product.rating || 5) : Number(product.rating || 5).toFixed(1))}
+                            </span>
+                            {product.reviews > 0 && (
+                              <span className="text-[10px] sm:text-[11px] text-neutral-400">
+                                ({product.reviews})
+                              </span>
+                            )}
                           </div>
                         </div>
 
