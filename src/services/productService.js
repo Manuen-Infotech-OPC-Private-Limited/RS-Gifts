@@ -135,7 +135,7 @@ export const fetchLiveProducts = async (params = {}) => {
         }
       });
     }
-  } catch {}
+  } catch { }
 
   // If search param provided, ensure products match terms
   if (params && params.search && String(params.search).trim()) {
@@ -279,7 +279,7 @@ export const fetchLiveCategories = async () => {
     try {
       const data = await api.get('/categories');
       categories = data.categories || (Array.isArray(data) ? data : []);
-    } catch {}
+    } catch { }
   }
 
   // If backend returned empty or offline, check admin localStorage
@@ -296,7 +296,7 @@ export const fetchLiveCategories = async () => {
         });
       }
     }
-  } catch {}
+  } catch { }
 
   return categories;
 };

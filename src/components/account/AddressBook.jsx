@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { MapPin, Plus, Trash2, Edit3, CheckCircle2, Home, Briefcase, Gift, X } from 'lucide-react';
 
 export const AddressBook = () => {
-  const { addresses, addAddress, updateAddress, deleteAddress, setDefaultAddress } = useAuth();
+  const { user, addresses, addAddress, updateAddress, deleteAddress, setDefaultAddress } = useAuth();
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -23,8 +23,8 @@ export const AddressBook = () => {
   const openAddModal = () => {
     setEditingId(null);
     setFormData({
-      name: '',
-      phone: '',
+      name: user?.name || '',
+      phone: user?.phone || '',
       street: '',
       landmark: '',
       city: '',
@@ -37,45 +37,55 @@ export const AddressBook = () => {
   };
 
   const openEditModal = (addr) => {
-    setEditingId(addr.id);
-    setFormData({ ...addr });
+    setEditingId(addr.id || addr._id);
+    setFormData({
+      name: addr.name || addr.recipientName || user?.name || '',
+      phone: addr.phone || user?.phone || '',
+      street: addr.street || addr.addressLine1 || '',
+      landmark: addr.landmark || addr.addressLine2 || '',
+      city: addr.city || '',
+      state: addr.state || '',
+      pincode: addr.pincode || addr.postalCode || '',
+      tag: addr.tag || addr.addressType || 'Home',
+      isDefault: Boolean(addr.isDefault),
+    });
     setModalOpen(true);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (editingId) {
-      updateAddress(editingId, formData);
+      await updateAddress(editingId, formData);
     } else {
-      addAddress(formData);
+      await addAddress(formData);
     }
     setModalOpen(false);
   };
 
   const getTagBadge = (tag) => {
-    switch (tag) {
-      case 'Gift Recipient':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FDF2F4] text-[#821D38] border border-[#F2D1D8]">
-            <Gift size={11} />
-            <span>Gift Recipient</span>
-          </span>
-        );
-      case 'Work':
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
-            <Briefcase size={11} />
-            <span>Work</span>
-          </span>
-        );
-      default:
-        return (
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-neutral-100 text-neutral-700 border border-neutral-200">
-            <Home size={11} />
-            <span>Home</span>
-          </span>
-        );
+    const normalizedTag = (tag || '').toLowerCase().trim();
+    if (normalizedTag.includes('gift') || normalizedTag.includes('recipient')) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#FDF2F4] text-[#821D38] border border-[#F2D1D8]">
+          <Gift size={11} />
+          <span>Gift Recipient</span>
+        </span>
+      );
     }
+    if (normalizedTag.includes('work') || normalizedTag.includes('office')) {
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+          <Briefcase size={11} />
+          <span>Work</span>
+        </span>
+      );
+    }
+    return (
+      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-neutral-100 text-neutral-700 border border-neutral-200">
+        <Home size={11} />
+        <span>Home</span>
+      </span>
+    );
   };
 
   return (
@@ -121,77 +131,80 @@ export const AddressBook = () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {addresses.map((addr) => (
-            <div
-              key={addr.id}
-              className={`bg-white rounded-2xl p-5 border transition-all flex flex-col justify-between shadow-xs ${addr.isDefault
-                ? 'border-[#821D38] ring-1 ring-[#821D38]/10'
-                : 'border-[#ECE7EC] hover:border-[#D5CAD0]'
-                }`}
-            >
-              <div>
-                {/* Top Card Row */}
-                <div className="flex items-center justify-between gap-2 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-[#1E1217]">{addr.name || addr.tag || 'Saved Address'}</span>
-                    {getTagBadge(addr.tag)}
+          {addresses.map((addr) => {
+            const addrKey = addr.id || addr._id;
+            return (
+              <div
+                key={addrKey}
+                className={`bg-white rounded-2xl p-5 border transition-all flex flex-col justify-between shadow-xs ${addr.isDefault
+                  ? 'border-[#821D38] ring-1 ring-[#821D38]/10'
+                  : 'border-[#ECE7EC] hover:border-[#D5CAD0]'
+                  }`}
+              >
+                <div>
+                  {/* Top Card Row */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-[#1E1217]">{addr.name || user?.name || addr.tag || 'Saved Address'}</span>
+                      {getTagBadge(addr.tag)}
+                    </div>
+
+                    {addr.isDefault && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
+                        Default
+                      </span>
+                    )}
                   </div>
 
-                  {addr.isDefault && (
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800">
-                      Default
-                    </span>
-                  )}
-                </div>
-
-                {/* Full Address Details */}
-                <div className="text-xs text-[#6F6870] space-y-1 leading-relaxed">
-                  <p className="text-neutral-800 font-medium">{addr.street}</p>
-                  {addr.landmark && <p>Landmark: {addr.landmark}</p>}
-                  <p>
-                    {addr.city}, {addr.state} - <strong className="text-neutral-800">{addr.pincode}</strong>
-                  </p>
-                  {addr.phone && (
-                    <p className="pt-1 text-[#29252A] font-semibold">
-                      Phone: {addr.phone}
+                  {/* Full Address Details */}
+                  <div className="text-xs text-[#6F6870] space-y-1 leading-relaxed">
+                    <p className="text-neutral-800 font-medium">{addr.street}</p>
+                    {addr.landmark && <p>Landmark: {addr.landmark}</p>}
+                    <p>
+                      {addr.city}, {addr.state} - <strong className="text-neutral-800">{addr.pincode}</strong>
                     </p>
-                  )}
+                    {(addr.phone || user?.phone) && (
+                      <p className="pt-1 text-[#29252A] font-semibold">
+                        Phone: {addr.phone || user?.phone}
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
 
-              {/* Bottom Actions */}
-              <div className="pt-3 mt-2 flex items-center justify-between text-xs">
-                <div>
-                  {!addr.isDefault && (
+                {/* Bottom Actions */}
+                <div className="pt-3 mt-2 flex items-center justify-between text-xs">
+                  <div>
+                    {!addr.isDefault && (
+                      <button
+                        onClick={() => setDefaultAddress(addrKey)}
+                        className="text-[#821D38] hover:underline font-semibold cursor-pointer"
+                      >
+                        Set as Default
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="flex items-center gap-3">
                     <button
-                      onClick={() => setDefaultAddress(addr.id)}
-                      className="text-[#821D38] hover:underline font-semibold cursor-pointer"
+                      onClick={() => openEditModal(addr)}
+                      className="inline-flex items-center gap-1 text-[#6F6870] hover:text-[#1E1217] font-semibold cursor-pointer"
                     >
-                      Set as Default
+                      <Edit3 size={13} />
+                      <span>Edit</span>
                     </button>
-                  )}
-                </div>
 
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => openEditModal(addr)}
-                    className="inline-flex items-center gap-1 text-[#6F6870] hover:text-[#1E1217] font-semibold cursor-pointer"
-                  >
-                    <Edit3 size={13} />
-                    <span>Edit</span>
-                  </button>
-
-                  <button
-                    onClick={() => setDeletingAddrId(addr.id)}
-                    className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
-                  >
-                    <Trash2 size={13} />
-                    <span>Delete</span>
-                  </button>
+                    <button
+                      onClick={() => setDeletingAddrId(addrKey)}
+                      className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
+                    >
+                      <Trash2 size={13} />
+                      <span>Delete</span>
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
 
@@ -215,6 +228,31 @@ export const AddressBook = () => {
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-[#29252A] mb-1">Full Name / Recipient</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="e.g. Shaikabdul Rahaman"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-neutral-900 focus:outline-none focus:border-[#821D38]"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-[#29252A] mb-1">Phone Number</label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="10-digit mobile number"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-3 py-2 rounded-xl border border-neutral-300 text-neutral-900 focus:outline-none focus:border-[#821D38]"
+                  />
+                </div>
+              </div>
+
               <div>
                 <label className="block font-bold text-[#29252A] mb-1">Flat, House no., Building, Street</label>
                 <input
@@ -286,7 +324,7 @@ export const AddressBook = () => {
                     { tag: 'Gift Recipient', icon: Gift, label: 'Gift Recipient' },
                   ].map((t) => {
                     const Icon = t.icon;
-                    const isSelected = formData.tag === t.tag;
+                    const isSelected = (formData.tag || 'Home').toLowerCase() === t.tag.toLowerCase();
                     return (
                       <button
                         key={t.tag}
@@ -303,6 +341,19 @@ export const AddressBook = () => {
                     );
                   })}
                 </div>
+              </div>
+
+              {/* Set Default Checkbox */}
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer pt-1">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(formData.isDefault)}
+                    onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
+                    className="accent-[#821D38] w-4 h-4 rounded cursor-pointer"
+                  />
+                  <span className="font-semibold text-neutral-700">Set as default delivery address</span>
+                </label>
               </div>
 
               {/* Submit Buttons */}

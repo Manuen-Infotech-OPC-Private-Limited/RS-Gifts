@@ -107,7 +107,8 @@ export const AuthProvider = ({ children }) => {
             city: a.city || '',
             state: a.state || '',
             pincode: a.postalCode || '',
-            tag: a.tag || 'Home',
+            tag: a.tag || a.addressType || 'Home',
+            addressType: a.tag || a.addressType || 'Home',
             isDefault: !!a.isDefault,
           }));
           setAddresses(formattedAddrs);
@@ -185,7 +186,8 @@ export const AuthProvider = ({ children }) => {
           city: a.city || '',
           state: a.state || '',
           pincode: a.postalCode || '',
-          tag: a.tag || 'Home',
+          tag: a.tag || a.addressType || 'Home',
+          addressType: a.tag || a.addressType || 'Home',
           isDefault: !!a.isDefault,
         }));
         setAddresses(formattedAddrs);
@@ -304,6 +306,10 @@ export const AuthProvider = ({ children }) => {
     const addressWithId = {
       ...newAddress,
       id: `addr_${Date.now()}`,
+      name: newAddress.name || user?.name || 'Customer',
+      phone: newAddress.phone || user?.phone || '',
+      tag: newAddress.tag || newAddress.addressType || 'Home',
+      addressType: newAddress.tag || newAddress.addressType || 'Home',
       isDefault: addresses.length === 0 ? true : !!newAddress.isDefault,
     };
 
@@ -327,21 +333,23 @@ export const AuthProvider = ({ children }) => {
           state: newAddress.state || '',
           postalCode: newAddress.pincode || '',
           country: 'India',
-          tag: newAddress.tag || 'Home',
+          tag: newAddress.tag || newAddress.addressType || 'Home',
+          addressType: newAddress.tag || newAddress.addressType || 'Home',
           isDefault: addressWithId.isDefault,
         });
         if (res?.addresses && Array.isArray(res.addresses)) {
           const synced = res.addresses.map((a) => ({
             id: a._id || a.id,
             _id: a._id,
-            name: a.recipientName,
-            phone: a.phone,
-            street: a.addressLine1,
+            name: a.recipientName || newAddress.name || user?.name || 'Customer',
+            phone: a.phone || newAddress.phone || user?.phone || '',
+            street: a.addressLine1 || '',
             landmark: a.addressLine2 || '',
-            city: a.city,
-            state: a.state,
-            pincode: a.postalCode,
-            tag: a.tag || 'Home',
+            city: a.city || '',
+            state: a.state || '',
+            pincode: a.postalCode || '',
+            tag: a.tag || a.addressType || 'Home',
+            addressType: a.tag || a.addressType || 'Home',
             isDefault: !!a.isDefault,
           }));
           setAddresses(synced);
@@ -352,11 +360,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateAddress = (id, updatedFields) => {
+  const updateAddress = async (id, updatedFields) => {
+    // Optimistic UI update
     setAddresses((prev) =>
       prev.map((addr) => {
         if (addr.id === id || addr._id === id) {
-          return { ...addr, ...updatedFields };
+          return {
+            ...addr,
+            ...updatedFields,
+            tag: updatedFields.tag || updatedFields.addressType || addr.tag || 'Home',
+            addressType: updatedFields.tag || updatedFields.addressType || addr.tag || 'Home',
+            isDefault: updatedFields.isDefault !== undefined ? Boolean(updatedFields.isDefault) : addr.isDefault,
+          };
         }
         if (updatedFields.isDefault) {
           return { ...addr, isDefault: false };
@@ -364,6 +379,81 @@ export const AuthProvider = ({ children }) => {
         return addr;
       })
     );
+
+    const token = localStorage.getItem('rs_gifts_token');
+    const backendId = !String(id).startsWith('addr_') ? id : null;
+    if (token && backendId) {
+      try {
+        const res = await api.put(`/customer/auth/addresses/${backendId}`, {
+          recipientName: updatedFields.name || updatedFields.recipientName,
+          phone: updatedFields.phone,
+          addressLine1: updatedFields.street || updatedFields.addressLine1,
+          addressLine2: updatedFields.landmark || updatedFields.addressLine2 || '',
+          city: updatedFields.city,
+          state: updatedFields.state,
+          postalCode: updatedFields.pincode || updatedFields.postalCode,
+          tag: updatedFields.tag || updatedFields.addressType || 'Home',
+          addressType: updatedFields.tag || updatedFields.addressType || 'Home',
+          isDefault: updatedFields.isDefault,
+        });
+        if (res?.addresses && Array.isArray(res.addresses)) {
+          const synced = res.addresses.map((a) => ({
+            id: a._id || a.id,
+            _id: a._id,
+            name: a.recipientName || updatedFields.name || 'Customer',
+            phone: a.phone || updatedFields.phone || '',
+            street: a.addressLine1 || '',
+            landmark: a.addressLine2 || '',
+            city: a.city || '',
+            state: a.state || '',
+            pincode: a.postalCode || '',
+            tag: a.tag || a.addressType || 'Home',
+            addressType: a.tag || a.addressType || 'Home',
+            isDefault: !!a.isDefault,
+          }));
+          setAddresses(synced);
+        }
+      } catch (err) {
+        console.warn('Backend address update notice:', err?.message || err);
+      }
+    }
+  };
+
+  const setDefaultAddress = async (id) => {
+    // Optimistic UI update
+    setAddresses((prev) =>
+      prev.map((addr) => ({
+        ...addr,
+        isDefault: addr.id === id || addr._id === id,
+      }))
+    );
+
+    const token = localStorage.getItem('rs_gifts_token');
+    const backendId = !String(id).startsWith('addr_') ? id : null;
+    if (token && backendId) {
+      try {
+        const res = await api.put(`/customer/auth/addresses/${backendId}/default`);
+        if (res?.addresses && Array.isArray(res.addresses)) {
+          const synced = res.addresses.map((a) => ({
+            id: a._id || a.id,
+            _id: a._id,
+            name: a.recipientName || 'Customer',
+            phone: a.phone || '',
+            street: a.addressLine1 || '',
+            landmark: a.addressLine2 || '',
+            city: a.city || '',
+            state: a.state || '',
+            pincode: a.postalCode || '',
+            tag: a.tag || a.addressType || 'Home',
+            addressType: a.tag || a.addressType || 'Home',
+            isDefault: !!a.isDefault,
+          }));
+          setAddresses(synced);
+        }
+      } catch (err) {
+        console.warn('Backend setDefaultAddress notice:', err?.message || err);
+      }
+    }
   };
 
   const deleteAddress = async (id) => {
@@ -376,15 +466,6 @@ export const AuthProvider = ({ children }) => {
         console.warn('Backend delete address notice:', err?.message || err);
       }
     }
-  };
-
-  const setDefaultAddress = (id) => {
-    setAddresses((prev) =>
-      prev.map((addr) => ({
-        ...addr,
-        isDefault: addr.id === id,
-      }))
-    );
   };
 
   // Listen for global auth expiration events from API interceptor
@@ -422,14 +503,15 @@ export const AuthProvider = ({ children }) => {
           const formattedProfileAddrs = profileData.user.addresses.map((a) => ({
             id: a._id || a.id,
             _id: a._id,
-            name: a.recipientName,
-            phone: a.phone,
-            street: a.addressLine1,
+            name: a.recipientName || (profileData.user.name || 'User').replace(/Super Admin|Admin/gi, '').trim(),
+            phone: a.phone || profileData.user.phone || '',
+            street: a.addressLine1 || '',
             landmark: a.addressLine2 || '',
-            city: a.city,
-            state: a.state,
-            pincode: a.postalCode,
-            tag: a.tag || 'Home',
+            city: a.city || '',
+            state: a.state || '',
+            pincode: a.postalCode || '',
+            tag: a.tag || a.addressType || 'Home',
+            addressType: a.tag || a.addressType || 'Home',
             isDefault: !!a.isDefault,
           }));
           setAddresses(formattedProfileAddrs);
