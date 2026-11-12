@@ -13,19 +13,11 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
 
   if (!user) return null;
 
-  const activeOrdersCount = orders.filter(
-    (o) => o.status === 'In Transit' || o.status === 'Placed' || o.status === 'Packed'
-  ).length;
-
-  const savedAddressesCount = (addresses || []).length;
-
   const menuItems = [
     {
       id: 'orders',
       label: 'My Orders & Tracking',
       icon: Package,
-      badge: activeOrdersCount > 0 ? `${activeOrdersCount} Active` : null,
-      badgeColor: 'bg-[#821D38] text-white',
     },
     {
       id: 'profile',
@@ -36,8 +28,6 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
       id: 'addresses',
       label: 'Saved Delivery Addresses',
       icon: MapPin,
-      badge: savedAddressesCount > 0 ? `${savedAddressesCount} Saved` : null,
-      badgeColor: 'bg-[#FAF0F3] text-[#821D38] border border-[#F2D7E0]',
     },
   ];
 
@@ -86,23 +76,12 @@ export const AccountSidebar = ({ activeTab, onSelectTab }) => {
                 <span>{item.label}</span>
               </div>
 
-              <div className="flex items-center gap-2">
-                {item.badge && (
-                  <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      isActive ? 'bg-white/20 text-white' : item.badgeColor
-                    }`}
-                  >
-                    {item.badge}
-                  </span>
-                )}
-                <ChevronRight
-                  size={15}
-                  className={`transition-transform ${
-                    isActive ? 'text-white translate-x-0.5' : 'text-neutral-400'
-                  }`}
-                />
-              </div>
+              <ChevronRight
+                size={15}
+                className={`transition-transform ${
+                  isActive ? 'text-white translate-x-0.5' : 'text-neutral-400'
+                }`}
+              />
             </button>
           );
         })}
