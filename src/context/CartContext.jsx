@@ -147,16 +147,29 @@ export const CartProvider = ({ children }) => {
     setCartItems([]);
   };
 
-  const applyCoupon = async (code) => {
+  const applyCoupon = async (code, customerData = null) => {
     const clean = (code || '').trim().toUpperCase();
     if (!clean) {
       return { success: false, message: 'Please enter a coupon code.' };
     }
 
+    let cachedUser = null;
+    try {
+      cachedUser = JSON.parse(localStorage.getItem('rs_gifts_user') || 'null');
+    } catch {}
+
+    const email = customerData?.email || cachedUser?.email || '';
+    const phone = customerData?.phone || cachedUser?.phone || '';
+    const userId = customerData?.userId || cachedUser?._id || cachedUser?.id || null;
+
     try {
       const res = await api.post('/customer/coupons/validate', {
         code: clean,
         orderTotal: itemsSubtotal,
+        subtotal: itemsSubtotal,
+        email,
+        phone,
+        userId,
       });
 
       const c = res.coupon;
@@ -173,24 +186,16 @@ export const CartProvider = ({ children }) => {
       }
       return { success: false, message: res.message || 'Invalid coupon code.' };
     } catch (err) {
-      // Check active coupon endpoint
-      try {
-        const activeRes = await api.get('/customer/coupons/active');
-        const activeCpn = activeRes.activeCoupon || (Array.isArray(activeRes.coupons) ? activeRes.coupons[0] : null);
-        if (activeCpn && activeCpn.code && activeCpn.code.toUpperCase() === clean) {
-          const isFlat = activeCpn.discountType === 'flat' || activeCpn.discountType === 'fixed';
-          setAppliedCoupon({
-            code: activeCpn.code,
-            discountType: isFlat ? 'flat' : 'percentage',
-            discountValue: Number(activeCpn.discountValue || 0),
-            discountPercent: isFlat ? 0 : Number(activeCpn.discountValue || 0),
-            flatDiscount: isFlat ? Number(activeCpn.discountValue || 0) : 0,
-          });
-          return { success: true, message: `Coupon ${activeCpn.code} applied!` };
-        }
-      } catch {}
+      // If backend explicitly rejected the coupon (e.g. already used, expired, below min spend)
+      if (err?.response?.data) {
+        return {
+          success: false,
+          alreadyUsed: !!err.response.data.alreadyUsed,
+          message: err.response.data.message || 'Invalid promo code.',
+        };
+      }
 
-      const errMsg = err?.response?.data?.message || err.message || 'Invalid promo code.';
+      const errMsg = err?.message || 'Invalid promo code.';
       return { success: false, message: errMsg };
     }
   };

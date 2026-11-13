@@ -25,6 +25,24 @@ import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { useAuth } from '../context/AuthContext';
 
+// Helper to resolve category route path for breadcrumbs and badges
+const resolveCategoryPath = (category) => {
+  if (!category) return '/gifts';
+  const s = String(category).toLowerCase().trim();
+  if (s.includes('toy') || s.includes('kid')) return '/category/toys-and-kids';
+  if (s.includes('birthday')) return '/category/birthday-gifts';
+  if (s.includes('anniversary')) return '/category/anniversary-gifts';
+  if (s.includes('personalized')) return '/category/personalized-gifts';
+  if (s.includes('corporate')) return '/category/corporate-gifts';
+  if (s.includes('flower') || s.includes('hamper')) return '/category/flowers-and-hampers';
+  if (s.includes('festival') || s.includes('festive')) return '/category/festival-gifts';
+  if (s.includes('accessori')) return '/category/accessories';
+  if (s.includes('gift')) return '/category/gifts';
+
+  const slug = s.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  return `/category/${slug || 'gifts'}`;
+};
+
 export const ProductDetailsPage = () => {
   const { idOrSlug } = useParams();
   const navigate = useNavigate();
@@ -311,7 +329,6 @@ export const ProductDetailsPage = () => {
   return (
     <div className="w-full min-h-screen bg-[#FFF9F5] text-[#1E1217] pb-20">
       {/* Top Breadcrumb Navigation */}
-      {/* Top Breadcrumb Navigation */}
       <div className="border-b border-[#ECE3E7]/60 bg-white/40 backdrop-blur-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <nav className="flex items-center gap-2 text-xs sm:text-sm text-[#705E67] overflow-x-auto whitespace-nowrap">
@@ -321,9 +338,12 @@ export const ProductDetailsPage = () => {
             <ChevronRight size={13} className="text-[#A89CA2] shrink-0" />
             {product.category && (
               <>
-                <span className="hover:text-[#821D38] transition-colors font-medium cursor-pointer">
+                <Link
+                  to={resolveCategoryPath(product.category)}
+                  className="hover:text-[#821D38] transition-colors font-medium"
+                >
                   {product.category}
-                </span>
+                </Link>
                 <ChevronRight size={13} className="text-[#A89CA2] shrink-0" />
               </>
             )}
@@ -444,9 +464,12 @@ export const ProductDetailsPage = () => {
             <div>
               {/* Category */}
               <div className="mb-2">
-                <span className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-[#821D38] bg-[#FDF2F5] px-2.5 py-0.5 rounded-full border border-[#DFC8D0]/60">
+                <Link
+                  to={resolveCategoryPath(product.category)}
+                  className="inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-bold uppercase tracking-wider text-[#821D38] bg-[#FDF2F5] px-2.5 py-0.5 rounded-full border border-[#DFC8D0]/60 hover:bg-[#FCE7ED] transition-colors"
+                >
                   {product.category || 'Luxury Gift'}
-                </span>
+                </Link>
               </div>
 
               {/* Product Title */}

@@ -1,15 +1,75 @@
-import React, { useState } from 'react';
-import { X, Check, Truck, Package, Clock, MapPin, Copy, CheckCheck, ExternalLink } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Check, Truck, Package, Clock, MapPin, Copy, CheckCheck, ExternalLink, Radio } from 'lucide-react';
+import { getSocket, joinOrderRoom, leaveOrderRoom } from '../../services/socket';
 
 export const OrderTrackerModal = ({ order, onClose }) => {
   const [copied, setCopied] = useState(false);
+  const [liveStatus, setLiveStatus] = useState(order?.status);
+  const [liveTracking, setLiveTracking] = useState({
+    carrier: order?.carrier,
+    trackingNumber: order?.trackingNumber,
+  });
+
+  useEffect(() => {
+    setLiveStatus(order?.status);
+    setLiveTracking({
+      carrier: order?.carrier,
+      trackingNumber: order?.trackingNumber,
+    });
+  }, [order]);
+
+  // Real-time WebSocket connection for order updates
+  useEffect(() => {
+    const targetId = order?._id || order?.id;
+    if (!targetId) return;
+
+    joinOrderRoom(targetId);
+    const socket = getSocket();
+
+    const handleStatusUpdate = (data) => {
+      if (data && (String(data.orderId) === String(targetId) || data.orderNumber === order?.orderNumber)) {
+        if (data.orderStatus) {
+          setLiveStatus(data.orderStatus);
+        }
+      }
+    };
+
+    const handleTrackingUpdate = (data) => {
+      if (data && (String(data.orderId) === String(targetId) || data.orderNumber === order?.orderNumber)) {
+        if (data.tracking) {
+          setLiveTracking({
+            carrier: data.tracking.carrier,
+            trackingNumber: data.tracking.trackingNumber,
+          });
+        }
+        if (data.orderStatus) {
+          setLiveStatus(data.orderStatus);
+        }
+      }
+    };
+
+    socket.on('order_status_updated', handleStatusUpdate);
+    socket.on('order_tracking_updated', handleTrackingUpdate);
+
+    return () => {
+      leaveOrderRoom(targetId);
+      socket.off('order_status_updated', handleStatusUpdate);
+      socket.off('order_tracking_updated', handleTrackingUpdate);
+    };
+  }, [order]);
 
   if (!order) return null;
 
+  const currentStatus = liveStatus || order.status;
+  const currentTrackingNumber = liveTracking.trackingNumber || order.trackingNumber;
+  const currentCarrier = liveTracking.carrier || order.carrier;
+
   const handleCopy = () => {
-    navigator.clipboard.writeText(order.trackingNumber);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    if (currentTrackingNumber) {
+      navigator.clipboard.writeText(currentTrackingNumber);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
@@ -28,8 +88,9 @@ export const OrderTrackerModal = ({ order, onClose }) => {
               <span className="text-base font-bold text-[#1E1217]">
                 Track Order #{order.id}
               </span>
-              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FDF2F4] text-[#821D38]">
-                {order.status}
+              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#FDF2F4] text-[#821D38] inline-flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                {currentStatus}
               </span>
             </div>
             <span className="text-xs text-[#6F6870]">
@@ -55,19 +116,19 @@ export const OrderTrackerModal = ({ order, onClose }) => {
               <span className="text-sm sm:text-base font-bold text-[#1E1217] block mt-0.5">
                 {order.estimatedDelivery}
               </span>
-              {order.carrier && (
+              {currentCarrier && (
                 <span className="text-xs text-[#6F6870] mt-0.5 block">
-                  Carrier: <strong className="text-neutral-800">{order.carrier}</strong>
+                  Carrier: <strong className="text-neutral-800">{currentCarrier}</strong>
                 </span>
               )}
             </div>
 
             {/* AWB Tracking Pill with Copy */}
-            {order.trackingNumber && (
+            {currentTrackingNumber && (
               <div className="flex items-center gap-1.5 bg-white px-3 py-1.5 rounded-xl border border-neutral-200 self-start sm:self-center">
                 <div className="text-left">
                   <span className="text-[9.5px] text-neutral-400 block uppercase font-bold">AWB Number</span>
-                  <span className="text-xs font-mono font-bold text-neutral-800">{order.trackingNumber}</span>
+                  <span className="text-xs font-mono font-bold text-neutral-800">{currentTrackingNumber}</span>
                 </div>
                 <button
                   onClick={handleCopy}
@@ -82,8 +143,12 @@ export const OrderTrackerModal = ({ order, onClose }) => {
 
           {/* Vertical Timeline Checkpoints */}
           <div>
-            <h4 className="text-xs font-bold text-[#29252A] uppercase tracking-wider mb-4">
-              Live Shipment Activity
+            <h4 className="text-xs font-bold text-[#29252A] uppercase tracking-wider mb-4 flex items-center justify-between">
+              <span>Shipment Activity</span>
+              <span className="text-[10px] text-emerald-600 font-medium lowercase flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
+                live connected
+              </span>
             </h4>
 
             <div className="relative pl-6 space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-[2px] before:bg-neutral-200">

@@ -112,7 +112,11 @@ export const CartPage = () => {
   const handleApplyCoupon = async (e) => {
     e.preventDefault();
     if (!couponInput.trim()) return;
-    const result = await applyCoupon(couponInput);
+    const result = await applyCoupon(couponInput, {
+      email: user?.email || checkoutForm.email,
+      phone: user?.phone || checkoutForm.phone,
+      userId: user?._id || user?.id,
+    });
     setCouponMessage(result);
     if (result.success) {
       setCouponInput('');

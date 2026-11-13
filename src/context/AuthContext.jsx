@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
+import { getSocket } from '../services/socket';
 
 const defaultAuthContextValue = {
   user: null,
@@ -599,10 +600,71 @@ export const AuthProvider = ({ children }) => {
     };
     loadMyOrders();
 
+    // Fast backup sync every 15 seconds to ensure orders never stay stale
+    const pollTimer = setInterval(() => {
+      if (isMounted && localStorage.getItem('rs_gifts_token')) {
+        loadMyOrders();
+      }
+    }, 15000);
+
     return () => {
       isMounted = false;
+      clearInterval(pollTimer);
     };
   }, [userId]);
+
+  // Real-time WebSocket listener for order status changes & tracking
+  useEffect(() => {
+    let socket;
+    try {
+      socket = getSocket();
+    } catch (e) {
+      return;
+    }
+
+    const handleLiveOrderUpdate = (data) => {
+      if (!data) return;
+      const targetId = String(data.orderId || data._id || '');
+      const targetNum = String(data.orderNumber || '');
+
+      setOrders((prev) =>
+        prev.map((order) => {
+          const match =
+            (targetId && (String(order._id) === targetId || String(order.id) === targetId)) ||
+            (targetNum && (String(order.orderNumber) === targetNum || String(order.id) === targetNum));
+
+          if (!match) return order;
+
+          const newStatus = data.orderStatus || data.status || order.status;
+          const newStep =
+            newStatus === 'Delivered' ? 4 :
+            newStatus === 'Shipped' ? 3 :
+            newStatus === 'Processing' ? 2 :
+            newStatus === 'Cancelled' ? 0 : 1;
+
+          return {
+            ...order,
+            status: newStatus,
+            statusStep: newStep,
+            statusHistory: data.statusHistory || order.statusHistory,
+            carrier: data.tracking?.carrier !== undefined ? data.tracking.carrier : order.carrier,
+            trackingNumber: data.tracking?.trackingNumber !== undefined ? data.tracking.trackingNumber : order.trackingNumber,
+            estimatedDelivery: newStatus === 'Delivered' ? 'Delivered' : order.estimatedDelivery,
+          };
+        })
+      );
+    };
+
+    socket.on('order_status_updated', handleLiveOrderUpdate);
+    socket.on('order_tracking_updated', handleLiveOrderUpdate);
+    socket.on('order_updated', handleLiveOrderUpdate);
+
+    return () => {
+      socket.off('order_status_updated', handleLiveOrderUpdate);
+      socket.off('order_tracking_updated', handleLiveOrderUpdate);
+      socket.off('order_updated', handleLiveOrderUpdate);
+    };
+  }, []);
 
   // Order actions
   const addCustomerOrder = (rawOrder) => {

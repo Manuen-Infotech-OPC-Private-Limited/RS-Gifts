@@ -11,7 +11,7 @@ const resolveBaseURL = () => {
 // Create a configured Axios instance
 export const api = axios.create({
   baseURL: resolveBaseURL(),
-  timeout: 15000,
+  timeout: 60000, // 60s timeout to gracefully accommodate Render cloud cold-starts
   headers: {
     'Content-Type': 'application/json',
     Accept: 'application/json',
