@@ -12,6 +12,34 @@
           links.forEach(function(l) { l.href = savedLogo; });
         }
       } catch (e) {}
+
+      // Instant High-Priority Hero Banner Preloader (LCP optimization)
+      try {
+        var base = '/RS-Gifts/';
+        var targetImg = base + 'images/hero-banner-1.jpg';
+        var cachedBanners = localStorage.getItem('rs_cached_hero_banners_v2');
+        if (cachedBanners) {
+          var parsed = JSON.parse(cachedBanners);
+          if (parsed && parsed[0] && parsed[0].image) {
+            targetImg = parsed[0].image;
+            if (targetImg.indexOf('res.cloudinary.com') !== -1 && targetImg.indexOf('/image/upload/') !== -1) {
+              if (targetImg.indexOf('/f_auto') === -1 && targetImg.indexOf('/q_auto') === -1) {
+                targetImg = targetImg.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_1600,c_limit/');
+              }
+            } else if (!targetImg.startsWith('http') && !targetImg.startsWith('data:')) {
+              var clean = targetImg.startsWith('/') ? targetImg.slice(1) : targetImg;
+              if (clean === 'images/hero-banner-1.png') clean = 'images/hero-banner-1.jpg';
+              targetImg = base + clean;
+            }
+          }
+        }
+        var preloadLink = document.createElement('link');
+        preloadLink.rel = 'preload';
+        preloadLink.as = 'image';
+        preloadLink.href = targetImg;
+        preloadLink.fetchPriority = 'high';
+        document.head.appendChild(preloadLink);
+      } catch (e) {}
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#A83F5B" />

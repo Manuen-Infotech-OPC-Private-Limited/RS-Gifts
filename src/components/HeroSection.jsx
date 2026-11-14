@@ -3,16 +3,34 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import api from '../services/api';
 
-const resolveImageUrl = (img) => {
+const BANNERS_CACHE_KEY = 'rs_cached_hero_banners_v2';
+
+export const resolveImageUrl = (img) => {
   if (!img) {
     const base = import.meta.env.BASE_URL || '/';
     const prefix = base.endsWith('/') ? base : `${base}/`;
-    return `${prefix}images/hero-banner-1.png`;
+    return `${prefix}images/hero-banner-1.jpg`;
   }
+
+  // Cloudinary image auto-optimization (f_auto: WebP/AVIF, q_auto: smart compression, w_1600: responsive banner width)
+  if (typeof img === 'string' && img.includes('res.cloudinary.com') && img.includes('/image/upload/')) {
+    let cleanUrl = img.startsWith('http://') ? img.replace(/^http:\/\//i, 'https://') : img;
+    if (!cleanUrl.includes('/f_auto') && !cleanUrl.includes('/q_auto')) {
+      cleanUrl = cleanUrl.replace('/image/upload/', '/image/upload/f_auto,q_auto,w_1600,c_limit/');
+    }
+    return cleanUrl;
+  }
+
   if (img.startsWith('http://') || img.startsWith('https://') || img.startsWith('data:')) return img;
   const base = import.meta.env.BASE_URL || '/';
   const prefix = base.endsWith('/') ? base : `${base}/`;
-  const clean = img.startsWith('/') ? img.slice(1) : img;
+  let clean = img.startsWith('/') ? img.slice(1) : img;
+
+  // Use the ultra-lightweight 85KB JPG instead of heavy 1MB PNG for immediate load
+  if (clean === 'images/hero-banner-1.png') {
+    clean = 'images/hero-banner-1.jpg';
+  }
+
   return `${prefix}${clean}`;
 };
 
@@ -24,17 +42,43 @@ const defaultSlide = {
   description: '',
   buttonText: 'Shop Gifts',
   buttonLink: '/gifts',
-  image: resolveImageUrl('/images/hero-banner-1.png'),
+  image: resolveImageUrl('/images/hero-banner-1.jpg'),
+};
+
+const getInitialSlides = () => {
+  try {
+    const cached = localStorage.getItem(BANNERS_CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (e) {}
+  return [defaultSlide];
 };
 
 export const HeroSection = ({ onShopNow }) => {
   const navigate = useNavigate();
-  const [slides, setSlides] = useState([defaultSlide]);
+  const [slides, setSlides] = useState(getInitialSlides);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [imagesLoaded, setImagesLoaded] = useState({});
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
   const touchMoved = useRef(false);
+
+  // Eagerly preload all slide images in browser memory so slide transitions are instantaneous
+  useEffect(() => {
+    if (slides && slides.length > 0) {
+      slides.forEach((slide) => {
+        if (slide?.image) {
+          const preImg = new Image();
+          preImg.src = resolveImageUrl(slide.image);
+        }
+      });
+    }
+  }, [slides]);
 
   // Fetch live banners from backend and sort sequentially 1, 2, 3...
   useEffect(() => {
@@ -67,10 +111,14 @@ export const HeroSection = ({ onShopNow }) => {
               description: b.subtitle ? b.subtitle.trim() : '',
               buttonText: b.buttonText || 'Shop Gifts',
               buttonLink: b.link || b.buttonLink || '/gifts',
-              image: b.image || b.imageUrl || '/images/hero-banner-1.png'
+              image: b.image || b.imageUrl || '/images/hero-banner-1.jpg'
             };
           });
+
           setSlides(dynamicSlides);
+          try {
+            localStorage.setItem(BANNERS_CACHE_KEY, JSON.stringify(dynamicSlides));
+          } catch (e) {}
         }
       } catch (err) {
         console.warn('Could not load live banners from backend:', err);
@@ -180,14 +228,20 @@ export const HeroSection = ({ onShopNow }) => {
             key={slide.id || idx}
             className="w-full shrink-0 relative min-h-[210px] sm:min-h-[270px] lg:min-h-[320px] flex items-center"
           >
-            {/* Background Image - full panorama, perfectly centered */}
-            <div
-              className="absolute inset-0 w-full h-full bg-cover bg-center transition-opacity duration-500"
-              style={{
-                backgroundImage: `url("${resolveImageUrl(slide.image)}")`,
-                backgroundColor: '#FDF7F4'
-              }}
-            />
+            {/* Background Image - High-priority eager load for LCP, object-cover centered */}
+            <div className="absolute inset-0 w-full h-full bg-[#FDF7F4] overflow-hidden">
+              <img
+                src={resolveImageUrl(slide.image)}
+                alt={slide.titleLine1 ? `${slide.titleLine1} ${slide.titleLine2 || ''}`.trim() : 'RS Gifts Banner'}
+                loading={idx === 0 ? 'eager' : 'lazy'}
+                fetchPriority={idx === 0 ? 'high' : 'auto'}
+                decoding="async"
+                onLoad={() => setImagesLoaded((prev) => ({ ...prev, [idx]: true }))}
+                className={`w-full h-full object-cover object-center transition-opacity duration-500 ${
+                  imagesLoaded[idx] || idx === 0 ? 'opacity-100' : 'opacity-90'
+                }`}
+              />
+            </div>
 
             {/* Subtle soft vignette for depth without washing out the image */}
             <div
