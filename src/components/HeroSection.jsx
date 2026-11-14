@@ -38,17 +38,27 @@ export const HeroSection = ({ onShopNow }) => {
   const [isPaused, setIsPaused] = useState(false);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
+  const touchMoved = useRef(false);
 
-  // Fetch live banners from backend
+  // Fetch live banners from backend and sort sequentially 1, 2, 3...
   useEffect(() => {
     let isMounted = true;
     const loadLiveBanners = async () => {
       try {
         const data = await api.get('/customer/content/banners');
-        const activeBanners = (data?.banners || []).filter(
+        let activeBanners = (data?.banners || []).filter(
           (b) => b && b.active !== false && (b.image || b.imageUrl)
         );
+
         if (activeBanners.length > 0 && isMounted) {
+          // Strictly sort banners in ascending sequence 1 -> 2 -> 3
+          activeBanners.sort((a, b) => {
+            const orderA = typeof a.order === 'number' ? a.order : 0;
+            const orderB = typeof b.order === 'number' ? b.order : 0;
+            if (orderA !== orderB) return orderA - orderB;
+            return new Date(a.createdAt || 0) - new Date(b.createdAt || 0);
+          });
+
           const dynamicSlides = activeBanners.map((b, idx) => {
             const rawTitle = b.title || '';
             const parts = rawTitle.includes(',') ? rawTitle.split(',') : [rawTitle];
@@ -77,43 +87,56 @@ export const HeroSection = ({ onShopNow }) => {
 
   const totalSlides = slides.length;
 
+  // Sequential Next (1 -> 2 -> 3 -> 1...)
   const nextSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
   }, [totalSlides]);
 
+  // Sequential Prev (3 -> 2 -> 1 -> 3...)
   const prevSlide = useCallback(() => {
     setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
   }, [totalSlides]);
 
+  // Direct Jump to Slide (1, 2, or 3)
   const goToSlide = (index) => {
     setCurrentSlide(index);
   };
 
-  // Autoplay with pause on hover
+  // Smooth continuous Autoplay: exactly 1 -> 2 -> 3 -> 1... without skipping
   useEffect(() => {
     if (isPaused || totalSlides <= 1) return;
     const timer = setInterval(() => {
-      nextSlide();
-    }, 5500);
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    }, 4500);
 
     return () => clearInterval(timer);
-  }, [isPaused, nextSlide, totalSlides]);
+  }, [isPaused, totalSlides]);
 
-  // Touch swipe handling
+  // Touch swipe handling without duplicate clicks
   const handleTouchStart = (e) => {
+    if (!e.targetTouches || e.targetTouches.length === 0) return;
     touchStartX.current = e.targetTouches[0].clientX;
+    touchEndX.current = e.targetTouches[0].clientX;
+    touchMoved.current = false;
   };
 
   const handleTouchMove = (e) => {
+    if (!e.targetTouches || e.targetTouches.length === 0) return;
     touchEndX.current = e.targetTouches[0].clientX;
+    if (Math.abs(touchStartX.current - touchEndX.current) > 10) {
+      touchMoved.current = true;
+    }
   };
 
   const handleTouchEnd = () => {
-    if (touchStartX.current - touchEndX.current > 50) {
-      nextSlide();
-    }
-    if (touchStartX.current - touchEndX.current < -50) {
-      prevSlide();
+    if (!touchMoved.current) return;
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) {
+        nextSlide(); // Swiped left -> next slide 1 -> 2 -> 3
+      } else {
+        prevSlide(); // Swiped right -> prev slide 3 -> 2 -> 1
+      }
     }
   };
 
@@ -126,22 +149,24 @@ export const HeroSection = ({ onShopNow }) => {
   };
 
   const handleBannerClick = (e) => {
+    // If the user swiped/dragged, do not trigger click
+    if (touchMoved.current) return;
     if (e.target.closest('button') || e.target.closest('a')) {
       return;
     }
     const rect = e.currentTarget.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     if (clickX < rect.width / 2) {
-      prevSlide();
+      prevSlide(); // Left click -> prev slide
     } else {
-      nextSlide();
+      nextSlide(); // Right click -> next slide (1 -> 2 -> 3)
     }
   };
 
   return (
     <section
       onClick={handleBannerClick}
-      className="relative w-full overflow-hidden bg-[#FFF9F5] select-none cursor-pointer"
+      className="relative w-full overflow-hidden bg-[#FFF9F5] select-none cursor-pointer group"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
       onTouchStart={handleTouchStart}
@@ -149,9 +174,9 @@ export const HeroSection = ({ onShopNow }) => {
       onTouchEnd={handleTouchEnd}
       aria-label="Hero Carousel"
     >
-      {/* Slides Container */}
+      {/* Slides Container with smooth ease-in-out transition */}
       <div
-        className="flex w-full transition-transform duration-700 ease-out"
+        className="flex w-full transition-transform duration-700 ease-in-out"
         style={{ transform: `translateX(-${currentSlide * 100}%)` }}
       >
         {slides.map((slide, idx) => (
@@ -221,26 +246,61 @@ export const HeroSection = ({ onShopNow }) => {
                     <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 transition-transform duration-300 group-hover:translate-x-1" />
                   </button>
                 </div>
-
-                
               </div>
             </div>
           </div>
         ))}
       </div>
 
-      {/* Carousel Dots Pagination */}
+      {/* Navigation Arrows: Left (<) and Right (>) with instant stopPropagation */}
       {slides.length > 1 && (
-        <div className="absolute bottom-2 sm:bottom-2.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
+        <>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              prevSlide();
+            }}
+            aria-label="Previous Slide"
+            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/75 hover:bg-white text-[#821D38] shadow-md flex items-center justify-center transition-all duration-200 opacity-70 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
+          >
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.4]" />
+          </button>
+
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              nextSlide();
+            }}
+            aria-label="Next Slide"
+            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/75 hover:bg-white text-[#821D38] shadow-md flex items-center justify-center transition-all duration-200 opacity-70 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
+          >
+            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.4]" />
+          </button>
+        </>
+      )}
+
+      {/* Carousel Dots Pagination: 1, 2, 3... indicators with smooth pill animation */}
+      {slides.length > 1 && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="absolute bottom-2 sm:bottom-2.5 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5"
+        >
           {slides.map((_, index) => (
             <button
               key={index}
-              onClick={() => goToSlide(index)}
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                goToSlide(index);
+              }}
               aria-label={`Go to slide ${index + 1}`}
-              className={`transition-all duration-300 rounded-full cursor-pointer ${currentSlide === index
-                ? 'w-2.5 h-2.5 bg-[#821D38] ring-2 ring-[#821D38]/30 scale-110'
-                : 'w-2 h-2 bg-[#D9C4CC] hover:bg-[#B3939F]'
-                }`}
+              className={`transition-all duration-300 cursor-pointer ${
+                currentSlide === index
+                  ? 'w-6 sm:w-7 h-2 bg-[#821D38] rounded-full scale-100 shadow-xs'
+                  : 'w-2 h-2 bg-[#D9C4CC] hover:bg-[#821D38]/60 rounded-full'
+              }`}
             />
           ))}
         </div>

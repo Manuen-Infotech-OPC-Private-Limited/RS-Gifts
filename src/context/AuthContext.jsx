@@ -97,10 +97,7 @@ export const AuthProvider = ({ children }) => {
 
   // Auto-fetch profile and sync addresses on mount if logged in
   useEffect(() => {
-    let token = null;
-    try {
-      token = localStorage.getItem('rs_gifts_token');
-    } catch {}
+    const token = localStorage.getItem('rs_gifts_token');
     if (!token) return;
 
     let isMounted = true;
@@ -153,27 +150,21 @@ export const AuthProvider = ({ children }) => {
     return () => { isMounted = false; };
   }, []);
 
-  // Sync to localStorage with crash-proof try/catch for mobile incognito
+  // Sync to localStorage
   useEffect(() => {
-    try {
-      if (user) {
-        localStorage.setItem('rs_gifts_user', JSON.stringify(user));
-      } else {
-        localStorage.removeItem('rs_gifts_user');
-      }
-    } catch {}
+    if (user) {
+      localStorage.setItem('rs_gifts_user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('rs_gifts_user');
+    }
   }, [user]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('rs_gifts_addresses', JSON.stringify(addresses));
-    } catch {}
+    localStorage.setItem('rs_gifts_addresses', JSON.stringify(addresses));
   }, [addresses]);
 
   useEffect(() => {
-    try {
-      localStorage.setItem('rs_gifts_orders', JSON.stringify(orders));
-    } catch {}
+    localStorage.setItem('rs_gifts_orders', JSON.stringify(orders));
   }, [orders]);
 
   // Auth actions

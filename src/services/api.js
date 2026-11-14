@@ -21,12 +21,10 @@ export const api = axios.create({
 // Request interceptor (e.g. for attaching auth tokens)
 api.interceptors.request.use(
   (config) => {
-    try {
-      const token = localStorage.getItem('rs_gifts_token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch {}
+    const token = localStorage.getItem('rs_gifts_token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
     return config;
   },
   (error) => Promise.reject(error)
@@ -41,10 +39,8 @@ api.interceptors.response.use(
 
     if (status === 401) {
       // Clean up stale/expired authentication tokens to prevent endless 401 retry loops
-      try {
-        localStorage.removeItem('rs_gifts_token');
-        localStorage.removeItem('rs_gifts_user');
-      } catch {}
+      localStorage.removeItem('rs_gifts_token');
+      localStorage.removeItem('rs_gifts_user');
       window.dispatchEvent(new CustomEvent('rs_auth_expired', { detail: { message } }));
       console.warn('[RS-Gifts Auth] Session expired or invalid token. Cached credentials cleared.');
     } else {
