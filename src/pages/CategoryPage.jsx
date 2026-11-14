@@ -12,63 +12,6 @@ import { useWishlist } from '../context/WishlistContext';
 import { fetchLiveProducts, fetchLiveCategories } from '../services/productService';
 import SEO from '../components/common/SEO';
 
-const KNOWN_CATEGORIES = [
-  { 
-    name: 'Toys and Kids', 
-    slug: 'toys-and-kids', 
-    description: 'Creative toys, board games, learning gifts, and fun surprises for kids',
-    aliases: ['toys-kids', 'toys-and-kids', 'toys', 'kids'] 
-  },
-  { 
-    name: 'Corporate Gifts', 
-    slug: 'corporate-gifts', 
-    description: 'Executive stationery, corporate gift sets, and employee appreciation packs',
-    aliases: ['corporate-gifts', 'corporate'] 
-  },
-  { 
-    name: 'Festival Gifts', 
-    slug: 'festival-gifts', 
-    description: 'Festive gift hampers, sweets, lamps, and holiday season specials',
-    aliases: ['festival-gifts', 'festival', 'festive'] 
-  },
-  { 
-    name: 'Anniversary Gifts', 
-    slug: 'anniversary-gifts', 
-    description: 'Romantic tokens, milestone gifts, and couple surprises',
-    aliases: ['anniversary-gifts', 'anniversary'] 
-  },
-  { 
-    name: 'Birthday Gifts', 
-    slug: 'birthday-gifts', 
-    description: 'Memorable birthday surprises and celebratory presents for all ages',
-    aliases: ['birthday-gifts', 'birthday'] 
-  },
-  { 
-    name: 'Flowers and Hampers', 
-    slug: 'flowers-and-hampers', 
-    description: 'Fresh flower arrangements, gourmet chocolate boxes, and luxury hampers',
-    aliases: ['flowers-and-hampers', 'flowers-hampers', 'flowers', 'hampers'] 
-  },
-  { 
-    name: 'Accessories', 
-    slug: 'accessories', 
-    description: 'Wallets, wristwatches, jewelry, keychains, and lifestyle accessories',
-    aliases: ['accessories'] 
-  },
-  { 
-    name: 'Personalized Gifts', 
-    slug: 'personalized-gifts', 
-    description: 'Customized mugs, frames, engraved items, and custom keepsakes',
-    aliases: ['personalized-gifts', 'personalized'] 
-  },
-  { 
-    name: 'Gifts', 
-    slug: 'gifts', 
-    description: 'Special gifts and thoughtful presents for every occasion',
-    aliases: ['gifts'] 
-  }
-];
-
 const cleanForCompare = (str) => {
   return String(str || '')
     .toLowerCase()
@@ -85,7 +28,15 @@ export const CategoryPage = () => {
   const { addToCart, closeCartDrawer } = useCart();
   const { isInWishlist, toggleWishlist } = useWishlist();
 
-  const [categoriesList, setCategoriesList] = useState([]);
+  // 100% dynamic categories fetched from Backend/MongoDB with instant cached state
+  const [categoriesList, setCategoriesList] = useState(() => {
+    try {
+      const cached = localStorage.getItem('rs_gifts_live_categories');
+      return cached ? JSON.parse(cached) : [];
+    } catch {
+      return [];
+    }
+  });
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState('featured');
@@ -103,13 +54,14 @@ export const CategoryPage = () => {
   const currentCategory = useMemo(() => {
     const slugClean = cleanForCompare(rawSlug);
 
-    // 1. Look in live categories from backend/admin
+    // 1. Match directly against live categories from Backend/MongoDB
     if (categoriesList && categoriesList.length > 0) {
       const liveFound = categoriesList.find(cat => {
         if (!cat) return false;
         return (
-          cleanForCompare(cat.name) === slugClean || 
-          cleanForCompare(cat.slug) === slugClean
+          cleanForCompare(cat.slug) === slugClean ||
+          cleanForCompare(cat.name) === slugClean ||
+          (Array.isArray(cat.aliases) && cat.aliases.some(a => cleanForCompare(a) === slugClean))
         );
       });
       if (liveFound) {
@@ -121,29 +73,12 @@ export const CategoryPage = () => {
       }
     }
 
-    // 2. Fallback to KNOWN_CATEGORIES
-    for (const cat of KNOWN_CATEGORIES) {
-      if (cleanForCompare(cat.name) === slugClean || cleanForCompare(cat.slug) === slugClean) {
-        return {
-          name: cat.name,
-          description: cat.description || '',
-          image: cat.image || ''
-        };
-      }
-      if (cat.aliases && cat.aliases.some(a => cleanForCompare(a) === slugClean)) {
-        return {
-          name: cat.name,
-          description: cat.description || '',
-          image: cat.image || ''
-        };
-      }
-    }
-
-    // 3. Fallback name from slug
+    // 2. Pure dynamic fallback name generated directly from the URL slug
     const fallbackName = rawSlug
       .split(/[-_]/)
+      .filter(Boolean)
       .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-      .join(' ');
+      .join(' ') || 'Gifts';
 
     return {
       name: fallbackName,

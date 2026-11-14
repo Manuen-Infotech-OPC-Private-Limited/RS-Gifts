@@ -298,6 +298,18 @@ export const fetchLiveCategories = async () => {
     }
   } catch { }
 
+  // Cache live categories in localStorage for instant retrieval across pages
+  if (categories.length > 0) {
+    try {
+      localStorage.setItem('rs_gifts_live_categories', JSON.stringify(categories));
+    } catch { }
+  } else {
+    try {
+      const cached = localStorage.getItem('rs_gifts_live_categories');
+      if (cached) categories = JSON.parse(cached);
+    } catch { }
+  }
+
   return categories;
 };
 

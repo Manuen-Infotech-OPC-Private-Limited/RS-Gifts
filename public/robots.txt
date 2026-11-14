@@ -18,3 +18,4 @@ Disallow: /order-confirmation
 
 # Sitemap location
 Sitemap: https://manuen-infotech-opc-private-limited.github.io/RS-Gifts/sitemap.xml
+

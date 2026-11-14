@@ -59,28 +59,49 @@ const ALL_CATEGORIES = [
 
 export const ShopByCategory = ({ onSelectCategory }) => {
   const navigate = useNavigate();
-  const [categoriesList, setCategoriesList] = useState(ALL_CATEGORIES);
+  const [categoriesList, setCategoriesList] = useState(() => {
+    try {
+      const cached = localStorage.getItem('rs_gifts_live_categories');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed
+            .filter((c) => c && c.active !== false)
+            .map((c) => {
+              const slug = c.slug || getCategorySlug(c);
+              return {
+                id: c._id || c.id || slug,
+                name: c.name || slug,
+                slug,
+                path: '/category/' + slug,
+                image: (c.image && c.image.trim()) ? c.image.trim() : getDefaultFallbackImage(slug)
+              };
+            });
+        }
+      }
+    } catch {}
+    return ALL_CATEGORIES;
+  });
 
   useEffect(() => {
     let isMounted = true;
     fetchLiveCategories()
       .then((live) => {
         if (isMounted && Array.isArray(live) && live.length > 0) {
-          const map = new Map();
-          ALL_CATEGORIES.forEach(c => map.set(c.slug, { ...c }));
-          live.forEach(c => {
-            if (!c || c.active === false) return;
-            const slug = getCategorySlug(c);
-            const existing = map.get(slug);
-            map.set(slug, {
-              id: c._id || c.id || slug,
-              name: c.name || existing?.name || slug,
-              slug,
-              path: '/category/' + slug,
-              image: (c.image && c.image.trim()) ? c.image.trim() : (existing?.image || getDefaultFallbackImage(slug))
+          const activeLive = live.filter((c) => c && c.active !== false);
+          if (activeLive.length > 0) {
+            const mapped = activeLive.map((c) => {
+              const slug = c.slug || getCategorySlug(c);
+              return {
+                id: c._id || c.id || slug,
+                name: c.name || slug,
+                slug,
+                path: '/category/' + slug,
+                image: (c.image && c.image.trim()) ? c.image.trim() : getDefaultFallbackImage(slug)
+              };
             });
-          });
-          setCategoriesList(Array.from(map.values()));
+            setCategoriesList(mapped);
+          }
         }
       })
       .catch(() => {});
