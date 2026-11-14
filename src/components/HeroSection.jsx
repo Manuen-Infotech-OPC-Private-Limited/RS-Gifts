@@ -1,10 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  ChevronLeft,
-  ChevronRight,
-  ArrowRight
-} from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import api from '../services/api';
 
 const resolveImageUrl = (img) => {
@@ -251,35 +247,6 @@ export const HeroSection = ({ onShopNow }) => {
           </div>
         ))}
       </div>
-
-      {/* Navigation Arrows: Left (<) and Right (>) with instant stopPropagation */}
-      {slides.length > 1 && (
-        <>
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              prevSlide();
-            }}
-            aria-label="Previous Slide"
-            className="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/75 hover:bg-white text-[#821D38] shadow-md flex items-center justify-center transition-all duration-200 opacity-70 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
-          >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.4]" />
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              nextSlide();
-            }}
-            aria-label="Next Slide"
-            className="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white/75 hover:bg-white text-[#821D38] shadow-md flex items-center justify-center transition-all duration-200 opacity-70 group-hover:opacity-100 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs"
-          >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.4]" />
-          </button>
-        </>
-      )}
 
       {/* Carousel Dots Pagination: 1, 2, 3... indicators with smooth pill animation */}
       {slides.length > 1 && (
