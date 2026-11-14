@@ -10,6 +10,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { fetchLiveProducts, fetchLiveCategories } from '../services/productService';
+import SEO from '../components/common/SEO';
 
 const KNOWN_CATEGORIES = [
   { 
@@ -235,8 +236,18 @@ export const CategoryPage = () => {
     navigate('/cart');
   };
 
+  const categoryTitle = `${categoryName || 'Gifts'} | RS Gifts`;
+  const categoryMetaDesc = categoryDescription || `Explore handcrafted and curated ${categoryName || 'gifts'} at RS Gifts. Premium quality and express delivery.`;
+  const categoryKeywords = `${categoryName || 'gifts'}, buy ${categoryName || 'gifts'} online, gift hampers, personalized gifts, RS Gifts`;
+
   return (
     <div className="w-full bg-[#FFF9F5] min-h-screen pb-16">
+      <SEO
+        title={categoryTitle}
+        description={categoryMetaDesc}
+        keywords={categoryKeywords}
+        canonical={`/category/${rawSlug}`}
+      />
       {/* Category Name & Description Header */}
       <div className="w-full bg-white border-b border-[#ECE7EC]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-7 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

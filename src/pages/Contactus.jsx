@@ -12,6 +12,7 @@ import {
     CheckCircle2
 } from 'lucide-react';
 import api from '../services/api';
+import SEO from '../components/common/SEO';
 
 export const Contactus = () => {
     const navigate = useNavigate();
@@ -195,6 +196,12 @@ export const Contactus = () => {
 
     return (
         <div className="w-full bg-[#FFF9F5] py-6 sm:py-9 font-sans select-none min-h-[85vh]">
+            <SEO
+                title="Contact Us & Customer Support | RS Gifts"
+                description="Get in touch with RS Gifts customer care for corporate gifting, order tracking, and bespoke hampers."
+                canonical="/contact"
+                keywords="contact RS gifts, customer care, corporate gifting support, gift delivery inquiries"
+            />
             <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-6 sm:space-y-8">
 
                 {/* Page Header */}

@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import { SEO } from '../components/common/SEO';
 import {
   Heart,
   Star,
@@ -267,10 +268,55 @@ export const ProductDetailsPage = () => {
   const isOutOfStock = product?.stock === 0;
   const isLowStock = product?.stock > 0 && product?.stock <= (product?.lowStockThreshold || 5);
 
+  // Schema.org JSON-LD structured data for Google Product Rich Snippets
+  const productSchema = useMemo(() => {
+    if (!product) return null;
+    const price = product.price || 0;
+    const availability = (product.stock > 0)
+      ? 'https://schema.org/InStock'
+      : 'https://schema.org/OutOfStock';
+
+    const images = Array.isArray(product.images) && product.images.length > 0
+      ? product.images
+      : (product.image ? [product.image] : []);
+
+    const schemaObj = {
+      '@context': 'https://schema.org',
+      '@type': 'Product',
+      name: product.title || 'Gift Item',
+      image: images,
+      description: product.description || `Buy ${product.title} online at RS Gifts. Thoughtful, personalized gifting with express delivery across India.`,
+      sku: product.productId || product.sku || String(product.id || ''),
+      offers: {
+        '@type': 'Offer',
+        priceCurrency: 'INR',
+        price: price,
+        availability: availability,
+        url: window.location.href,
+        seller: {
+          '@type': 'Organization',
+          name: 'RS Gifts',
+        },
+      },
+    };
+
+    if (reviews && reviews.length > 0) {
+      const avgRating = (reviews.reduce((acc, r) => acc + (Number(r.rating) || 5), 0) / reviews.length).toFixed(1);
+      schemaObj.aggregateRating = {
+        '@type': 'AggregateRating',
+        ratingValue: avgRating,
+        reviewCount: reviews.length,
+      };
+    }
+
+    return schemaObj;
+  }, [product, reviews]);
+
   // 1. Loading Skeleton View
   if (loading) {
     return (
       <div className="w-full min-h-screen bg-[#FFF9F5] py-8 sm:py-12">
+        <SEO title="Loading Gift Details... | RS Gifts" />
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Breadcrumb skeleton */}
           <div className="h-4 w-48 bg-rose-100/60 rounded-full mb-8 animate-pulse" />
@@ -306,6 +352,7 @@ export const ProductDetailsPage = () => {
   if (error || !product) {
     return (
       <div className="w-full min-h-[70vh] bg-[#FFF9F5] flex items-center justify-center py-16 px-4">
+        <SEO title="Gift Not Found | RS Gifts" description="The gift product you are looking for is currently unavailable. Browse our curated gift hampers and keepsakes." />
         <div className="max-w-md w-full bg-white rounded-3xl border border-[#EFEBEF] shadow-sm p-8 text-center">
           <div className="w-16 h-16 rounded-full bg-[#FDF2F5] text-[#821D38] flex items-center justify-center mx-auto mb-4">
             <Gift size={32} />
@@ -328,6 +375,14 @@ export const ProductDetailsPage = () => {
 
   return (
     <div className="w-full min-h-screen bg-[#FFF9F5] text-[#1E1217] pb-20">
+      <SEO
+        title={`${product.title} - Buy Online at ₹${product.price}`}
+        description={product.description?.slice(0, 160) || `Buy ${product.title} online at RS Gifts. Handcrafted packaging, personalized options, and express delivery across India.`}
+        keywords={`${product.title}, buy ${product.title}, ${product.category || 'gifts'}, personalized gifts, RS Gifts`}
+        image={product.image || product.images?.[0]}
+        type="product"
+        schema={productSchema}
+      />
       {/* Top Breadcrumb Navigation */}
       <div className="border-b border-[#ECE3E7]/60 bg-white/40 backdrop-blur-xs">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-3">

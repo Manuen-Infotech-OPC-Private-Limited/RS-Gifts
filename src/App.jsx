@@ -22,6 +22,7 @@ import { OffersPage } from './pages/OffersPage';
 import { CartDrawer } from './components/cart/CartDrawer';
 import api from './services/api';
 import { updateTabFavicon } from './utils/urlHelper';
+import SEO from './components/common/SEO';
 import './App.css';
 
 // Automatically scroll to top on any route navigation
@@ -110,6 +111,11 @@ export function App() {
                   path="/"
                   element={
                     <>
+                      <SEO
+                        title="RS Gifts | Thoughtful, Personalized & Luxury Gifting Platform"
+                        description="Discover exquisite gifts, curated hampers, personalized keepsakes, flowers, and surprise gifts for birthdays, anniversaries, and corporate celebrations at RS Gifts."
+                        canonical="/"
+                      />
                       <HeroSection onShopNow={handleNavigate} />
                       <ShopByCategory onSelectCategory={(cat) => handleNavigate(cat.path)} />
                       <FeaturedProducts onAddToCart={handleAddToCart} />

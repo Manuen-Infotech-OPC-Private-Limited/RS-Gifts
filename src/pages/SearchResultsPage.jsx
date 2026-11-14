@@ -13,6 +13,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { fetchLiveProducts } from '../services/productService';
+import SEO from '../components/common/SEO';
 
 export const SearchResultsPage = () => {
   const [searchParams] = useSearchParams();
@@ -214,6 +215,11 @@ export const SearchResultsPage = () => {
 
   return (
     <div className="w-full bg-[#FFF9F5] min-h-screen pb-16">
+      <SEO
+        title={searchQuery ? `Search: "${searchQuery}" | RS Gifts` : 'Search Gifts | RS Gifts'}
+        description={`Find curated gifts, personalized hampers, and celebration presents for "${searchQuery || 'all gifts'}" at RS Gifts.`}
+        canonical={`/search${searchQuery ? `?q=${encodeURIComponent(searchQuery)}` : ''}`}
+      />
       {/* Search Header Banner */}
       <div className="w-full bg-white border-b border-[#ECE7EC]">
         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">

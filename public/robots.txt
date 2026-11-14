@@ -1,0 +1,20 @@
+# Robots.txt for RS-Gifts
+User-agent: *
+Allow: /
+Allow: /products
+Allow: /categories
+Allow: /about
+Allow: /contact
+Allow: /privacy
+Allow: /terms
+
+# Disallow private user flows to optimize crawl budget
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /login
+Disallow: /register
+Disallow: /order-confirmation
+
+# Sitemap location
+Sitemap: https://manuen-infotech-opc-private-limited.github.io/RS-Gifts/sitemap.xml

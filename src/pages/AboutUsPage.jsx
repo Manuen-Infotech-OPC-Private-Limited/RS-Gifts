@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import SEO from '../components/common/SEO';
 
 // Pixel-perfect SVG Icons matching the reference design mockup
 const DiamondGemIcon = () => (
@@ -131,6 +132,12 @@ export const AboutUsPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FFFDFB] font-sans text-neutral-800 antialiased selection:bg-[#821D38] selection:text-white">
+      <SEO
+        title="About Us | RS Gifts - Handcrafted & Luxury Gifting"
+        description="Learn about RS Gifts, our commitment to artisanal craftsmanship, emotional connections, and memorable celebration presents."
+        canonical="/about"
+        keywords="about RS gifts, personalized gifts store, corporate gifting company, handcrafted gifts India"
+      />
 
       {/* 1. HERO SECTION (Matches Reference Mockup) */}
       <section className="relative overflow-hidden w-full border-b border-[#EFE7E2] bg-[#FAF5F0]/70 py-10 sm:py-14 lg:py-16">

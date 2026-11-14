@@ -18,6 +18,7 @@ import {
 import { useCart } from '../context/CartContext';
 import { useWishlist } from '../context/WishlistContext';
 import { fetchOfferProducts } from '../services/productService';
+import SEO from '../components/common/SEO';
 
 export const OffersPage = () => {
   const navigate = useNavigate();
@@ -125,6 +126,12 @@ export const OffersPage = () => {
 
   return (
     <div className="min-h-screen bg-[#FFF9F5] text-neutral-800 pb-20">
+      <SEO
+        title="Special Offers, Deals & Coupons | RS Gifts"
+        description="Save on luxury gift hampers, festive specials, and personalized presents with exclusive discounts and coupon codes at RS Gifts."
+        canonical="/offers"
+        keywords="gift offers, discount gift hampers, coupon codes RS gifts, cheap gift delivery"
+      />
 
       {/* 1. HERO BANNER */}
       <section className="relative overflow-hidden bg-gradient-to-b from-[#FFF0E6] via-[#FFF9F5] to-[#FFF9F5] pt-4 pb-1 sm:pt-6 sm:pb-2 px-4 sm:px-6 lg:px-8">
